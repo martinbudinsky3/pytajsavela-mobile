@@ -8,10 +8,11 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 class ApiClient {
-    companion object{
+    companion object {
         private var retrofit: Retrofit? = null
-        /*private val propertiesReader = PropertiesReader("classpath:config.properties")
-        private val baseUrl = propertiesReader.getProperty("baseUrl")*/
+        /*private val propertiesReader = PropertiesReader(this)
+        private val properties = propertiesReader.getProperties("config.properties")
+        private val baseUrl = properties.getProperty("baseUrl")*/
 
         private val baseUrl = "http://10.0.2.2:8000/api/"
         fun getApiClient(): Retrofit {
