@@ -19,8 +19,8 @@ class AuthRepository {
     suspend fun login(credentials: Credentials) =
         try {
             apiInterface?.login(credentials).let {
-                if(it?.isSuccessful == true) ApiResult.Success(it)
-                else ApiResult.Error<ErrorEntity>(ErrorHandler.getError(HttpException(it)))
+                if(it?.isSuccessful == true) { ApiResult.Success(it) }
+                else { ApiResult.Error<ErrorEntity>(ErrorHandler.getError(HttpException(it))) }
             }
         } catch (exception: Exception) {
             ApiResult.Error<ErrorEntity>(ErrorHandler.getError(exception))

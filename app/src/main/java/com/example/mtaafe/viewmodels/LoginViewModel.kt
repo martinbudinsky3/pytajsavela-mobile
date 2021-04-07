@@ -1,37 +1,44 @@
 package com.example.mtaafe.viewmodels
 
-import android.util.Log
+import android.app.Application
+import android.content.Context
+import android.content.SharedPreferences
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.example.mtaafe.data.models.ApiResult
 import com.example.mtaafe.data.models.Credentials
 import com.example.mtaafe.data.models.ErrorEntity
+import com.example.mtaafe.data.models.LoggedInUser
 import com.example.mtaafe.data.repositories.AuthRepository
-import com.example.mtaafe.utils.PropertiesReader
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import retrofit2.HttpException
 
-class LoginViewModel: ViewModel() {
+
+class LoginViewModel(application: Application): AndroidViewModel(application) {
     private var authRepository:AuthRepository?=null
+    private var sharedPreferences: SharedPreferences
 
-    private var _error = MutableLiveData<ErrorEntity>()
+    val email = MutableLiveData<String>()
+    val password = MutableLiveData<String>()
+
+    private val _error = MutableLiveData<ErrorEntity>()
     val error: LiveData<ErrorEntity>
             get() = _error
 
     init {
         authRepository = AuthRepository()
+        sharedPreferences = getApplication<Application>()
+                .getSharedPreferences("user_info", Context.MODE_PRIVATE)
     }
 
     fun login() {
         CoroutineScope(Dispatchers.IO).launch {
-            val credentials = Credentials("jozefmrkva@stuba.sk", "password1234")
+            val credentials = Credentials(email.value.toString(), password.value.toString())
             val response = authRepository?.login(credentials)
 
-            Log.i("Login response", response.toString())
             withContext(Dispatchers.Main) {
                 when(response) {
                     is ApiResult.Error -> {
@@ -39,8 +46,13 @@ class LoginViewModel: ViewModel() {
                     }
 
                     is ApiResult.Success -> {
-                        // do something with success response
+                        if(response.data is LoggedInUser) {
+                            sharedPreferences.edit().putString("api_token", response.data.apiToken).apply()
+                            sharedPreferences.edit().putLong("id", response.data.id).apply()
+                        }
                     }
+
+                    else -> {}
                 }
             }
         }
