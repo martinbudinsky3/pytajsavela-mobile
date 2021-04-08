@@ -24,9 +24,9 @@ class LoginViewModel(application: Application): AndroidViewModel(application) {
     val email = MutableLiveData<String>()
     val password = MutableLiveData<String>()
 
-    private val _error = MutableLiveData<ErrorEntity>()
-    val error: LiveData<ErrorEntity>
-            get() = _error
+    private val _result = MutableLiveData<ApiResult<out Any>>()
+    val result: LiveData<ApiResult<out Any>>
+        get() = _result
 
     init {
         authRepository = AuthRepository()
@@ -40,20 +40,7 @@ class LoginViewModel(application: Application): AndroidViewModel(application) {
             val response = authRepository?.login(credentials)
 
             withContext(Dispatchers.Main) {
-                when(response) {
-                    is ApiResult.Error -> {
-                        _error.value = response.error
-                    }
-
-                    is ApiResult.Success -> {
-                        if(response.data is LoggedInUser) {
-                            sharedPreferences.edit().putString("api_token", response.data.apiToken).apply()
-                            sharedPreferences.edit().putLong("id", response.data.id).apply()
-                        }
-                    }
-
-                    else -> {}
-                }
+                _result.value = response!!
             }
         }
     }

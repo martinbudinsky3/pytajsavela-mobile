@@ -8,6 +8,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.mtaafe.R
+import com.example.mtaafe.data.models.ApiResult
 import com.example.mtaafe.data.models.ErrorEntity
 import com.example.mtaafe.databinding.ActivityMainBinding
 import com.example.mtaafe.viewmodels.LoginViewModel
@@ -25,11 +26,20 @@ class LoginActivity : AppCompatActivity() {
                 .create(LoginViewModel::class.java)
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
+        
 
-        viewModel.error.observe(this, Observer {
-            when(it) {
+        fun handleError(error: ErrorEntity) {
+            when(error) {
                 is ErrorEntity.Unauthorized -> Toast.makeText(this, "Nesprávne prihlasovacie údaje", Toast.LENGTH_LONG).show()
                 else -> Toast.makeText(this, "Oops, niečo sa pokazilo. Vyskúšajte akciu neskôr prosím", Toast.LENGTH_LONG).show()
+            }
+        }
+
+        viewModel.result.observe(this, Observer {
+            when(it) {
+                is ApiResult.Success -> { /* handle success */ }
+                is ApiResult.Error -> handleError(it.error)
+                else -> {}
             }
         })
     }

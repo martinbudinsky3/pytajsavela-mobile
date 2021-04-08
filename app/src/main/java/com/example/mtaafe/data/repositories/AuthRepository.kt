@@ -1,5 +1,6 @@
 package com.example.mtaafe.data.repositories
 
+import android.util.Log
 import com.example.mtaafe.data.models.ApiResult
 import com.example.mtaafe.data.models.Credentials
 import com.example.mtaafe.data.models.ErrorEntity
@@ -16,13 +17,28 @@ class AuthRepository {
         apiInterface = ApiClient.getApiClient().create(ApiInterface::class.java)
     }
 
-    suspend fun login(credentials: Credentials) =
+    suspend fun login(credentials: Credentials): ApiResult<out Any> {
         try {
             apiInterface?.login(credentials).let {
-                if(it?.isSuccessful == true) { ApiResult.Success(it) }
-                else { ApiResult.Error<ErrorEntity>(ErrorHandler.getError(HttpException(it))) }
+                // server returns 200
+                if (it?.isSuccessful == true) {
+                    Log.i("Login api call", "Successful login api call")
+                    return ApiResult.Success(it)
+                }
+
+                // server returns response with error code
+                else {
+                    val exception = HttpException(it)
+                    Log.e("Login api call", "Server returns response with error code.", exception)
+                    return ApiResult.Error<ErrorEntity>(ErrorHandler.getError(exception))
+                }
             }
-        } catch (exception: Exception) {
-            ApiResult.Error<ErrorEntity>(ErrorHandler.getError(exception))
         }
+
+        // something else went wrong
+        catch (exception: Exception) {
+            Log.e("Login api call", "Error while connecting to server.", exception)
+            return ApiResult.Error<ErrorEntity>(ErrorHandler.getError(exception))
+        }
+    }
 }
