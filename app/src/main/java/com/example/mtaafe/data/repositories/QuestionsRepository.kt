@@ -2,7 +2,6 @@ package com.example.mtaafe.data.repositories
 
 import android.util.Log
 import com.example.mtaafe.data.models.ApiResult
-import com.example.mtaafe.data.models.Credentials
 import com.example.mtaafe.data.models.ErrorEntity
 import com.example.mtaafe.network.ApiClient
 import com.example.mtaafe.network.ApiInterface
@@ -10,26 +9,26 @@ import com.example.mtaafe.utils.ErrorHandler
 import retrofit2.HttpException
 import java.lang.Exception
 
-class AuthRepository {
+class QuestionsRepository {
     private var apiInterface: ApiInterface?=null
 
     init {
         apiInterface = ApiClient.getApiClient().create(ApiInterface::class.java)
     }
 
-    suspend fun login(credentials: Credentials): ApiResult<out Any> {
+    suspend fun getQuestionsList(apiToken: String): ApiResult<out Any> {
         try {
-            apiInterface?.login(credentials).let {
+            apiInterface?.getQuestionsList("Bearer $apiToken").let {
                 // server returns 200
                 if (it?.isSuccessful == true) {
-                    Log.i("Login api call", "Successful login api call")
+                    Log.i("Questions list api call", "Successful questions list api call")
                     return ApiResult.Success(it.body()!!)
                 }
 
                 // server returns response with error code
                 else {
                     val exception = HttpException(it!!)
-                    Log.e("Login api call", "Server returns response with error code.", exception)
+                    Log.e("Questions list api call", "Server returns response with error code.", exception)
                     return ApiResult.Error<ErrorEntity>(ErrorHandler.getError(exception))
                 }
             }
@@ -37,7 +36,7 @@ class AuthRepository {
 
         // something else went wrong
         catch (exception: Exception) {
-            Log.e("Login api call", "Error while making api call.", exception)
+            Log.e("Questions list api call", "Error while connecting to server.", exception)
             return ApiResult.Error<ErrorEntity>(ErrorHandler.getError(exception))
         }
     }

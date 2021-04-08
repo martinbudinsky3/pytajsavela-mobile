@@ -1,6 +1,6 @@
 package com.example.mtaafe.network
 
-import com.example.mtaafe.utils.PropertiesReader
+import com.example.mtaafe.config.Constants
 import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -10,11 +10,7 @@ import java.util.concurrent.TimeUnit
 class ApiClient {
     companion object {
         private var retrofit: Retrofit? = null
-        /*private val propertiesReader = PropertiesReader(this)
-        private val properties = propertiesReader.getProperties("config.properties")
-        private val baseUrl = properties.getProperty("baseUrl")*/
 
-        private val baseUrl = "http://10.0.2.2:8000/api/"
         fun getApiClient(): Retrofit {
             val gson = GsonBuilder()
                 .setLenient()
@@ -25,7 +21,7 @@ class ApiClient {
                 .build()
             if (retrofit == null) {
                 retrofit = Retrofit.Builder()
-                    .baseUrl(baseUrl)
+                    .baseUrl(Constants.BASE_URL)
                     .client(okHttpClient)
                     .addConverterFactory(GsonConverterFactory.create(gson))
                     .build()

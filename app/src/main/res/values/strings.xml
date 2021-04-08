@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">MTAA FE</string>
+    <string name="user_info_shared_prefs">Session storage</string>
 </resources>

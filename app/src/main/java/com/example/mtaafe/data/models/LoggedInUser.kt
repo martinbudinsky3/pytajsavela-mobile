@@ -1,6 +1,11 @@
 package com.example.mtaafe.data.models
 
+import com.google.gson.annotations.SerializedName
+
 data class LoggedInUser (
-    var id: Long,
-    var apiToken: String
+        @SerializedName("id")
+        var id: Long,
+
+        @SerializedName("api_token")
+        var apiToken: String
 )
