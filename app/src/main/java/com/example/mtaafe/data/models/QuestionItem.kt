@@ -1,13 +1,26 @@
 package com.example.mtaafe.data.models
 
+import com.google.gson.annotations.SerializedName
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZonedDateTime
 
 data class QuestionItem (
-    var id: Long,
-    var title: String,
-    var body: String,
-    var createdAt: LocalDateTime,
-    var author: Author,
-    var tags: List<Tag>,
-    var answersCount: Int
+        @SerializedName("id")
+        var id: Long,
+
+        @SerializedName("title")
+        var title: String,
+
+        @SerializedName("created_at")
+        var createdAt: LocalDate,
+
+        @SerializedName("author")
+        var author: Author,
+
+        @SerializedName("tags")
+        var tags: List<Tag>,
+
+        @SerializedName("answers_count")
+        var answersCount: Int
 )

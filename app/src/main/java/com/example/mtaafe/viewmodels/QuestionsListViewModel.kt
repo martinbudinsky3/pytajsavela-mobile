@@ -2,7 +2,9 @@ package com.example.mtaafe.viewmodels
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.mtaafe.data.models.ApiResult
 import com.example.mtaafe.data.models.Credentials
 import com.example.mtaafe.data.repositories.QuestionsRepository
 import com.example.mtaafe.utils.SessionManager
@@ -16,6 +18,9 @@ class QuestionsListViewModel(application: Application): AndroidViewModel(applica
     private var sessionManager: SessionManager? = null
 
     val questions = MutableLiveData<String>()
+    private val _result = MutableLiveData<ApiResult<out Any>>()
+    val result: LiveData<ApiResult<out Any>>
+        get() = _result
 
     init {
         questionsRepository = QuestionsRepository()
@@ -28,6 +33,7 @@ class QuestionsListViewModel(application: Application): AndroidViewModel(applica
 
             withContext(Dispatchers.Main) {
                 questions.value = response.toString()
+                _result.value = response!!
             }
         }
     }

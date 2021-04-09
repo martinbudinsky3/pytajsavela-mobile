@@ -1,6 +1,11 @@
 package com.example.mtaafe.data.models
 
+import com.google.gson.annotations.SerializedName
+
 data class Author (
-    var id: Long,
-    var name: String
+        @SerializedName("id")
+        var id: Long,
+
+        @SerializedName("name")
+        var name: String
 )
