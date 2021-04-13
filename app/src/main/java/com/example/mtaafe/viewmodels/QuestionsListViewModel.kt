@@ -1,23 +1,31 @@
 package com.example.mtaafe.viewmodels
 
 import android.app.Application
+import android.os.Build
+import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.mtaafe.data.models.ApiResult
 import com.example.mtaafe.data.models.Credentials
+import com.example.mtaafe.data.models.QuestionsList
 import com.example.mtaafe.data.repositories.QuestionsRepository
 import com.example.mtaafe.utils.SessionManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.lang.Math.ceil
 
 class QuestionsListViewModel(application: Application): AndroidViewModel(application) {
+    private val PAGE_SIZE: Int = 10
+
     private var questionsRepository: QuestionsRepository? = null
     private var sessionManager: SessionManager? = null
+    private var currentPage: Int = 1;
+    private var count: Int = 0
 
-    val questions = MutableLiveData<String>()
     private val _result = MutableLiveData<ApiResult<out Any>>()
     val result: LiveData<ApiResult<out Any>>
         get() = _result
@@ -27,14 +35,46 @@ class QuestionsListViewModel(application: Application): AndroidViewModel(applica
         sessionManager = SessionManager(application)
     }
 
-    fun getQuestionsList() {
+    private fun getQuestionsList(page: Int) {
         CoroutineScope(Dispatchers.IO).launch {
-            val response = questionsRepository?.getQuestionsList(sessionManager?.fetchApiToken().toString())
+            val response = questionsRepository?.getQuestionsList(sessionManager?.fetchApiToken().toString(), page)
 
             withContext(Dispatchers.Main) {
-                questions.value = response.toString()
                 _result.value = response!!
+
+                if(response is ApiResult.Success) {
+                    currentPage = page
+
+                    if(response.data is QuestionsList) {
+                        count = response.data.count
+                    }
+                }
             }
         }
+    }
+
+    fun getFirstPage() {
+        getQuestionsList(1)
+    }
+
+    fun getPrevioustPage() {
+        getQuestionsList(currentPage - 1)
+    }
+
+    fun getNextPage() {
+        Log.d("Questions list api call", (currentPage + 1).toString())
+        getQuestionsList(currentPage + 1)
+    }
+
+    fun getLastPage() {
+        var lastPage = count / PAGE_SIZE
+        if(count % PAGE_SIZE != 0) {
+            lastPage++
+        }
+        getQuestionsList(lastPage)
+    }
+
+    fun retry() {
+        getQuestionsList(currentPage)
     }
 }

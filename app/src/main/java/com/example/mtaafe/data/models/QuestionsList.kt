@@ -7,5 +7,7 @@ data class QuestionsList (
         var count: Int,
 
         @SerializedName("questions")
-        var questions: List<QuestionItem>
+        var questions: ArrayList<QuestionItem>,
+
+        val nextPage: Int? = null
 )

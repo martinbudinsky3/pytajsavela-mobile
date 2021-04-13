@@ -20,6 +20,7 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables.useSupportLibrary = true
     }
 
     buildTypes {
@@ -60,6 +61,12 @@ dependencies {
 
     // RecyclerView
     implementation 'androidx.recyclerview:recyclerview:1.2.0-alpha03'
+
+    // CardView
+    implementation 'androidx.cardview:cardview:1.0.0'
+
+    // Paging
+    implementation "androidx.paging:paging-runtime-ktx:$pagingVersion"
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'

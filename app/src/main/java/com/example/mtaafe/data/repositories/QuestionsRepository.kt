@@ -1,6 +1,8 @@
 package com.example.mtaafe.data.repositories
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import com.example.mtaafe.data.models.ApiResult
 import com.example.mtaafe.data.models.ErrorEntity
 import com.example.mtaafe.network.ApiClient
@@ -16,9 +18,11 @@ class QuestionsRepository {
         apiInterface = ApiClient.getApiClient().create(ApiInterface::class.java)
     }
 
-    suspend fun getQuestionsList(apiToken: String): ApiResult<out Any> {
+    suspend fun getQuestionsList(apiToken: String, page: Int): ApiResult<out Any> {
         try {
-            apiInterface?.getQuestionsList("Bearer $apiToken").let {
+            Log.d("Questions list api call", "Getting `${page}`")
+
+            apiInterface?.getQuestionsList("Bearer $apiToken", page).let {
                 // server returns 200
                 if (it?.isSuccessful == true) {
                     Log.i("Questions list api call", "Successful questions list api call")
