@@ -19,5 +19,5 @@ data class Question (
         var tags: List<Tag>,
 
         @SerializedName("images")
-        var images: List<Image>,
+        var images: List<Image>
 )

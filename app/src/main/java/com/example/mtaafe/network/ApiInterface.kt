@@ -2,6 +2,8 @@ package com.example.mtaafe.network
 
 import android.database.Observable
 import com.example.mtaafe.data.models.*
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*
@@ -19,9 +21,12 @@ interface ApiInterface {
             @Query("page") page: Int?
     ): Response<QuestionsList>
 
-    @Headers("Accept: application/json")
+    @Multipart
     @POST("questions")
     suspend fun postQuestion(
-            @Body question: Question):
+            @Part("title") title : RequestBody,
+            @Part("body") body : RequestBody,
+            @Part("tags") tags : List<MultipartBody.Part>,
+            @Part("images") images : List<MultipartBody.Part>):
             Response<Question>
 }
