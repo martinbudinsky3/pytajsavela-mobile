@@ -7,5 +7,8 @@ data class Tag (
         var id: Long,
 
         @SerializedName("name")
-        var name: String
+        var name: String,
+
+        @SerializedName("questions_count")
+        var questionsCount: Int
 )

@@ -17,19 +17,19 @@ import retrofit2.Response
 
 @RequiresApi(Build.VERSION_CODES.O)
 class QuestionFormViewModel(application: Application): AndroidViewModel(application) {
-    private var questionsRepository: QuestionsRepository? = null
-    var result: MutableLiveData<ApiResult<out Any>> = MutableLiveData()
-
-    init {
-        questionsRepository = QuestionsRepository()
-    }
-
-     fun postQuestion(question : Question){
-        CoroutineScope(Dispatchers.IO).launch {
-            val response = questionsRepository?.postQuestion(question)
-
-            result.value = response
-        }
-
-    }
+//    private var questionsRepository: QuestionsRepository? = null
+//    var result: MutableLiveData<ApiResult<out Any>> = MutableLiveData()
+//
+//    init {
+//        questionsRepository = QuestionsRepository()
+//    }
+//
+//     fun postQuestion(question : Question){
+//        CoroutineScope(Dispatchers.IO).launch {
+//            val response = questionsRepository?.postQuestion(question)
+//
+//            result.value = response
+//        }
+//
+//    }
 }

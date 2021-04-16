@@ -13,7 +13,6 @@ import retrofit2.HttpException
 import retrofit2.Retrofit
 import java.lang.Exception
 
-@RequiresApi(Build.VERSION_CODES.O)
 class QuestionsRepository {
     private var apiInterface: ApiInterface?=null
 
@@ -47,28 +46,28 @@ class QuestionsRepository {
         }
     }
 
-    suspend fun postQuestion(question : Question) : ApiResult<out Any>{
-        try {
-            Log.d("Post question api call", "Posting question.")
-
-            apiInterface?.postQuestion(question).let {
-                // server returns 200
-                if (it?.isSuccessful == true) {
-                    Log.i("Post question api call", "Successful post question api call")
-                    return ApiResult.Success(it.body()!!)
-                }
-
-                // server returns response with error code
-                else {
-                    val exception = HttpException(it!!)
-                    Log.e("Post question api call", "Server returns response with error code.", exception)
-                    return ApiResult.Error<ErrorEntity>(ErrorHandler.getError(exception))
-                }
-            }
-        }
-        catch (exception: Exception) {
-            Log.e("Questions api call", "Error while connecting to server.", exception)
-            return ApiResult.Error<ErrorEntity>(ErrorHandler.getError(exception))
-        }
-    }
+//    suspend fun postQuestion(question : Question) : ApiResult<out Any>{
+//        try {
+//            Log.d("Post question api call", "Posting question.")
+//
+//            apiInterface?.postQuestion(question).let {
+//                // server returns 200
+//                if (it?.isSuccessful == true) {
+//                    Log.i("Post question api call", "Successful post question api call")
+//                    return ApiResult.Success(it.body()!!)
+//                }
+//
+//                // server returns response with error code
+//                else {
+//                    val exception = HttpException(it!!)
+//                    Log.e("Post question api call", "Server returns response with error code.", exception)
+//                    return ApiResult.Error<ErrorEntity>(ErrorHandler.getError(exception))
+//                }
+//            }
+//        }
+//        catch (exception: Exception) {
+//            Log.e("Questions api call", "Error while connecting to server.", exception)
+//            return ApiResult.Error<ErrorEntity>(ErrorHandler.getError(exception))
+//        }
+//    }
 }

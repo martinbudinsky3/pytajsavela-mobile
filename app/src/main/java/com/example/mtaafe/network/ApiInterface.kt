@@ -1,13 +1,10 @@
 package com.example.mtaafe.network
 
-import android.database.Observable
 import com.example.mtaafe.data.models.*
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*
-import java.util.*
 
 interface ApiInterface {
     @Headers("Accept: application/json")
@@ -29,4 +26,11 @@ interface ApiInterface {
             @Part("tags") tags : List<MultipartBody.Part>,
             @Part("images") images : List<MultipartBody.Part>):
             Response<Question>
+
+    @Headers("Accept: application/json")
+    @GET("tags")
+    suspend fun getTagsList(
+        @Header("Authorization") apiToken: String,
+        @Query("page") page: Int?
+    ): Response<TagsList>
 }

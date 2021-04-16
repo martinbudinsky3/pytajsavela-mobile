@@ -1,27 +1,23 @@
 package com.example.mtaafe.viewmodels
 
 import android.app.Application
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.mtaafe.data.models.ApiResult
-import com.example.mtaafe.data.models.Credentials
-import com.example.mtaafe.data.models.QuestionsList
-import com.example.mtaafe.data.repositories.QuestionsRepository
+import com.example.mtaafe.data.models.TagsList
+import com.example.mtaafe.data.repositories.TagsRepository
 import com.example.mtaafe.utils.SessionManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.lang.Math.ceil
 
-class QuestionsListViewModel(application: Application): AndroidViewModel(application) {
+class TagsListViewModel(application: Application): AndroidViewModel(application) {
     private val PAGE_SIZE: Int = 10
 
-    private var questionsRepository: QuestionsRepository? = null
+    private var tagsRepository: TagsRepository? = null
     private var sessionManager: SessionManager? = null
     private var currentPage: Int = 1;
     private var count: Int = 0
@@ -31,13 +27,13 @@ class QuestionsListViewModel(application: Application): AndroidViewModel(applica
         get() = _result
 
     init {
-        questionsRepository = QuestionsRepository()
+        tagsRepository = TagsRepository()
         sessionManager = SessionManager(application)
     }
 
-    private fun getQuestionsList(page: Int) {
+    private fun getTagsList(page: Int) {
         CoroutineScope(Dispatchers.IO).launch {
-            val response = questionsRepository?.getQuestionsList(sessionManager?.fetchApiToken().toString(), page)
+            val response = tagsRepository?.getTagsList(sessionManager?.fetchApiToken().toString(), page)
 
             withContext(Dispatchers.Main) {
                 _result.value = response!!
@@ -45,7 +41,7 @@ class QuestionsListViewModel(application: Application): AndroidViewModel(applica
                 if(response is ApiResult.Success) {
                     currentPage = page
 
-                    if(response.data is QuestionsList) {
+                    if(response.data is TagsList) {
                         count = response.data.count
                     }
                 }
@@ -54,16 +50,16 @@ class QuestionsListViewModel(application: Application): AndroidViewModel(applica
     }
 
     fun getFirstPage() {
-        getQuestionsList(1)
+        getTagsList(1)
     }
 
     fun getPrevioustPage() {
-        getQuestionsList(currentPage - 1)
+        getTagsList(currentPage - 1)
     }
 
     fun getNextPage() {
         Log.d("Questions list api call", (currentPage + 1).toString())
-        getQuestionsList(currentPage + 1)
+        getTagsList(currentPage + 1)
     }
 
     fun getLastPage() {
@@ -71,10 +67,10 @@ class QuestionsListViewModel(application: Application): AndroidViewModel(applica
         if(count % PAGE_SIZE != 0) {
             lastPage++
         }
-        getQuestionsList(lastPage)
+        getTagsList(lastPage)
     }
 
     fun retry() {
-        getQuestionsList(currentPage)
+        getTagsList(currentPage)
     }
 }

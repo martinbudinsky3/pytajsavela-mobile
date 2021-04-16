@@ -26,7 +26,6 @@ class QuestionsListActivity : AppCompatActivity(), IPageButtonClickListener {
     private lateinit var rootLayout: View
     private lateinit var adapter: QuestionAdapter
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_questions_list)
@@ -47,7 +46,6 @@ class QuestionsListActivity : AppCompatActivity(), IPageButtonClickListener {
             when(it) {
                 is ApiResult.Success -> {
                     if(it.data is QuestionsList) {
-                        //questionsListRecycler.adapter = QuestionAdapter(it.data.questions)
                         adapter.updateData(it.data.questions)
                     }
                 }
@@ -57,7 +55,6 @@ class QuestionsListActivity : AppCompatActivity(), IPageButtonClickListener {
         })
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun handleError(error: ErrorEntity) {
         when(error) {
             is ErrorEntity.Unauthorized -> {
@@ -74,22 +71,18 @@ class QuestionsListActivity : AppCompatActivity(), IPageButtonClickListener {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun handleFirstPageButtonClick() {
         viewModel.getFirstPage()
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun handlePreviousPageButtonClick() {
         viewModel.getPrevioustPage()
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun handleNextPageButtonClick() {
         viewModel.getNextPage()
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun handleLastPageButtonClick() {
         viewModel.getLastPage()
     }
