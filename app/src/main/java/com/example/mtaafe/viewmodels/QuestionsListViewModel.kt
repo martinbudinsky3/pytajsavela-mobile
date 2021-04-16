@@ -18,6 +18,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.lang.Math.ceil
 
+@RequiresApi(Build.VERSION_CODES.O)
 class QuestionsListViewModel(application: Application): AndroidViewModel(application) {
     private val PAGE_SIZE: Int = 10
 
@@ -35,6 +36,7 @@ class QuestionsListViewModel(application: Application): AndroidViewModel(applica
         sessionManager = SessionManager(application)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun getQuestionsList(page: Int) {
         CoroutineScope(Dispatchers.IO).launch {
             val response = questionsRepository?.getQuestionsList(sessionManager?.fetchApiToken().toString(), page)

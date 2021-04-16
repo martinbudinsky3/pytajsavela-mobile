@@ -1,10 +1,9 @@
 package com.example.mtaafe.network
 
 import android.database.Observable
-import com.example.mtaafe.data.models.Credentials
-import com.example.mtaafe.data.models.LoggedInUser
-import com.example.mtaafe.data.models.QuestionItem
-import com.example.mtaafe.data.models.QuestionsList
+import com.example.mtaafe.data.models.*
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*
@@ -21,4 +20,13 @@ interface ApiInterface {
             @Header("Authorization") apiToken: String,
             @Query("page") page: Int?
     ): Response<QuestionsList>
+
+    @Multipart
+    @POST("questions")
+    suspend fun postQuestion(
+            @Part("title") title : RequestBody,
+            @Part("body") body : RequestBody,
+            @Part("tags") tags : List<MultipartBody.Part>,
+            @Part("images") images : List<MultipartBody.Part>):
+            Response<Question>
 }
