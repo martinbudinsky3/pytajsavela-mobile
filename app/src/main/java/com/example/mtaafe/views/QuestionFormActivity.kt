@@ -39,9 +39,9 @@ class QuestionFormActivity : AppCompatActivity() {
     private lateinit var adapter: QuestionAdapter
 
     //private var selectedImage : Uri? = null
-    private lateinit var selectedImages : MutableList<Uri?>
+    private var selectedImages = mutableListOf<Uri?>()
     private var imageIndex = 0
-    var images : MutableList<MultipartBody.Part>? = null
+    var images = mutableListOf<MultipartBody.Part>()
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,19 +56,26 @@ class QuestionFormActivity : AppCompatActivity() {
         val selectImageBtn : Button = findViewById(R.id.selectImageBtn)
         val askButton : Button = findViewById(R.id.askButton)
 
-        val title = editTextQuestionTitle.text.toString()
-        val body = editTextQuestionBody.text.toString()
-
         selectImageBtn.setOnClickListener {
             imageSelection()
         }
 
-        var tags = getTags(editTextQuestionTags.text.toString())
-
         askButton.setOnClickListener {
+            val title = editTextQuestionTitle.text.toString()
+            val body = editTextQuestionBody.text.toString()
+
+            val tags = getTags(editTextQuestionTags.text.toString())
+
             if (selectedImages[0] != null) {
                 images = getImages(selectedImages)
             }
+
+            Log.d("message", "Title : " + title)
+            Log.d("message", "Body : " + body)
+
+            tags!!.forEachIndexed{index, element -> (Log.d("message", "Tag no."+ index + " : "+ element))}
+            images.forEachIndexed{index, element -> (Log.d("message", "Image no."+ index + " : "+ element))}
+            // Log.d("message", "Image name : "+ images.get(0))
 
             viewModel.postQuestion(
                     createPartFromString(title),
@@ -122,16 +129,16 @@ class QuestionFormActivity : AppCompatActivity() {
 
     private fun getTags(tagsInput : String): List<RequestBody>? {
         val tagsString = tagsInput.split(",").map { it.trim() }
-        val tagsRequestBody : MutableList<RequestBody>? = null
+        val tagsRequestBody = mutableListOf<RequestBody>()
 
-        tagsString.forEachIndexed{index, element -> tagsRequestBody?.add(index, createPartFromString(element)) }
+        tagsString.forEachIndexed{index, element -> tagsRequestBody.add(index, createPartFromString(element)) }
 
         return tagsRequestBody
     }
 
     @RequiresApi(Build.VERSION_CODES.KITKAT)
-    private fun getImages(imageUris : MutableList<Uri?>) : MutableList<MultipartBody.Part>?{
-        val images : MutableList<MultipartBody.Part>? = null
+    private fun getImages(imageUris : MutableList<Uri?>) : MutableList<MultipartBody.Part>{
+        val images = mutableListOf<MultipartBody.Part>()
 
         imageUris.forEachIndexed{index, element -> images?.add(prepareFilePart("" + index, element))}
 

@@ -39,9 +39,10 @@ class AnswerFormActivity : AppCompatActivity() {
     private lateinit var rootLayout: View
 
     //private var selectedImage : Uri? = null
-    private lateinit var selectedImages : MutableList<Uri?>
+    private var selectedImages = mutableListOf<Uri?>()
     private var imageIndex = 0
-    var images : MutableList<MultipartBody.Part>? = null
+    var images = mutableListOf<MultipartBody.Part>()
+    //var images = MutableList<MultipartBody.Part>?
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,24 +55,25 @@ class AnswerFormActivity : AppCompatActivity() {
         val selectImageBtn : Button = findViewById(R.id.selectImageBtn2)
         val answerBtn : Button = findViewById(R.id.answerBtn)
 
-        val body = editTextAnswerBody.text.toString()
-
         selectImageBtn.setOnClickListener {
             imageSelection()
         }
 
-
         answerBtn.setOnClickListener {
-            if (selectedImages[0] != null) {
+            val body = editTextAnswerBody.text.toString()
+
+            if (selectedImages.get(0) != null) {
                 images = getImages(selectedImages)
             }
+
+            images.forEachIndexed{index, element -> (Log.d("message", "Image no."+ index + " : "+ element))}
+           // Log.d("message", "Image name : "+ images.get(0))
+            Log.d("message", "Body : " + body)
 
             viewModel.postAnswer(
                     createPartFromString(body),
                     images
             )
-
-            //viewModel.postQuestion(question)
 
             viewModel.result.observe(this, Observer {
                 when(it) {
@@ -115,10 +117,10 @@ class AnswerFormActivity : AppCompatActivity() {
     }
 
     @RequiresApi(Build.VERSION_CODES.KITKAT)
-    private fun getImages(imageUris : MutableList<Uri?>) : MutableList<MultipartBody.Part>?{
-        val images : MutableList<MultipartBody.Part>? = null
+    private fun getImages(imageUris : MutableList<Uri?>) : MutableList<MultipartBody.Part>{
+        val images = mutableListOf<MultipartBody.Part>()
 
-        imageUris.forEachIndexed{index, element -> images?.add(prepareFilePart("" + index, element))}
+        imageUris.forEachIndexed{index, element -> images.add(prepareFilePart("" + index, element))}
 
         return images
     }
