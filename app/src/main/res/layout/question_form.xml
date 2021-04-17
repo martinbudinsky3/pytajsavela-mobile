@@ -26,7 +26,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Nová otázka"
-            android:textSize="30sp"
+            android:textSize="24sp"
             app:layout_constraintBottom_toTopOf="@+id/textView5"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.497"
@@ -53,7 +53,7 @@
             android:layout_marginLeft="4dp"
             android:layout_marginTop="32dp"
             android:text="Nadpis"
-            android:textSize="24sp"
+            android:textSize="18sp"
             app:layout_constraintStart_toStartOf="@+id/textView5"
             app:layout_constraintTop_toBottomOf="@+id/textView5" />
 
@@ -63,7 +63,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:text="Otázka"
-            android:textSize="24sp"
+            android:textSize="18sp"
             app:layout_constraintStart_toStartOf="@+id/editTextQuestionTitle"
             app:layout_constraintTop_toBottomOf="@+id/editTextQuestionTitle" />
 
@@ -95,7 +95,7 @@
             android:layout_marginLeft="4dp"
             android:layout_marginTop="28dp"
             android:text="Obrázky"
-            android:textSize="24sp"
+            android:textSize="18sp"
             app:layout_constraintStart_toStartOf="@+id/editTextQuestionBody"
             app:layout_constraintTop_toBottomOf="@+id/editTextQuestionBody" />
 
@@ -106,7 +106,7 @@
             android:layout_marginStart="84dp"
             android:layout_marginLeft="84dp"
             android:layout_marginTop="32dp"
-            android:text="Pridaj obrázok"
+            android:text="+ Pridaj obrázok"
             app:layout_constraintStart_toStartOf="@+id/textView9"
             app:layout_constraintTop_toBottomOf="@+id/textView9" />
 
@@ -116,7 +116,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="Tagy"
-            android:textSize="24sp"
+            android:textSize="18sp"
             app:layout_constraintStart_toStartOf="@+id/textView9"
             app:layout_constraintTop_toBottomOf="@+id/selectImageBtn" />
 
