@@ -6,6 +6,8 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.mtaafe.data.models.ApiResult
+import com.example.mtaafe.data.models.ErrorEntity
+import com.example.mtaafe.data.models.QuestionsList
 import com.example.mtaafe.data.models.TagsList
 import com.example.mtaafe.data.repositories.TagsRepository
 import com.example.mtaafe.utils.SessionManager
@@ -26,6 +28,14 @@ class TagsListViewModel(application: Application): AndroidViewModel(application)
     val result: LiveData<ApiResult<out Any>>
         get() = _result
 
+    private val _tagsList = MutableLiveData<TagsList>()
+    val tagsList: LiveData<TagsList>
+        get() = _tagsList
+
+    private val _error = MutableLiveData<ErrorEntity>()
+    val error: LiveData<ErrorEntity>
+        get() = _error
+
     var searchQuery: String = ""
 
     init {
@@ -38,13 +48,18 @@ class TagsListViewModel(application: Application): AndroidViewModel(application)
             val response = tagsRepository?.getTagsList(sessionManager?.fetchApiToken().toString(), page, searchQuery)
 
             withContext(Dispatchers.Main) {
-                _result.value = response!!
+                when(response) {
+                    is ApiResult.Success -> {
+                        currentPage = page
 
-                if(response is ApiResult.Success) {
-                    currentPage = page
+                        if(response.data is TagsList) {
+                            count = response.data.count
+                            _tagsList.value = response.data!!
 
-                    if(response.data is TagsList) {
-                        count = response.data.count
+                        }
+                    }
+                    is ApiResult.Error -> {
+                        _error.value = response.error
                     }
                 }
             }

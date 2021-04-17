@@ -38,17 +38,13 @@ class TagQuestionsListActivity : AppCompatActivity(), IPageButtonClickListener {
 
         viewModel.getFirstPage()
 
-        viewModel.result.observe(this, Observer {
-            when(it) {
-                is ApiResult.Success -> {
-                    if(it.data is TagQuestionsList) {
-                        adapter.updateData(it.data.questions)
-                        questionsListRecycler.scrollToPosition(0)
-                    }
-                }
-                is ApiResult.Error -> handleError(it.error)
-                else -> {}
-            }
+        viewModel.tagQuestionsList.observe(this, {
+            adapter.updateData(it.questions)
+            questionsListRecycler.scrollToPosition(0)
+        })
+
+        viewModel.error.observe(this, {
+            handleError(it)
         })
     }
 
@@ -59,7 +55,7 @@ class TagQuestionsListActivity : AppCompatActivity(), IPageButtonClickListener {
                 startActivity(intent)
             }
             else -> {
-                Snackbar.make(rootLayout, "Oops, niečo sa pokazilo.", Snackbar.LENGTH_LONG)
+                Snackbar.make(rootLayout, "Oops, niečo sa pokazilo.", Snackbar.LENGTH_INDEFINITE)
                     .setAction("Skúsiť znovu") {
                         viewModel.retry()
                     }

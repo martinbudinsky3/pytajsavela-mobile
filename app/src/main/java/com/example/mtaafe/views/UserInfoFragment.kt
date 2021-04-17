@@ -48,17 +48,14 @@ class UserInfoFragment: Fragment() {
         }!!
 
         viewModel.getUserInfo()
-        viewModel.result.observe(this, Observer {
-            when(it) {
-                is ApiResult.Success -> {
-                    if(it.data is User) {
-                        userNameText.text = it.data.name
-                        userEmailText.text = it.data.email
-                    }
-                }
-                is ApiResult.Error -> handleError(it.error)
-                else -> {}
-            }
+
+        viewModel.user.observe(this, {
+            userNameText.text = it.name
+            userEmailText.text = it.email
+        })
+
+        viewModel.error.observe(this, {
+            handleError(it)
         })
 
         //return binding.root
@@ -72,12 +69,12 @@ class UserInfoFragment: Fragment() {
                 startActivity(intent)
             }
             else -> {
-                    Snackbar.make(userInfoFragmentView, "Oops, niečo sa pokazilo.", Snackbar.LENGTH_INDEFINITE)
-                        .setAction("Skúsiť znovu") {
-                            Log.d("Test SNACKBAR", "Test")
-                            viewModel.getUserInfo()
-                        }
-                        .show()
+                Snackbar.make(userInfoFragmentView, "Oops, niečo sa pokazilo.", Snackbar.LENGTH_INDEFINITE)
+                    .setAction("Skúsiť znovu") {
+                        Log.d("Test SNACKBAR", "Test")
+                        viewModel.getUserInfo()
+                    }
+                    .show()
             }
         }
     }

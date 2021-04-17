@@ -5,6 +5,8 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.mtaafe.data.models.ApiResult
+import com.example.mtaafe.data.models.ErrorEntity
+import com.example.mtaafe.data.models.QuestionsList
 import com.example.mtaafe.data.models.TagQuestionsList
 import com.example.mtaafe.data.repositories.TagsRepository
 import com.example.mtaafe.utils.SessionManager
@@ -21,9 +23,13 @@ class TagQuestionsListViewModel(application: Application): AndroidViewModel(appl
     private var currentPage: Int = 1;
     private var count: Int = 0
 
-    private val _result = MutableLiveData<ApiResult<out Any>>()
-    val result: LiveData<ApiResult<out Any>>
-        get() = _result
+    private val _tagQuestionsList = MutableLiveData<TagQuestionsList>()
+    val tagQuestionsList: LiveData<TagQuestionsList>
+        get() = _tagQuestionsList
+
+    private val _error = MutableLiveData<ErrorEntity>()
+    val error: LiveData<ErrorEntity>
+        get() = _error
 
     var tagId: Long = 1
 
@@ -37,13 +43,18 @@ class TagQuestionsListViewModel(application: Application): AndroidViewModel(appl
             val response = tagsRepository?.getTagQuestionsList(sessionManager?.fetchApiToken().toString(), tagId, page)
 
             withContext(Dispatchers.Main) {
-                _result.value = response!!
+                when(response) {
+                    is ApiResult.Success -> {
+                        currentPage = page
 
-                if(response is ApiResult.Success) {
-                    currentPage = page
+                        if(response.data is TagQuestionsList) {
+                            count = response.data.count
+                            _tagQuestionsList.value = response.data!!
 
-                    if(response.data is TagQuestionsList) {
-                        count = response.data.count
+                        }
+                    }
+                    is ApiResult.Error -> {
+                        _error.value = response.error
                     }
                 }
             }

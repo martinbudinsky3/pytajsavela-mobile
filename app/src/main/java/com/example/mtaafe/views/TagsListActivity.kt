@@ -20,7 +20,6 @@ import com.example.mtaafe.viewmodels.TagsListViewModel
 import com.google.android.material.snackbar.Snackbar
 
 class TagsListActivity : AppCompatActivity(), IPageButtonClickListener {
-    //lateinit var binding: ActivityTagsListBinding
     private lateinit var viewModel: TagsListViewModel
     private lateinit var rootLayout: View
     private lateinit var adapter: TagDetailAdapter
@@ -31,7 +30,6 @@ class TagsListActivity : AppCompatActivity(), IPageButtonClickListener {
         setContentView(R.layout.activity_tags_list)
 
         rootLayout = findViewById(R.id.tagsListRoot)
-        //rootLayout = findViewById(R.id.content)
         viewModel = ViewModelProvider.AndroidViewModelFactory(application)
             .create(TagsListViewModel::class.java)
 
@@ -53,17 +51,13 @@ class TagsListActivity : AppCompatActivity(), IPageButtonClickListener {
 
         viewModel.getFirstPage()
 
-        viewModel.result.observe(this, Observer {
-            when(it) {
-                is ApiResult.Success -> {
-                    if(it.data is TagsList) {
-                        adapter.updateData(it.data.tags)
-                        tagsListRecycler.scrollToPosition(0)
-                    }
-                }
-                is ApiResult.Error -> handleError(it.error)
-                else -> {}
-            }
+        viewModel.tagsList.observe(this, {
+            adapter.updateData(it.tags)
+            tagsListRecycler.scrollToPosition(0)
+        })
+
+        viewModel.error.observe(this, {
+            handleError(it)
         })
     }
 
@@ -74,7 +68,7 @@ class TagsListActivity : AppCompatActivity(), IPageButtonClickListener {
                 startActivity(intent)
             }
             else -> {
-                Snackbar.make(rootLayout, "Oops, niečo sa pokazilo.", Snackbar.LENGTH_LONG)
+                Snackbar.make(rootLayout, "Oops, niečo sa pokazilo.", Snackbar.LENGTH_INDEFINITE)
                     .setAction("Skúsiť znovu") {
                         viewModel.retry()
                     }

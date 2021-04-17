@@ -9,6 +9,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.mtaafe.data.models.ApiResult
 import com.example.mtaafe.data.models.Credentials
+import com.example.mtaafe.data.models.ErrorEntity
 import com.example.mtaafe.data.models.QuestionsList
 import com.example.mtaafe.data.repositories.QuestionsRepository
 import com.example.mtaafe.utils.SessionManager
@@ -26,9 +27,13 @@ class QuestionsListViewModel(application: Application): AndroidViewModel(applica
     private var currentPage: Int = 1;
     private var count: Long = 0
 
-    private val _result = MutableLiveData<ApiResult<out Any>>()
-    val result: LiveData<ApiResult<out Any>>
-        get() = _result
+    private val _questionsList = MutableLiveData<QuestionsList>()
+    val questionsList: LiveData<QuestionsList>
+        get() = _questionsList
+
+    private val _error = MutableLiveData<ErrorEntity>()
+    val error: LiveData<ErrorEntity>
+        get() = _error
 
     init {
         questionsRepository = QuestionsRepository()
@@ -40,13 +45,19 @@ class QuestionsListViewModel(application: Application): AndroidViewModel(applica
             val response = questionsRepository?.getQuestionsList(sessionManager?.fetchApiToken().toString(), page)
 
             withContext(Dispatchers.Main) {
-                _result.value = response!!
 
-                if(response is ApiResult.Success) {
-                    currentPage = page
+                when(response) {
+                    is ApiResult.Success -> {
+                        currentPage = page
 
-                    if(response.data is QuestionsList) {
-                        count = response.data.count
+                        if(response.data is QuestionsList) {
+                            count = response.data.count
+                            _questionsList.value = response.data!!
+
+                        }
+                    }
+                    is ApiResult.Error -> {
+                        _error.value = response.error
                     }
                 }
             }

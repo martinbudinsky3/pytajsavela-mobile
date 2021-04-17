@@ -34,26 +34,23 @@ class LoginActivity : AppCompatActivity() {
 
         sessionManager = SessionManager(this)
 
-        fun handleError(error: ErrorEntity) {
-            when(error) {
-                is ErrorEntity.Unauthorized -> Toast.makeText(this, "Nesprávne prihlasovacie údaje", Toast.LENGTH_LONG).show()
-                else -> Toast.makeText(this, "Oops, niečo sa pokazilo. Vyskúšajte akciu neskôr prosím", Toast.LENGTH_LONG).show()
-            }
-        }
-
-        viewModel.result.observe(this, Observer {
-            when(it) {
-                is ApiResult.Success -> {
-                    if(it.data is LoggedInUser) {
-                        sessionManager.saveApiToken(it.data.apiToken)
-                        sessionManager.saveUserId(it.data.id)
-                        val intent = Intent(this, QuestionsListActivity::class.java)
-                        startActivity(intent)
-                    }
-                }
-                is ApiResult.Error -> handleError(it.error)
-                else -> {}
-            }
+        viewModel.loggedInUser.observe(this, {
+            sessionManager.saveApiToken(it.apiToken)
+            sessionManager.saveUserId(it.id)
+            val intent = Intent(this, QuestionsListActivity::class.java)
+            startActivity(intent)
         })
+
+        viewModel.error.observe(this, {
+            handleError(it)
+        })
+    }
+
+    fun handleError(error: ErrorEntity) {
+        // TODO snackbar
+        when(error) {
+            is ErrorEntity.Unauthorized -> Toast.makeText(this, "Nesprávne prihlasovacie údaje", Toast.LENGTH_LONG).show()
+            else -> Toast.makeText(this, "Oops, niečo sa pokazilo. Vyskúšajte akciu neskôr prosím", Toast.LENGTH_LONG).show()
+        }
     }
 }
