@@ -29,4 +29,11 @@ interface ApiInterface {
             @Part("tags") tags : List<RequestBody>?,
             @Part("images") images : List<MultipartBody.Part>?):
             Response<Question>
+
+    @Multipart
+    @POST("questions/{id}/answers")
+    suspend fun postAnswer(
+            @Part("body") body : RequestBody,
+            @Part("images") images : List<MultipartBody.Part>?):
+            Response<Answer>
 }
