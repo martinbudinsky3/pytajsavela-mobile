@@ -1,9 +1,6 @@
 package com.example.mtaafe.data.models
 
 import com.google.gson.annotations.SerializedName
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.ZonedDateTime
 
 data class Question (
         @SerializedName("id")

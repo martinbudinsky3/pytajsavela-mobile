@@ -26,7 +26,7 @@ interface ApiInterface {
     suspend fun postQuestion(
             @Part("title") title : RequestBody,
             @Part("body") body : RequestBody,
-            @Part("tags") tags : List<MultipartBody.Part>,
-            @Part("images") images : List<MultipartBody.Part>):
+            @Part("tags") tags : List<RequestBody>?,
+            @Part("images") images : List<MultipartBody.Part>?):
             Response<Question>
 }

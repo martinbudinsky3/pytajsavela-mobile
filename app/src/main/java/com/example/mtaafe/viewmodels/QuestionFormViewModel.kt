@@ -13,6 +13,8 @@ import com.example.mtaafe.utils.SessionManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Response
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -24,9 +26,14 @@ class QuestionFormViewModel(application: Application): AndroidViewModel(applicat
         questionsRepository = QuestionsRepository()
     }
 
-     fun postQuestion(question : Question){
+     fun postQuestion(title : RequestBody, body : RequestBody, tags : List<RequestBody>?, images : List<MultipartBody.Part>?){
         CoroutineScope(Dispatchers.IO).launch {
-            val response = questionsRepository?.postQuestion(question)
+            val response = questionsRepository?.postQuestion(
+                    title,
+                    body,
+                    tags,
+                    images
+            )
 
             result.value = response
         }

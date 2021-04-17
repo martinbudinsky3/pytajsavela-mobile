@@ -7,6 +7,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.FileUtils
 import android.provider.OpenableColumns
 import android.util.Log
 import android.view.View
@@ -25,6 +26,9 @@ import androidx.lifecycle.Observer
 import com.example.mtaafe.data.models.*
 import com.example.mtaafe.viewmodels.QuestionFormViewModel
 import com.google.android.material.snackbar.Snackbar
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -34,22 +38,23 @@ class QuestionFormActivity : AppCompatActivity() {
     private lateinit var rootLayout: View
     private lateinit var adapter: QuestionAdapter
 
-    val editTextQuestionTitle: EditText = findViewById(R.id.editTextQuestionTitle)
-    val editTextQuestionBody: EditText = findViewById(R.id.editTextQuestionBody)
-    val editTextQuestionTags: EditText = findViewById(R.id.editTextQuestionTags)
-
-    val selectImageBtn : Button = findViewById(R.id.selectImageBtn)
-    val askButton : Button = findViewById(R.id.askButton)
-
     //private var selectedImage : Uri? = null
     private lateinit var selectedImages : MutableList<Uri?>
     private var imageIndex = 0
+    var images : MutableList<MultipartBody.Part>? = null
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.question_form)
         rootLayout = findViewById(R.id.questionFormRoot)
+
+        val editTextQuestionTitle: EditText = findViewById(R.id.editTextQuestionTitle)
+        val editTextQuestionBody: EditText = findViewById(R.id.editTextQuestionBody)
+        val editTextQuestionTags: EditText = findViewById(R.id.editTextQuestionTags)
+
+        val selectImageBtn : Button = findViewById(R.id.selectImageBtn)
+        val askButton : Button = findViewById(R.id.askButton)
 
         val title = editTextQuestionTitle.text.toString()
         val body = editTextQuestionBody.text.toString()
@@ -62,12 +67,17 @@ class QuestionFormActivity : AppCompatActivity() {
 
         askButton.setOnClickListener {
             if (selectedImages[0] != null) {
-                val images = getImages(selectedImages)
+                images = getImages(selectedImages)
             }
 
-            val question = Question(1, title, body, tags, listOf())
+            viewModel.postQuestion(
+                    createPartFromString(title),
+                    createPartFromString(body),
+                    tags,
+                    images
+            )
 
-            viewModel.postQuestion(question)
+            //viewModel.postQuestion(question)
 
             viewModel.result.observe(this, Observer {
                 when(it) {
@@ -110,18 +120,40 @@ class QuestionFormActivity : AppCompatActivity() {
         private const val REQUEST_CODE_IMAGE_PCIKER = 100
     }
 
-    private fun getTags(tagsInput : String): List<String> {
-        return tagsInput.split(",").map { it.trim() }
+    private fun getTags(tagsInput : String): List<RequestBody>? {
+        val tagsString = tagsInput.split(",").map { it.trim() }
+        val tagsRequestBody : MutableList<RequestBody>? = null
+
+        tagsString.forEachIndexed{index, element -> tagsRequestBody?.add(index, createPartFromString(element)) }
+
+        return tagsRequestBody
     }
 
     @RequiresApi(Build.VERSION_CODES.KITKAT)
-    private fun getImages(imageUris : MutableList<Uri?>){
-        val parcelFileDescriptor = contentResolver.openFileDescriptor(imageUris[0]!!, "r", null) ?: return
+    private fun getImages(imageUris : MutableList<Uri?>) : MutableList<MultipartBody.Part>?{
+        val images : MutableList<MultipartBody.Part>? = null
 
-        val file = File(cacheDir, contentResolver.getFileName(imageUris[0]!!))
-        val inputStream = FileInputStream(parcelFileDescriptor.fileDescriptor)
+        imageUris.forEachIndexed{index, element -> images?.add(prepareFilePart("" + index, element))}
+
+        return images
+    }
+
+    private fun createPartFromString(partString : String) : RequestBody{
+        return RequestBody.create(MultipartBody.FORM, partString)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.KITKAT)
+    private fun prepareFilePart(partName : String, fileUri : Uri?) : MultipartBody.Part {
+        val parcelFileDescriptor = contentResolver.openFileDescriptor(fileUri!!, "r", null)
+
+        val file = File(cacheDir, contentResolver.getFileName(fileUri))
+        val inputStream = FileInputStream(parcelFileDescriptor?.fileDescriptor)
         val outputStream = FileOutputStream(file)
         inputStream.copyTo(outputStream)
+
+        val requestFile : RequestBody = RequestBody.create(MediaType.parse(contentResolver.getFileName(fileUri)), file)
+
+        return MultipartBody.Part.createFormData(partName, contentResolver.getFileName(fileUri), requestFile)
     }
 
     private fun ContentResolver.getFileName(uri : Uri) : String{

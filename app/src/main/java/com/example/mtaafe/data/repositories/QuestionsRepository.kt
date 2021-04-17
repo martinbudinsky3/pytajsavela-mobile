@@ -9,6 +9,8 @@ import com.example.mtaafe.data.models.Question
 import com.example.mtaafe.network.ApiClient
 import com.example.mtaafe.network.ApiInterface
 import com.example.mtaafe.utils.ErrorHandler
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.HttpException
 import retrofit2.Retrofit
 import java.lang.Exception
@@ -47,11 +49,16 @@ class QuestionsRepository {
         }
     }
 
-    suspend fun postQuestion(question : Question) : ApiResult<out Any>{
+    suspend fun postQuestion(title : RequestBody, body : RequestBody, tags : List<RequestBody>?, images : List<MultipartBody.Part>?) : ApiResult<out Any>{
         try {
             Log.d("Post question api call", "Posting question.")
 
-            apiInterface?.postQuestion(question).let {
+            apiInterface?.postQuestion(
+                    title,
+                    body,
+                    tags,
+                    images
+            ).let {
                 // server returns 200
                 if (it?.isSuccessful == true) {
                     Log.i("Post question api call", "Successful post question api call")

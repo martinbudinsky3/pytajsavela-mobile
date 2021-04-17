@@ -15,7 +15,8 @@
         <activity android:name=".views.LoginActivity">
 
         </activity>
-        <activity android:name=".views.QuestionsListActivity">
+        <!--<activity android:name=".views.QuestionsListActivity">-->
+        <activity android:name=".views.QuestionFormActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
