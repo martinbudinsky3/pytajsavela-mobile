@@ -53,7 +53,7 @@ class QuestionsRepository {
         try {
             Log.d("Post question api call", "Posting question.")
 
-            apiInterface?.postQuestion(
+            apiInterface!!.postQuestion(
                     title,
                     body,
                     tags,

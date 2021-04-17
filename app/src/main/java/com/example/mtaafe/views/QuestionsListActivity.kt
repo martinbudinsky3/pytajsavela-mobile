@@ -6,6 +6,7 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.EditText
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -19,6 +20,7 @@ import com.example.mtaafe.R
 import com.example.mtaafe.data.models.*
 import com.example.mtaafe.databinding.ActivityQuestionsListBinding
 import com.example.mtaafe.viewmodels.QuestionsListViewModel
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 
 class QuestionsListActivity : AppCompatActivity(), IPageButtonClickListener {
@@ -40,6 +42,13 @@ class QuestionsListActivity : AppCompatActivity(), IPageButtonClickListener {
         adapter = QuestionAdapter(ArrayList<QuestionItem>())
         questionsListRecycler.layoutManager = LinearLayoutManager(this)
         questionsListRecycler.adapter = adapter
+
+        val askQuestionBtn: FloatingActionButton = findViewById(R.id.askQuestionBtn)
+
+        askQuestionBtn.setOnClickListener(){
+            val intent = Intent(this, QuestionFormActivity::class.java)
+            startActivity(intent)
+        }
 
         viewModel.getFirstPage()
 

@@ -28,7 +28,7 @@ class QuestionFormViewModel(application: Application): AndroidViewModel(applicat
 
      fun postQuestion(title : RequestBody, body : RequestBody, tags : List<RequestBody>?, images : List<MultipartBody.Part>?){
         CoroutineScope(Dispatchers.IO).launch {
-            val response = questionsRepository?.postQuestion(
+            val response = questionsRepository!!.postQuestion(
                     title,
                     body,
                     tags,

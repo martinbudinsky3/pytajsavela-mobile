@@ -23,9 +23,11 @@ import com.example.mtaafe.databinding.ActivityLoginBinding
 import com.example.mtaafe.network.ApiClient
 import com.example.mtaafe.network.ApiInterface
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.example.mtaafe.data.models.*
 import com.example.mtaafe.viewmodels.AnswerFormViewModel
 import com.example.mtaafe.viewmodels.QuestionFormViewModel
+import com.example.mtaafe.viewmodels.QuestionsListViewModel
 import com.google.android.material.snackbar.Snackbar
 import okhttp3.MediaType
 import okhttp3.MultipartBody
@@ -48,7 +50,10 @@ class AnswerFormActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.answer_form)
+
         rootLayout = findViewById(R.id.answerFormRoot)
+        viewModel = ViewModelProvider.AndroidViewModelFactory(application)
+                .create(AnswerFormViewModel::class.java)
 
         val editTextAnswerBody: EditText = findViewById(R.id.editTextAnswerBody)
 
@@ -66,9 +71,8 @@ class AnswerFormActivity : AppCompatActivity() {
                 images = getImages(selectedImages)
             }
 
-            images.forEachIndexed{index, element -> (Log.d("message", "Image no."+ index + " : "+ element))}
-           // Log.d("message", "Image name : "+ images.get(0))
             Log.d("message", "Body : " + body)
+            images.forEachIndexed{index, element -> (Log.d("message", "Image no."+ index + " : "+ element))}
 
             viewModel.postAnswer(
                     createPartFromString(body),

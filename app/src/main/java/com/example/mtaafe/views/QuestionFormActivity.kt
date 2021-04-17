@@ -23,8 +23,10 @@ import com.example.mtaafe.databinding.ActivityLoginBinding
 import com.example.mtaafe.network.ApiClient
 import com.example.mtaafe.network.ApiInterface
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.example.mtaafe.data.models.*
 import com.example.mtaafe.viewmodels.QuestionFormViewModel
+import com.example.mtaafe.viewmodels.QuestionsListViewModel
 import com.google.android.material.snackbar.Snackbar
 import okhttp3.MediaType
 import okhttp3.MultipartBody
@@ -47,7 +49,10 @@ class QuestionFormActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.question_form)
+
         rootLayout = findViewById(R.id.questionFormRoot)
+        viewModel = ViewModelProvider.AndroidViewModelFactory(application)
+                .create(QuestionFormViewModel::class.java)
 
         val editTextQuestionTitle: EditText = findViewById(R.id.editTextQuestionTitle)
         val editTextQuestionBody: EditText = findViewById(R.id.editTextQuestionBody)
@@ -75,7 +80,6 @@ class QuestionFormActivity : AppCompatActivity() {
 
             tags!!.forEachIndexed{index, element -> (Log.d("message", "Tag no."+ index + " : "+ element))}
             images.forEachIndexed{index, element -> (Log.d("message", "Image no."+ index + " : "+ element))}
-            // Log.d("message", "Image name : "+ images.get(0))
 
             viewModel.postQuestion(
                     createPartFromString(title),
@@ -83,8 +87,6 @@ class QuestionFormActivity : AppCompatActivity() {
                     tags,
                     images
             )
-
-            //viewModel.postQuestion(question)
 
             viewModel.result.observe(this, Observer {
                 when(it) {

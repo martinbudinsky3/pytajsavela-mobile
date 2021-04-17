@@ -22,15 +22,16 @@ interface ApiInterface {
     ): Response<QuestionsList>
 
     @Multipart
+    @JvmSuppressWildcards
     @POST("questions")
     suspend fun postQuestion(
             @Part("title") title : RequestBody,
             @Part("body") body : RequestBody,
             @Part("tags") tags : List<RequestBody>?,
-            @Part("images") images : List<MultipartBody.Part>?):
-            Response<Question>
+            @Part images : List<MultipartBody.Part>?): Response<Question>
 
     @Multipart
+    @JvmSuppressWildcards
     @POST("questions/{id}/answers")
     suspend fun postAnswer(
             @Part("body") body : RequestBody,
