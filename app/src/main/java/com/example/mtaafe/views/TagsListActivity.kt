@@ -31,6 +31,7 @@ class TagsListActivity : AppCompatActivity(), IPageButtonClickListener {
         setContentView(R.layout.activity_tags_list)
 
         rootLayout = findViewById(R.id.tagsListRoot)
+        //rootLayout = findViewById(R.id.content)
         viewModel = ViewModelProvider.AndroidViewModelFactory(application)
             .create(TagsListViewModel::class.java)
 
@@ -47,6 +48,7 @@ class TagsListActivity : AppCompatActivity(), IPageButtonClickListener {
         tagsListRecycler.adapter = adapter
 
         searchText = findViewById(R.id.searchText)
+        searchText.setText(viewModel.searchQuery)
         initSearch()
 
         viewModel.getFirstPage()
@@ -109,6 +111,12 @@ class TagsListActivity : AppCompatActivity(), IPageButtonClickListener {
         }*/
     }
 
+    fun openTagQuestionsListActivity(tagId: Long) {
+        val intent = Intent(this, TagQuestionsListActivity::class.java)
+        intent.putExtra("tagId", tagId)
+        startActivity(intent)
+    }
+
     override fun handleFirstPageButtonClick() {
         viewModel.getFirstPage()
     }
@@ -124,5 +132,4 @@ class TagsListActivity : AppCompatActivity(), IPageButtonClickListener {
     override fun handleLastPageButtonClick() {
         viewModel.getLastPage()
     }
-
 }

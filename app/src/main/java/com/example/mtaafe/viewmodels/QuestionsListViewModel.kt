@@ -24,7 +24,7 @@ class QuestionsListViewModel(application: Application): AndroidViewModel(applica
     private var questionsRepository: QuestionsRepository? = null
     private var sessionManager: SessionManager? = null
     private var currentPage: Int = 1;
-    private var count: Int = 0
+    private var count: Long = 0
 
     private val _result = MutableLiveData<ApiResult<out Any>>()
     val result: LiveData<ApiResult<out Any>>
@@ -68,10 +68,10 @@ class QuestionsListViewModel(application: Application): AndroidViewModel(applica
 
     fun getLastPage() {
         var lastPage = count / PAGE_SIZE
-        if(count % PAGE_SIZE != 0) {
+        if(count % PAGE_SIZE != 0L) {
             lastPage++
         }
-        getQuestionsList(lastPage)
+        getQuestionsList(lastPage.toInt())
     }
 
     fun retry() {

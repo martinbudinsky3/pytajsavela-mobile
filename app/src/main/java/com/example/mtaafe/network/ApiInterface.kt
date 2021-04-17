@@ -14,7 +14,7 @@ interface ApiInterface {
     @Headers("Accept: application/json")
     @GET("questions")
     suspend fun getQuestionsList(
-            @Header("Authorization") apiToken: String,
+            @Header("Authorization") bearerToken: String,
             @Query("page") page: Int?
     ): Response<QuestionsList>
 
@@ -30,8 +30,16 @@ interface ApiInterface {
     @Headers("Accept: application/json")
     @GET("tags")
     suspend fun getTagsList(
-        @Header("Authorization") apiToken: String,
+        @Header("Authorization") bearerToken: String,
         @Query("page") page: Int?,
         @Query("search") search: String?
     ): Response<TagsList>
+
+    @Headers("Accept: application/json")
+    @GET("tags/{id}/questions")
+    suspend fun getTagQuestionsList(
+        @Header("Authorization") bearerToken: String,
+        @Path("id") tagId: Long,
+        @Query("page") page: Int?
+    ): Response<TagQuestionsList>
 }

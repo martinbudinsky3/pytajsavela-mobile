@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 data class TagsList (
     @SerializedName("count")
-    var count: Int,
+    var count: Long,
 
     @SerializedName("tags")
     var tags: ArrayList<Tag>

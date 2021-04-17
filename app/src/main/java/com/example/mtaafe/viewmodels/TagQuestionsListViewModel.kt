@@ -1,12 +1,11 @@
 package com.example.mtaafe.viewmodels
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.mtaafe.data.models.ApiResult
-import com.example.mtaafe.data.models.TagsList
+import com.example.mtaafe.data.models.TagQuestionsList
 import com.example.mtaafe.data.repositories.TagsRepository
 import com.example.mtaafe.utils.SessionManager
 import kotlinx.coroutines.CoroutineScope
@@ -14,28 +13,28 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class TagsListViewModel(application: Application): AndroidViewModel(application) {
+class TagQuestionsListViewModel(application: Application): AndroidViewModel(application) {
     private val PAGE_SIZE: Int = 10
 
     private var tagsRepository: TagsRepository? = null
     private var sessionManager: SessionManager? = null
     private var currentPage: Int = 1;
-    private var count: Long = 0
+    private var count: Int = 0
 
     private val _result = MutableLiveData<ApiResult<out Any>>()
     val result: LiveData<ApiResult<out Any>>
         get() = _result
 
-    var searchQuery: String = ""
+    var tagId: Long = 1
 
     init {
         tagsRepository = TagsRepository()
         sessionManager = SessionManager(application)
     }
 
-    private fun getTagsList(page: Int) {
+    private fun getTagQuestionsList(page: Int) {
         CoroutineScope(Dispatchers.IO).launch {
-            val response = tagsRepository?.getTagsList(sessionManager?.fetchApiToken().toString(), page, searchQuery)
+            val response = tagsRepository?.getTagQuestionsList(sessionManager?.fetchApiToken().toString(), tagId, page)
 
             withContext(Dispatchers.Main) {
                 _result.value = response!!
@@ -43,7 +42,7 @@ class TagsListViewModel(application: Application): AndroidViewModel(application)
                 if(response is ApiResult.Success) {
                     currentPage = page
 
-                    if(response.data is TagsList) {
+                    if(response.data is TagQuestionsList) {
                         count = response.data.count
                     }
                 }
@@ -52,27 +51,26 @@ class TagsListViewModel(application: Application): AndroidViewModel(application)
     }
 
     fun getFirstPage() {
-        getTagsList(1)
+        getTagQuestionsList(1)
     }
 
     fun getPrevioustPage() {
-        getTagsList(currentPage - 1)
+        getTagQuestionsList(currentPage - 1)
     }
 
     fun getNextPage() {
-        Log.d("Questions list api call", (currentPage + 1).toString())
-        getTagsList(currentPage + 1)
+        getTagQuestionsList(currentPage + 1)
     }
 
     fun getLastPage() {
         var lastPage = count / PAGE_SIZE
-        if(count % PAGE_SIZE != 0L) {
+        if(count % PAGE_SIZE != 0) {
             lastPage++
         }
-        getTagsList(lastPage.toInt())
+        getTagQuestionsList(lastPage)
     }
 
     fun retry() {
-        getTagsList(currentPage)
+        getTagQuestionsList(currentPage)
     }
 }
