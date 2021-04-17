@@ -19,14 +19,17 @@
 
         </activity>
         <activity android:name=".views.TagsListActivity">
+
+        </activity>
+        <activity android:name=".views.TagQuestionsListActivity">
+
+        </activity>
+        <activity android:name=".views.UserProfileActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <activity android:name=".views.TagQuestionsListActivity">
-
         </activity>
     </application>
 

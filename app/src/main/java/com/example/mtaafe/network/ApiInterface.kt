@@ -42,4 +42,11 @@ interface ApiInterface {
         @Path("id") tagId: Long,
         @Query("page") page: Int?
     ): Response<TagQuestionsList>
+
+    @Headers("Accept: application/json")
+    @GET("users/{id}")
+    suspend fun getUserInfo(
+        @Header("Authorization") bearerToken: String,
+        @Path("id") userId: Long
+    ): Response<User>
 }
