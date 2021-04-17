@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class TagsListViewModel(application: Application): AndroidViewModel(application) {
+    var searchQuery: String = ""
     private val PAGE_SIZE: Int = 10
 
     private var tagsRepository: TagsRepository? = null
@@ -33,7 +34,7 @@ class TagsListViewModel(application: Application): AndroidViewModel(application)
 
     private fun getTagsList(page: Int) {
         CoroutineScope(Dispatchers.IO).launch {
-            val response = tagsRepository?.getTagsList(sessionManager?.fetchApiToken().toString(), page)
+            val response = tagsRepository?.getTagsList(sessionManager?.fetchApiToken().toString(), page, searchQuery)
 
             withContext(Dispatchers.Main) {
                 _result.value = response!!

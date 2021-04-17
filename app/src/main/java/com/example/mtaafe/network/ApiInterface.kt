@@ -31,6 +31,7 @@ interface ApiInterface {
     @GET("tags")
     suspend fun getTagsList(
         @Header("Authorization") apiToken: String,
-        @Query("page") page: Int?
+        @Query("page") page: Int?,
+        @Query("search") search: String?
     ): Response<TagsList>
 }

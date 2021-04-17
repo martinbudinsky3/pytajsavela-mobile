@@ -47,6 +47,7 @@ class QuestionsListActivity : AppCompatActivity(), IPageButtonClickListener {
                 is ApiResult.Success -> {
                     if(it.data is QuestionsList) {
                         adapter.updateData(it.data.questions)
+                        questionsListRecycler.scrollToPosition(0)
                     }
                 }
                 is ApiResult.Error -> handleError(it.error)

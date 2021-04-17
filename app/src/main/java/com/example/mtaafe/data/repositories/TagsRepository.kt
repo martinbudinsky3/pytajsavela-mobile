@@ -16,11 +16,11 @@ class TagsRepository {
         apiInterface = ApiClient.getApiClient().create(ApiInterface::class.java)
     }
 
-    suspend fun getTagsList(apiToken: String, page: Int): ApiResult<out Any> {
+    suspend fun getTagsList(apiToken: String, page: Int, searchQuery: String): ApiResult<out Any> {
         try {
             Log.d("Tags list api call", "Getting $page page")
 
-            apiInterface?.getTagsList("Bearer $apiToken", page).let {
+            apiInterface?.getTagsList("Bearer $apiToken", page, searchQuery).let {
                 // server returns 200
                 if (it?.isSuccessful == true) {
                     Log.i("Tags list api call", "Successful tags list api call")
