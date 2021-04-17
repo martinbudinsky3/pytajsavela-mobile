@@ -19,7 +19,7 @@ data class QuestionItem (
         var author: Author,
 
         @SerializedName("tags")
-        var tags: List<Tag>,
+        var tags: ArrayList<Tag>,
 
         @SerializedName("answers_count")
         var answersCount: Int
