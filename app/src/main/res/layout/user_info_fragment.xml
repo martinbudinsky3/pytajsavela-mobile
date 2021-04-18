@@ -4,9 +4,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+<!--        <variable-->
+<!--            name="viewModel"-->
+<!--            type="com.example.mtaafe.viewmodels.UserInfoViewModel" />-->
         <variable
             name="viewModel"
-            type="com.example.mtaafe.viewmodels.UserInfoViewModel" />
+            type="com.example.mtaafe.viewmodels.UserProfileViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

@@ -1,4 +1,7 @@
 <resources>
-    <string name="app_name">MTAA FE</string>
+    <string name="app_name">PÝTAJSAVEĽA</string>
     <string name="user_info_shared_prefs">Session storage</string>
+    <string name="question_list_no_results">Nenašli sa žiadne otázky</string>
+    <string name="tags_list_no_results">Nenašli sa žiadne tagy</string>
+    <string name="answers_list_no_results">Nenašli sa žiadne odpovede</string>
 </resources>

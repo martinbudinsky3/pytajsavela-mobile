@@ -20,11 +20,13 @@ import com.example.mtaafe.databinding.UserInfoFragmentBinding
 import com.example.mtaafe.viewmodels.LoginViewModel
 import com.example.mtaafe.viewmodels.QuestionsListViewModel
 import com.example.mtaafe.viewmodels.UserInfoViewModel
+import com.example.mtaafe.viewmodels.UserProfileViewModel
 import com.google.android.material.snackbar.Snackbar
 
 class UserInfoFragment: Fragment() {
     lateinit var binding: UserInfoFragmentBinding
-    private lateinit var viewModel: UserInfoViewModel
+//    private lateinit var viewModel: UserInfoViewModel
+    private lateinit var viewModel: UserProfileViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,9 +36,13 @@ class UserInfoFragment: Fragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.user_info_fragment,
                 container, false)
 
+//        viewModel = activity?.let {
+//            ViewModelProvider.AndroidViewModelFactory(it.application)
+//                .create(UserInfoViewModel::class.java)
+//        }!!
         viewModel = activity?.let {
             ViewModelProvider.AndroidViewModelFactory(it.application)
-                .create(UserInfoViewModel::class.java)
+                .create(UserProfileViewModel::class.java)
         }!!
 
         binding.viewModel = viewModel
@@ -44,7 +50,10 @@ class UserInfoFragment: Fragment() {
 
         viewModel.getUserInfo()
 
-        viewModel.error.observe(this, {
+//        viewModel.error.observe(this, {
+//            handleError(it)
+//        })
+        viewModel.errorInfo.observe(this, {
             handleError(it)
         })
 
@@ -56,6 +65,13 @@ class UserInfoFragment: Fragment() {
             is ErrorEntity.Unauthorized -> {
                 val intent = Intent(activity, LoginActivity::class.java)
                 startActivity(intent)
+            }
+            is ErrorEntity.NotFound -> {
+                Snackbar.make(binding.root, "Používateľ neexistuje", Snackbar.LENGTH_INDEFINITE)
+                    .setAction("Späť") {
+                        activity?.finish()
+                    }
+                    .show()
             }
             else -> {
                 Snackbar.make(binding.root, "Oops, niečo sa pokazilo.", Snackbar.LENGTH_INDEFINITE)

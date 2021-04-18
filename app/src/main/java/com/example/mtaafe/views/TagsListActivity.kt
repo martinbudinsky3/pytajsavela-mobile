@@ -7,6 +7,7 @@ import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.Observer
@@ -21,7 +22,9 @@ import com.google.android.material.snackbar.Snackbar
 
 class TagsListActivity : AppCompatActivity(), IPageButtonClickListener {
     private lateinit var viewModel: TagsListViewModel
+    private lateinit var tagsListRecycler: RecyclerView
     private lateinit var rootLayout: View
+    private lateinit var emptyTagsListText: TextView
     private lateinit var adapter: TagDetailAdapter
     private lateinit var searchText: EditText
 
@@ -29,7 +32,11 @@ class TagsListActivity : AppCompatActivity(), IPageButtonClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tags_list)
 
+        supportActionBar?.title = "Tagy"
+
         rootLayout = findViewById(R.id.tagsListRoot)
+        emptyTagsListText = findViewById(R.id.emptyTagsListText)
+
         viewModel = ViewModelProvider.AndroidViewModelFactory(application)
             .create(TagsListViewModel::class.java)
 
@@ -41,7 +48,7 @@ class TagsListActivity : AppCompatActivity(), IPageButtonClickListener {
         }
         val layoutManager = GridLayoutManager(this, TAGS_LIST_COLS)
         layoutManager.spanSizeLookup = spanSizeLookup
-        val tagsListRecycler: RecyclerView = findViewById(R.id.tagsListRecycler)
+        tagsListRecycler = findViewById(R.id.tagsListRecycler)
         tagsListRecycler.layoutManager = layoutManager
         tagsListRecycler.adapter = adapter
 
@@ -52,8 +59,13 @@ class TagsListActivity : AppCompatActivity(), IPageButtonClickListener {
         viewModel.getFirstPage()
 
         viewModel.tagsList.observe(this, {
-            adapter.updateData(it.tags)
-            tagsListRecycler.scrollToPosition(0)
+            if(it.tags.isNotEmpty()) {
+                hideEmptyListMessage()
+                adapter.updateData(it.tags)
+                tagsListRecycler.scrollToPosition(0)
+            } else {
+                showEmptyListMessage()
+            }
         })
 
         viewModel.error.observe(this, {
@@ -68,7 +80,7 @@ class TagsListActivity : AppCompatActivity(), IPageButtonClickListener {
                 startActivity(intent)
             }
             else -> {
-                Snackbar.make(rootLayout, "Oops, niečo sa pokazilo.", Snackbar.LENGTH_INDEFINITE)
+                Snackbar.make(rootLayout, "Nepodarilo sa načítať tagy", Snackbar.LENGTH_INDEFINITE)
                     .setAction("Skúsiť znovu") {
                         viewModel.retry()
                     }
@@ -82,27 +94,16 @@ class TagsListActivity : AppCompatActivity(), IPageButtonClickListener {
             viewModel.searchQuery = text.toString()
             viewModel.getFirstPage()
         }
+    }
 
-        /*// handle search queries
-        searchText.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_GO) {
-                viewModel.searchQuery = searchText.text.toString()
-                viewModel.getFirstPage()
-                true
-            } else {
-                false
-            }
-        }
+    private fun showEmptyListMessage() {
+        emptyTagsListText.visibility = View.VISIBLE
+        tagsListRecycler.visibility = View.GONE
+    }
 
-        searchText.setOnKeyListener { _, keyCode, event ->
-            if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
-                viewModel.searchQuery = searchText.text.toString()
-                viewModel.getFirstPage()
-                true
-            } else {
-                false
-            }
-        }*/
+    private fun hideEmptyListMessage() {
+        emptyTagsListText.visibility = View.GONE
+        tagsListRecycler.visibility = View.VISIBLE
     }
 
     fun openTagQuestionsListActivity(tagId: Long) {

@@ -1,38 +1,35 @@
 package com.example.mtaafe.views
 
 import android.content.Intent
-import android.content.SharedPreferences
-import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.widget.Toast
-import androidx.annotation.RequiresApi
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mtaafe.R
 import com.example.mtaafe.data.models.*
-import com.example.mtaafe.databinding.ActivityQuestionsListBinding
 import com.example.mtaafe.viewmodels.QuestionsListViewModel
 import com.google.android.material.snackbar.Snackbar
 
 class QuestionsListActivity : AppCompatActivity(), IPageButtonClickListener {
     private lateinit var viewModel: QuestionsListViewModel
-    private lateinit var rootLayout: View
+    private lateinit var questionsListRecycler: RecyclerView
+    private lateinit var questionsListRoot: View
+    private lateinit var emptyQuestionsListText: TextView
     private lateinit var adapter: QuestionAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_questions_list)
 
-        rootLayout = findViewById(R.id.questionsListRoot)
+        supportActionBar?.title = "Otázky"
 
-        val questionsListRecycler: RecyclerView = findViewById(R.id.questionsListRecycler)
+        questionsListRoot = findViewById(R.id.questionsListRoot)
+        emptyQuestionsListText = findViewById(R.id.emptyQuestionsListText)
+        questionsListRecycler = findViewById(R.id.questionsListRecycler)
+
         viewModel = ViewModelProvider.AndroidViewModelFactory(application)
                 .create(QuestionsListViewModel::class.java)
 
@@ -43,8 +40,13 @@ class QuestionsListActivity : AppCompatActivity(), IPageButtonClickListener {
         viewModel.getFirstPage()
 
         viewModel.questionsList.observe(this, {
-            adapter.updateData(it.questions)
-            questionsListRecycler.scrollToPosition(0)
+            if(it.questions.isNotEmpty()) {
+                hideEmptyListMessage()
+                adapter.updateData(it.questions)
+                questionsListRecycler.scrollToPosition(0)
+            } else {
+                showEmptyListMessage()
+            }
         })
 
         viewModel.error.observe(this, {
@@ -59,13 +61,23 @@ class QuestionsListActivity : AppCompatActivity(), IPageButtonClickListener {
                 startActivity(intent)
             }
             else -> {
-                Snackbar.make(rootLayout, "Oops, niečo sa pokazilo.", Snackbar.LENGTH_INDEFINITE)
+                Snackbar.make(questionsListRoot, "Nepodarilo sa načítať otázky", Snackbar.LENGTH_INDEFINITE)
                     .setAction("Skúsiť znovu") {
                         viewModel.retry()
                     }
                     .show()
             }
         }
+    }
+
+    private fun showEmptyListMessage() {
+        emptyQuestionsListText.visibility = View.VISIBLE
+        questionsListRecycler.visibility = View.GONE
+    }
+
+    private fun hideEmptyListMessage() {
+        emptyQuestionsListText.visibility = View.GONE
+        questionsListRecycler.visibility = View.VISIBLE
     }
 
     override fun handleFirstPageButtonClick() {
