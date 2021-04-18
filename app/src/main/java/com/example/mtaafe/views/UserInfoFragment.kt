@@ -16,7 +16,6 @@ import com.example.mtaafe.data.models.ApiResult
 import com.example.mtaafe.data.models.ErrorEntity
 import com.example.mtaafe.data.models.TagsList
 import com.example.mtaafe.data.models.User
-import com.example.mtaafe.databinding.ActivityLoginBinding
 import com.example.mtaafe.databinding.UserInfoFragmentBinding
 import com.example.mtaafe.viewmodels.LoginViewModel
 import com.example.mtaafe.viewmodels.QuestionsListViewModel
@@ -26,40 +25,38 @@ import com.google.android.material.snackbar.Snackbar
 class UserInfoFragment: Fragment() {
     lateinit var binding: UserInfoFragmentBinding
     private lateinit var viewModel: UserInfoViewModel
-    private lateinit var userNameText: TextView
-    private lateinit var userEmailText: TextView
-    private lateinit var userInfoFragmentView: View
+    //private lateinit var userNameText: TextView
+    //private lateinit var userEmailText: TextView
+    //private lateinit var userInfoFragmentView: View
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        userInfoFragmentView = inflater.inflate(R.layout.user_info_fragment, container, false)
-        //binding = DataBindingUtil.inflate(inflater, R.layout.user_info_fragment,
-        //        container, false)
+        //userInfoFragmentView = inflater.inflate(R.layout.user_info_fragment, container, false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.user_info_fragment,
+                container, false)
 
-        userNameText = userInfoFragmentView.findViewById(R.id.userNameText)
-        userEmailText = userInfoFragmentView.findViewById(R.id.userEmailText)
+//        userNameText = userInfoFragmentView.findViewById(R.id.userNameText)
+//        userEmailText = userInfoFragmentView.findViewById(R.id.userEmailText)
 
         viewModel = activity?.let {
             ViewModelProvider.AndroidViewModelFactory(it.application)
                 .create(UserInfoViewModel::class.java)
         }!!
 
-        viewModel.getUserInfo()
+        binding.viewModel = viewModel
+        binding.lifecycleOwner = this
 
-        viewModel.user.observe(this, {
-            userNameText.text = it.name
-            userEmailText.text = it.email
-        })
+        viewModel.getUserInfo()
 
         viewModel.error.observe(this, {
             handleError(it)
         })
 
-        //return binding.root
-        return userInfoFragmentView
+        return binding.root
+        //return userInfoFragmentView
     }
 
     private fun handleError(error: ErrorEntity) {
@@ -69,9 +66,8 @@ class UserInfoFragment: Fragment() {
                 startActivity(intent)
             }
             else -> {
-                Snackbar.make(userInfoFragmentView, "Oops, niečo sa pokazilo.", Snackbar.LENGTH_INDEFINITE)
+                Snackbar.make(binding.root, "Oops, niečo sa pokazilo.", Snackbar.LENGTH_INDEFINITE)
                     .setAction("Skúsiť znovu") {
-                        Log.d("Test SNACKBAR", "Test")
                         viewModel.getUserInfo()
                     }
                     .show()

@@ -69,9 +69,6 @@ dependencies {
     // CardView
     implementation 'androidx.cardview:cardview:1.0.0'
 
-    // Paging
-    implementation "androidx.paging:paging-runtime-ktx:$pagingVersion"
-
     // Flexbox
     implementation 'com.google.android:flexbox:2.0.1'
 
