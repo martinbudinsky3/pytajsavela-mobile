@@ -12,7 +12,7 @@ class AnswerAdapter (private val answersList: ArrayList<AnswerItem>): RecyclerVi
         var view = LayoutInflater.from(parent.context)
                 .inflate(R.layout.answer_item, parent, false)
 
-        return QuestionViewHolder(view)
+        return AnswerViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -23,6 +23,12 @@ class AnswerAdapter (private val answersList: ArrayList<AnswerItem>): RecyclerVi
     }
 
     override fun getItemCount(): Int {
-        return answersList.size + 1
+        return answersList.size
+    }
+
+    fun updateData(answersListNew: ArrayList<AnswerItem>) {
+        answersList.clear()
+        answersList.addAll(answersListNew)
+        notifyDataSetChanged()
     }
 }

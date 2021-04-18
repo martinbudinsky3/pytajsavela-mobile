@@ -6,7 +6,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.mtaafe.R
 import com.example.mtaafe.data.models.QuestionItem
 
-class QuestionAdapter (private val questionsList: ArrayList<QuestionItem>): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class QuestionAdapter (private val questionsList: ArrayList<QuestionItem>,
+                        private val listener: OnQuestionClickListener):
+        RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val TYPE_ITEM = 0
     private val TYPE_FOOTER = 1
 
@@ -53,5 +55,9 @@ class QuestionAdapter (private val questionsList: ArrayList<QuestionItem>): Recy
         questionsList.clear()
         questionsList.addAll(questionsListNew)
         notifyDataSetChanged()
+    }
+
+    fun getQuestion(position: Int): QuestionItem{
+        return questionsList[position]
     }
 }

@@ -21,15 +21,19 @@ import retrofit2.Response
 @RequiresApi(Build.VERSION_CODES.O)
 class AnswerFormViewModel(application: Application): AndroidViewModel(application) {
     private var answersRepository: AnswersRepository? = null
+    private var sessionManager: SessionManager? = null
+
     var result: MutableLiveData<ApiResult<out Any>> = MutableLiveData()
 
     init {
+        sessionManager = SessionManager(application)
         answersRepository = AnswersRepository()
     }
 
     fun postAnswer(body : RequestBody, images : List<MultipartBody.Part>?){
         CoroutineScope(Dispatchers.IO).launch {
             val response = answersRepository?.postAnswer(
+                    sessionManager?.fetchApiToken().toString(),
                     body,
                     images
             )

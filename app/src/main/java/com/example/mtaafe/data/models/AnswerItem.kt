@@ -15,4 +15,7 @@ data class AnswerItem (
 
         @SerializedName("author")
         var author: Author,
+
+        @SerializedName("images")
+        var images: List<Image>
 )

@@ -21,19 +21,30 @@ interface ApiInterface {
             @Query("page") page: Int?
     ): Response<QuestionsList>
 
+    @Headers("Accept: application/json")
+    @GET("questions/{id}")
+    suspend fun getQuestionDetails(
+            @Header("Authorization") apiToken: String,
+            @Path("id") id: Long?
+    ): Response<Question>
+
+    @Headers("Accept: application/json")
     @Multipart
     @JvmSuppressWildcards
     @POST("questions")
     suspend fun postQuestion(
+            @Header("Authorization") apiToken: String,
             @Part("title") title : RequestBody,
             @Part("body") body : RequestBody,
             @Part("tags") tags : List<RequestBody>?,
             @Part images : List<MultipartBody.Part>?): Response<Question>
 
+    @Headers("Accept: application/json")
     @Multipart
     @JvmSuppressWildcards
     @POST("questions/{id}/answers")
     suspend fun postAnswer(
+            @Header("Authorization") apiToken: String,
             @Part("body") body : RequestBody,
             @Part("images") images : List<MultipartBody.Part>?):
             Response<Answer>

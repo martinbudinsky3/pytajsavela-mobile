@@ -1,29 +1,23 @@
 package com.example.mtaafe.views
 
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.EditText
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mtaafe.R
 import com.example.mtaafe.data.models.*
-import com.example.mtaafe.databinding.ActivityQuestionsListBinding
 import com.example.mtaafe.viewmodels.QuestionsListViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 
-class QuestionsListActivity : AppCompatActivity(), IPageButtonClickListener {
+class QuestionsListActivity : AppCompatActivity(), IPageButtonClickListener, OnQuestionClickListener {
     private lateinit var viewModel: QuestionsListViewModel
     private lateinit var rootLayout: View
     private lateinit var adapter: QuestionAdapter
@@ -39,16 +33,9 @@ class QuestionsListActivity : AppCompatActivity(), IPageButtonClickListener {
         viewModel = ViewModelProvider.AndroidViewModelFactory(application)
                 .create(QuestionsListViewModel::class.java)
 
-        adapter = QuestionAdapter(ArrayList<QuestionItem>())
+        adapter = QuestionAdapter(ArrayList<QuestionItem>(), this)
         questionsListRecycler.layoutManager = LinearLayoutManager(this)
         questionsListRecycler.adapter = adapter
-
-        val askQuestionBtn: FloatingActionButton = findViewById(R.id.askQuestionBtn)
-
-        askQuestionBtn.setOnClickListener(){
-            val intent = Intent(this, QuestionFormActivity::class.java)
-            startActivity(intent)
-        }
 
         viewModel.getFirstPage()
 
@@ -64,6 +51,13 @@ class QuestionsListActivity : AppCompatActivity(), IPageButtonClickListener {
                 else -> {}
             }
         })
+
+        val askQuestionBtn: FloatingActionButton = findViewById(R.id.askQuestionBtn)
+
+        askQuestionBtn.setOnClickListener(){
+            val intent = Intent(this, QuestionFormActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -101,5 +95,14 @@ class QuestionsListActivity : AppCompatActivity(), IPageButtonClickListener {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun handleLastPageButtonClick() {
         viewModel.getLastPage()
+    }
+
+    override fun onQuestionClick(position: Int) {
+        val clickedQuestion: QuestionItem = adapter.getQuestion(position)
+        Log.d("qes", "Question with id = " + clickedQuestion.id + " was clicked!")
+
+        val intent = Intent(this, QuestionDetailActivity::class.java)
+        intent.putExtra("question_id", clickedQuestion.id)
+        startActivity(intent)
     }
 }

@@ -1,6 +1,7 @@
 package com.example.mtaafe.data.models
 
 import com.google.gson.annotations.SerializedName
+import java.time.LocalDate
 
 data class Question (
         @SerializedName("id")
@@ -12,9 +13,18 @@ data class Question (
         @SerializedName("body")
         var body: String,
 
+        @SerializedName("created_at")
+        var createdAt: LocalDate,
+
+        @SerializedName("author")
+        var author: Author,
+
         @SerializedName("tags")
-        var tags: List<Tag>,
+        var tags: ArrayList<Tag>,
 
         @SerializedName("images")
-        var images: List<Image>
+        var images: List<Image>,
+
+        @SerializedName("answers")
+        var answers: ArrayList<AnswerItem>
 )

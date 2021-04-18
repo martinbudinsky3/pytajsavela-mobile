@@ -49,11 +49,12 @@ class QuestionsRepository {
         }
     }
 
-    suspend fun postQuestion(title : RequestBody, body : RequestBody, tags : List<RequestBody>?, images : List<MultipartBody.Part>?) : ApiResult<out Any>{
+    suspend fun postQuestion(apiToken: String, title : RequestBody, body : RequestBody, tags : List<RequestBody>?, images : List<MultipartBody.Part>?) : ApiResult<out Any>{
         try {
             Log.d("Post question api call", "Posting question.")
 
             apiInterface!!.postQuestion(
+                    "Bearer $apiToken",
                     title,
                     body,
                     tags,
@@ -75,6 +76,32 @@ class QuestionsRepository {
         }
         catch (exception: Exception) {
             Log.e("Questions api call", "Error while connecting to server.", exception)
+            return ApiResult.Error<ErrorEntity>(ErrorHandler.getError(exception))
+        }
+    }
+
+    suspend fun getQuestionDetails(apiToken: String, questionId: Long): ApiResult<out Any> {
+        try {
+            Log.d("Questions list api call", "Getting question details")
+
+            apiInterface?.getQuestionDetails("Bearer $apiToken", questionId).let {
+                // server returns 200
+                if (it?.isSuccessful == true) {
+                    Log.i("Quest. details api call", "Successful question details api call")
+                    return ApiResult.Success(it.body()!!)
+                }
+
+                // server returns response with error code
+                else {
+                    val exception = HttpException(it!!)
+                    Log.e("Quest. details api call", "Server returns response with error code.", exception)
+                    return ApiResult.Error<ErrorEntity>(ErrorHandler.getError(exception))
+                }
+            }
+        }
+        // something else went wrong
+        catch (exception: Exception) {
+            Log.e("Quest. details api call", "Error while connecting to server.", exception)
             return ApiResult.Error<ErrorEntity>(ErrorHandler.getError(exception))
         }
     }
