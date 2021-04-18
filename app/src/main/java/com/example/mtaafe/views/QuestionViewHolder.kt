@@ -24,13 +24,11 @@ class QuestionViewHolder(private val view: View): RecyclerView.ViewHolder(view) 
         } else {
             authorText?.text = ""
         }
-
         createdAtText?.text = questionItem.createdAt.toString()
         answersCountText?.text = questionItem.answersCount.toString()
 
         val adapter = TagAdapter(questionItem.tags)
         val layoutManager = FlexboxLayoutManager(view.context)
-
         tagsListRecycler.layoutManager = layoutManager
         tagsListRecycler.adapter = adapter
     }

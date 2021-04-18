@@ -19,7 +19,6 @@ import com.example.mtaafe.viewmodels.UserQuestionsListViewModel
 import com.google.android.material.snackbar.Snackbar
 
 class UserQuestionsFragment: Fragment() {
-    //lateinit var binding: UserQuestionsFragmentBinding
     private lateinit var viewModel: UserQuestionsListViewModel
     private lateinit var adapter: QuestionsAdapterWithoutPagination
     private lateinit var userQuestionsFragmentView: View
@@ -29,8 +28,7 @@ class UserQuestionsFragment: Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-//        binding = DataBindingUtil.inflate(inflater, R.layout.user_questions_fragment,
-//            container, false)
+
         userQuestionsFragmentView = inflater.inflate(R.layout.user_questions_fragment, container, false)
 
         viewModel = activity?.let {
@@ -40,8 +38,6 @@ class UserQuestionsFragment: Fragment() {
 
         adapter = QuestionsAdapterWithoutPagination(ArrayList())
 
-//        binding.userQuestionsListRecycler.layoutManager = LinearLayoutManager(context)
-//        binding.userQuestionsListRecycler.adapter = adapter
         val userQuestionsListRecycler: RecyclerView = userQuestionsFragmentView.findViewById(R.id.userQuestionsListRecycler)
         userQuestionsListRecycler.layoutManager = LinearLayoutManager(context)
         userQuestionsListRecycler.adapter = adapter
@@ -56,7 +52,6 @@ class UserQuestionsFragment: Fragment() {
             handleError(it)
         })
 
-        //return binding.root
         return userQuestionsFragmentView
     }
 

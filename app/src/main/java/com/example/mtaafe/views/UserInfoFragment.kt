@@ -25,21 +25,14 @@ import com.google.android.material.snackbar.Snackbar
 class UserInfoFragment: Fragment() {
     lateinit var binding: UserInfoFragmentBinding
     private lateinit var viewModel: UserInfoViewModel
-    //private lateinit var userNameText: TextView
-    //private lateinit var userEmailText: TextView
-    //private lateinit var userInfoFragmentView: View
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        //userInfoFragmentView = inflater.inflate(R.layout.user_info_fragment, container, false)
         binding = DataBindingUtil.inflate(inflater, R.layout.user_info_fragment,
                 container, false)
-
-//        userNameText = userInfoFragmentView.findViewById(R.id.userNameText)
-//        userEmailText = userInfoFragmentView.findViewById(R.id.userEmailText)
 
         viewModel = activity?.let {
             ViewModelProvider.AndroidViewModelFactory(it.application)
@@ -56,7 +49,6 @@ class UserInfoFragment: Fragment() {
         })
 
         return binding.root
-        //return userInfoFragmentView
     }
 
     private fun handleError(error: ErrorEntity) {

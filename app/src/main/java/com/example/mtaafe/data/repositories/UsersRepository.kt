@@ -63,4 +63,28 @@ class UsersRepository {
             return ApiResult.Error<ErrorEntity>(ErrorHandler.getError(exception))
         }
     }
+
+    suspend fun getUserAnswersList(apiToken: String, userId: Long): ApiResult<out Any> {
+        try {
+            apiInterface?.getUserAnswersList("Bearer $apiToken", userId).let {
+                // server returns 200
+                if (it?.isSuccessful == true) {
+                    Log.i("UsersRepository", "Successful user answers api call")
+                    return ApiResult.Success(it.body()!!)
+                }
+
+                // server returns response with error code
+                else {
+                    val exception = HttpException(it!!)
+                    Log.e("UsersRepository", "Server returns response with error code. Response: $it", exception)
+                    return ApiResult.Error<ErrorEntity>(ErrorHandler.getError(exception))
+                }
+            }
+        }
+        // something else went wrong
+        catch (exception: Exception) {
+            Log.e("UsersRepository", "Error while connecting to server.", exception)
+            return ApiResult.Error<ErrorEntity>(ErrorHandler.getError(exception))
+        }
+    }
 }
