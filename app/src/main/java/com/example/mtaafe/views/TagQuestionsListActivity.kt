@@ -3,15 +3,12 @@ package com.example.mtaafe.views
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mtaafe.R
 import com.example.mtaafe.data.models.*
-import com.example.mtaafe.viewmodels.QuestionsListViewModel
 import com.example.mtaafe.viewmodels.TagQuestionsListViewModel
 import com.google.android.material.snackbar.Snackbar
 
@@ -23,24 +20,24 @@ class TagQuestionsListActivity : AppCompatActivity(), IPageButtonClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.activity_questions_list)
+        setContentView(R.layout.activity_tag_questions_list)
         val tagId = intent.getLongExtra("tagId", 1);
         rootLayout = findViewById(R.id.questionsListRoot)
 
-        val questionsListRecycler: RecyclerView = findViewById(R.id.questionsListRecycler)
+        val tagQuestionsListRecycler: RecyclerView = findViewById(R.id.tagQuestionsListRecycler)
         viewModel = ViewModelProvider.AndroidViewModelFactory(application)
             .create(TagQuestionsListViewModel::class.java)
         viewModel.tagId = tagId
 
-        adapter = QuestionAdapter(ArrayList<QuestionItem>())
-        questionsListRecycler.layoutManager = LinearLayoutManager(this)
-        questionsListRecycler.adapter = adapter
+        adapter = QuestionAdapter(ArrayList())
+        tagQuestionsListRecycler.layoutManager = LinearLayoutManager(this)
+        tagQuestionsListRecycler.adapter = adapter
 
         viewModel.getFirstPage()
 
         viewModel.tagQuestionsList.observe(this, {
             adapter.updateData(it.questions)
-            questionsListRecycler.scrollToPosition(0)
+            tagQuestionsListRecycler.scrollToPosition(0)
         })
 
         viewModel.error.observe(this, {

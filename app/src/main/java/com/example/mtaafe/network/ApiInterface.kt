@@ -49,4 +49,11 @@ interface ApiInterface {
         @Header("Authorization") bearerToken: String,
         @Path("id") userId: Long
     ): Response<User>
+
+    @Headers("Accept: application/json")
+    @GET("users/{id}/questions")
+    suspend fun getUserQuestionsList(
+        @Header("Authorization") bearerToken: String,
+        @Path("id") userId: Long
+    ): Response<UserQuestionsList>
 }
