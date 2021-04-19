@@ -22,12 +22,13 @@ class AnswersRepository {
         apiInterface = ApiClient.getApiClient().create(ApiInterface::class.java)
     }
 
-    suspend fun postAnswer(apiToken: String, body : RequestBody, images : List<MultipartBody.Part>?) : ApiResult<out Any>{
+    suspend fun postAnswer(apiToken: String, questionId: Long, body : RequestBody, images : List<MultipartBody.Part>?) : ApiResult<out Any>{
         try {
             Log.d("Post answer api call", "Posting answer.")
 
             apiInterface?.postAnswer(
                     apiToken,
+                    questionId,
                     body,
                     images
             ).let {

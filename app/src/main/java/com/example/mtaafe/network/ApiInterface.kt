@@ -2,6 +2,7 @@ package com.example.mtaafe.network
 
 import android.database.Observable
 import com.example.mtaafe.data.models.*
+import com.example.mtaafe.data.models.Tag
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Call
@@ -36,8 +37,9 @@ interface ApiInterface {
             @Header("Authorization") apiToken: String,
             @Part("title") title : RequestBody,
             @Part("body") body : RequestBody,
-            @Part("tags") tags : List<RequestBody>?,
-            @Part images : List<MultipartBody.Part>?): Response<Question>
+            @Query("tags") tags : List<Long>,
+            @Part images : List<MultipartBody.Part>?
+    ): Response<Any>
 
     @Headers("Accept: application/json")
     @Multipart
@@ -45,7 +47,36 @@ interface ApiInterface {
     @POST("questions/{id}/answers")
     suspend fun postAnswer(
             @Header("Authorization") apiToken: String,
+            @Path("id") question_id: Long?,
             @Part("body") body : RequestBody,
-            @Part("images") images : List<MultipartBody.Part>?):
-            Response<Answer>
+            @Part images : List<MultipartBody.Part>?):
+            Response<Any>
+
+    @Headers("Accept: application/json")
+    @GET("questions/{id}/edit-form")
+    suspend fun getQuestionEditForm(
+            @Header("Authorization") apiToken: String,
+            @Path("id") id: Long?
+    ): Response<Question>
+
+    @Headers("Accept: application/json")
+    @JvmSuppressWildcards
+    @PUT("questions/{id}")
+    suspend fun editQuestion(
+            @Header("Authorization") apiToken: String,
+            @Path("id") id: Long?,
+//            @Body title : RequestBody,
+//            @Body body : RequestBody,
+//            @Body tags : List<RequestBody>?,
+//            @Body deleted_tags : List<RequestBody>?):
+            @Body questionEdit: QuestionEdit):
+            Response<Any>
+
+    @Headers("Accept: application/json", "Content-Type: application/json")
+    @JvmSuppressWildcards
+    @PUT("answers/{id}")
+    suspend fun editAnswer(
+            @Header("Authorization") apiToken: String,
+            @Body body : RequestBody):
+            Response<Any>
 }

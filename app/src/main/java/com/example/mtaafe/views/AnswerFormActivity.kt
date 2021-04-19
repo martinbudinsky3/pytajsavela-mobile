@@ -46,10 +46,14 @@ class AnswerFormActivity : AppCompatActivity() {
     var images = mutableListOf<MultipartBody.Part>()
     //var images = MutableList<MultipartBody.Part>?
 
+    private var questionId: Long = 0
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.answer_form)
+
+        questionId = intent.getLongExtra("question_id", 0)
 
         rootLayout = findViewById(R.id.answerFormRoot)
         viewModel = ViewModelProvider.AndroidViewModelFactory(application)
@@ -67,7 +71,7 @@ class AnswerFormActivity : AppCompatActivity() {
         answerBtn.setOnClickListener {
             val body = editTextAnswerBody.text.toString()
 
-            if (selectedImages.get(0) != null) {
+            if (selectedImages.isNotEmpty()) {
                 images = getImages(selectedImages)
             }
 
@@ -75,6 +79,7 @@ class AnswerFormActivity : AppCompatActivity() {
             images.forEachIndexed{index, element -> (Log.d("message", "Image no."+ index + " : "+ element))}
 
             viewModel.postAnswer(
+                    questionId,
                     createPartFromString(body),
                     images
             )
@@ -83,6 +88,10 @@ class AnswerFormActivity : AppCompatActivity() {
                 when(it) {
                     is ApiResult.Success -> {
                         Log.d("Success", "Answer was posted.")
+
+                        val intent = Intent(this, QuestionDetailActivity::class.java)
+                        intent.putExtra("question_id", questionId)
+                        startActivity(intent)
                     }
                     is ApiResult.Error -> handleError(it.error)
                     else -> {}

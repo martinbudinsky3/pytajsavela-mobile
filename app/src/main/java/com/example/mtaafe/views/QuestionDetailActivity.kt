@@ -5,6 +5,7 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Button
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -15,13 +16,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.mtaafe.R
 import com.example.mtaafe.data.models.*
 import com.example.mtaafe.viewmodels.QuestionDetailViewModel
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 
 class QuestionDetailActivity: AppCompatActivity() {
     private lateinit var viewModel: QuestionDetailViewModel
     private lateinit var rootLayout: View
     private lateinit var answerAdapter: AnswerAdapter
-    private lateinit var tagAdapter: TagAdapter
+
     private var questionId: Long = 0
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -30,8 +32,6 @@ class QuestionDetailActivity: AppCompatActivity() {
         setContentView(R.layout.question_detail)
 
         questionId = intent.getLongExtra("question_id", 0)
-
-        Log.d("qes", "Question with id = $questionId is being processed!")
 
         val answersListRecycler: RecyclerView = findViewById(R.id.answersListRecycler)
 
@@ -55,6 +55,14 @@ class QuestionDetailActivity: AppCompatActivity() {
                 else -> {}
             }
         })
+
+        val answerButton : FloatingActionButton = findViewById(R.id.answerBtn)
+
+        answerButton.setOnClickListener {
+            val intent = Intent(this, AnswerFormActivity::class.java)
+            intent.putExtra("question_id", questionId)
+            startActivity(intent)
+        }
     }
 
     private fun setQuestionData(question: Question){

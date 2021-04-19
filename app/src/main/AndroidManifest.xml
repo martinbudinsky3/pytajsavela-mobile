@@ -35,6 +35,14 @@
         <activity android:name=".views.QuestionDetailActivity">
 
         </activity>
+
+        <activity android:name=".views.QuestionEditActivity">
+
+        </activity>
+
+        <activity android:name=".views.AnswerEditActivity">
+
+        </activity>
     </application>
 
 </manifest>

@@ -34,6 +34,7 @@ import okhttp3.RequestBody
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.util.ArrayList
 
 class QuestionFormActivity : AppCompatActivity() {
     private lateinit var viewModel: QuestionFormViewModel
@@ -69,22 +70,21 @@ class QuestionFormActivity : AppCompatActivity() {
             val title = editTextQuestionTitle.text.toString()
             val body = editTextQuestionBody.text.toString()
 
-            val tags = getTags(editTextQuestionTags.text.toString())
-
-            if (selectedImages[0] != null) {
+            if (selectedImages.isNotEmpty()) {
                 images = getImages(selectedImages)
             }
 
             Log.d("message", "Title : " + title)
             Log.d("message", "Body : " + body)
 
-            tags!!.forEachIndexed{index, element -> (Log.d("message", "Tag no."+ index + " : "+ element))}
             images.forEachIndexed{index, element -> (Log.d("message", "Image no."+ index + " : "+ element))}
+
+            val tagList = mutableListOf<Long>() // postovanie otazky s tagmi nefunguje
 
             viewModel.postQuestion(
                     createPartFromString(title),
                     createPartFromString(body),
-                    tags,
+                    tagList,
                     images
             )
 
@@ -92,6 +92,9 @@ class QuestionFormActivity : AppCompatActivity() {
                 when(it) {
                     is ApiResult.Success -> {
                         Log.d("Success", "Question was posted.")
+
+                        val intent = Intent(this, QuestionsListActivity::class.java)
+                        startActivity(intent)
                     }
                     is ApiResult.Error -> handleError(it.error)
                     else -> {}
@@ -129,20 +132,11 @@ class QuestionFormActivity : AppCompatActivity() {
         private const val REQUEST_CODE_IMAGE_PCIKER = 100
     }
 
-    private fun getTags(tagsInput : String): List<RequestBody>? {
-        val tagsString = tagsInput.split(",").map { it.trim() }
-        val tagsRequestBody = mutableListOf<RequestBody>()
-
-        tagsString.forEachIndexed{index, element -> tagsRequestBody.add(index, createPartFromString(element)) }
-
-        return tagsRequestBody
-    }
-
     @RequiresApi(Build.VERSION_CODES.KITKAT)
     private fun getImages(imageUris : MutableList<Uri?>) : MutableList<MultipartBody.Part>{
         val images = mutableListOf<MultipartBody.Part>()
 
-        imageUris.forEachIndexed{index, element -> images?.add(prepareFilePart("" + index, element))}
+        imageUris.forEachIndexed{index, element -> images.add(prepareFilePart("" + index, element))}
 
         return images
     }
