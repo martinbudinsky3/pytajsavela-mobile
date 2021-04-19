@@ -4,4 +4,6 @@
     <string name="question_list_no_results">Nenašli sa žiadne otázky</string>
     <string name="tags_list_no_results">Nenašli sa žiadne tagy</string>
     <string name="answers_list_no_results">Nenašli sa žiadne odpovede</string>
+    <string name="navigation_drawer_open">Open</string>
+    <string name="navigation_drawer_close">Close</string>
 </resources>

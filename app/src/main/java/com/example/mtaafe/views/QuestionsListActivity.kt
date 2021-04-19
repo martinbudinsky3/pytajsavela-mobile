@@ -25,6 +25,8 @@ class QuestionsListActivity : AppCompatActivity(), IPageButtonClickListener {
         setContentView(R.layout.activity_questions_list)
 
         supportActionBar?.title = "Otázky"
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setHomeButtonEnabled(true)
 
         questionsListRoot = findViewById(R.id.questionsListRoot)
         emptyQuestionsListText = findViewById(R.id.emptyQuestionsListText)
