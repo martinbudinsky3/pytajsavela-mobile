@@ -9,15 +9,17 @@ import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
 import com.example.mtaafe.R
 
-class MainActivity: AppCompatActivity() {
-    private lateinit var drawer: DrawerLayout
+open class MainActivity: AppCompatActivity() {
+    lateinit var drawer: DrawerLayout
     private lateinit var toggle: ActionBarDrawerToggle
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.drawer_activity)
 
         val toolbar: Toolbar = findViewById(R.id.toolbar_main)
+        //supportActionBar?.setCustomView(R.layout.app_bar_main)
         setSupportActionBar(toolbar)
 
         drawer = findViewById(R.id.drawerLayout)

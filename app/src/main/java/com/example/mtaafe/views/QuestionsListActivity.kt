@@ -1,10 +1,12 @@
 package com.example.mtaafe.views
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -13,7 +15,8 @@ import com.example.mtaafe.data.models.*
 import com.example.mtaafe.viewmodels.QuestionsListViewModel
 import com.google.android.material.snackbar.Snackbar
 
-class QuestionsListActivity : AppCompatActivity(), IPageButtonClickListener {
+
+class QuestionsListActivity : MainActivity(), IPageButtonClickListener {
     private lateinit var viewModel: QuestionsListViewModel
     private lateinit var questionsListRecycler: RecyclerView
     private lateinit var questionsListRoot: View
@@ -22,11 +25,20 @@ class QuestionsListActivity : AppCompatActivity(), IPageButtonClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_questions_list)
+        //setContentView(R.layout.activity_questions_list)
+
+        val dynamicContent: LinearLayout = findViewById(R.id.dynamicContent)
+        val questionsListView: View = layoutInflater.inflate(R.layout.activity_questions_list, dynamicContent, false)
+        dynamicContent.addView(questionsListView)
+
+//        val inflater = this
+//            .getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+//        val contentView: View = inflater.inflate(R.layout.activity_questions_list, null, false)
+//        drawer.addView(contentView, 0)
 
         supportActionBar?.title = "Otázky"
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setHomeButtonEnabled(true)
+//        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+//        supportActionBar?.setHomeButtonEnabled(true)
 
         questionsListRoot = findViewById(R.id.questionsListRoot)
         emptyQuestionsListText = findViewById(R.id.emptyQuestionsListText)
@@ -35,14 +47,14 @@ class QuestionsListActivity : AppCompatActivity(), IPageButtonClickListener {
         viewModel = ViewModelProvider.AndroidViewModelFactory(application)
                 .create(QuestionsListViewModel::class.java)
 
-        adapter = QuestionAdapter(ArrayList<QuestionItem>())
+        adapter = QuestionAdapter(ArrayList())
         questionsListRecycler.layoutManager = LinearLayoutManager(this)
         questionsListRecycler.adapter = adapter
 
         viewModel.getFirstPage()
 
         viewModel.questionsList.observe(this, {
-            if(it.questions.isNotEmpty()) {
+            if (it.questions.isNotEmpty()) {
                 hideEmptyListMessage()
                 adapter.updateData(it.questions)
                 questionsListRecycler.scrollToPosition(0)
@@ -63,7 +75,11 @@ class QuestionsListActivity : AppCompatActivity(), IPageButtonClickListener {
                 startActivity(intent)
             }
             else -> {
-                Snackbar.make(questionsListRoot, "Nepodarilo sa načítať otázky", Snackbar.LENGTH_INDEFINITE)
+                Snackbar.make(
+                    questionsListRoot,
+                    "Nepodarilo sa načítať otázky",
+                    Snackbar.LENGTH_INDEFINITE
+                )
                     .setAction("Skúsiť znovu") {
                         viewModel.retry()
                     }
