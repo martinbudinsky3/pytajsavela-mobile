@@ -1,9 +1,7 @@
 package com.example.mtaafe.views
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -16,7 +14,7 @@ import com.example.mtaafe.viewmodels.QuestionsListViewModel
 import com.google.android.material.snackbar.Snackbar
 
 
-class QuestionsListActivity : MainActivity(), IPageButtonClickListener {
+class QuestionsListActivity : DrawerActivity(), IPageButtonClickListener {
     private lateinit var viewModel: QuestionsListViewModel
     private lateinit var questionsListRecycler: RecyclerView
     private lateinit var questionsListRoot: View
@@ -27,18 +25,12 @@ class QuestionsListActivity : MainActivity(), IPageButtonClickListener {
         super.onCreate(savedInstanceState)
         //setContentView(R.layout.activity_questions_list)
 
+        // inject activity_questions_list layout into drawer layout
         val dynamicContent: LinearLayout = findViewById(R.id.dynamicContent)
         val questionsListView: View = layoutInflater.inflate(R.layout.activity_questions_list, dynamicContent, false)
         dynamicContent.addView(questionsListView)
 
-//        val inflater = this
-//            .getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-//        val contentView: View = inflater.inflate(R.layout.activity_questions_list, null, false)
-//        drawer.addView(contentView, 0)
-
         supportActionBar?.title = "Otázky"
-//        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-//        supportActionBar?.setHomeButtonEnabled(true)
 
         questionsListRoot = findViewById(R.id.questionsListRoot)
         emptyQuestionsListText = findViewById(R.id.emptyQuestionsListText)

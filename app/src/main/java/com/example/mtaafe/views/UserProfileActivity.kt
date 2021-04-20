@@ -3,6 +3,7 @@ package com.example.mtaafe.views
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager.widget.ViewPager
@@ -12,14 +13,19 @@ import com.example.mtaafe.viewmodels.UserProfileViewModel
 import com.google.android.material.tabs.TabLayout
 
 
-class UserProfileActivity : AppCompatActivity() {
+class UserProfileActivity : DrawerActivity() {
     private lateinit var viewModel: UserProfileViewModel
     private lateinit var viewPager: ViewPager
     private lateinit var tabLayout: TabLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_user_profile)
+        //setContentView(R.layout.activity_user_profile)
+
+        // inject activity_user_profile layout into drawer layout
+        val dynamicContent: LinearLayout = findViewById(R.id.dynamicContent)
+        val questionsListView: View = layoutInflater.inflate(R.layout.activity_user_profile, dynamicContent, false)
+        dynamicContent.addView(questionsListView)
 
         viewModel = ViewModelProvider.AndroidViewModelFactory(application)
             .create(UserProfileViewModel::class.java)

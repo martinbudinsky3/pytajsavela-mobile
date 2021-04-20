@@ -7,6 +7,7 @@ import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doOnTextChanged
@@ -20,7 +21,7 @@ import com.example.mtaafe.data.models.*
 import com.example.mtaafe.viewmodels.TagsListViewModel
 import com.google.android.material.snackbar.Snackbar
 
-class TagsListActivity : AppCompatActivity(), IPageButtonClickListener {
+class TagsListActivity : DrawerActivity(), IPageButtonClickListener {
     private lateinit var viewModel: TagsListViewModel
     private lateinit var tagsListRecycler: RecyclerView
     private lateinit var rootLayout: View
@@ -30,7 +31,12 @@ class TagsListActivity : AppCompatActivity(), IPageButtonClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_tags_list)
+        //setContentView(R.layout.activity_tags_list)
+
+        // inject activity_tags_list layout into drawer layout
+        val dynamicContent: LinearLayout = findViewById(R.id.dynamicContent)
+        val questionsListView: View = layoutInflater.inflate(R.layout.activity_tags_list, dynamicContent, false)
+        dynamicContent.addView(questionsListView)
 
         supportActionBar?.title = "Tagy"
 
