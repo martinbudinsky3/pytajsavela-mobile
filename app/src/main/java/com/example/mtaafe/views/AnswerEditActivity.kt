@@ -38,6 +38,9 @@ class AnswerEditActivity: AppCompatActivity() {
         answerId = intent.getLongExtra("answer_id", 0)
         questionId = intent.getLongExtra("question_id", 0)
 
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setHomeButtonEnabled(true)
+
         answerBodyEditET = findViewById(R.id.answerBodyEditET)
 
         viewModel = ViewModelProvider.AndroidViewModelFactory(application)

@@ -35,6 +35,7 @@ class QuestionFormActivity : AppCompatActivity() {
     private lateinit var rootLayout: View
     private lateinit var titleErrorMessageText: TextView
     private lateinit var bodyErrorMessageText: TextView
+    private lateinit var questionFormImageView: ImageView
     private var selectedImages = mutableListOf<Uri?>()
     private var imageIndex = 0
     var images = mutableListOf<MultipartBody.Part>()
@@ -44,9 +45,13 @@ class QuestionFormActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.question_form)
 
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setHomeButtonEnabled(true)
+
         rootLayout = findViewById(R.id.questionFormRoot)
         titleErrorMessageText = findViewById(R.id.titleErrorMessageText)
         bodyErrorMessageText = findViewById(R.id.bodyErrorMessageText)
+        questionFormImageView = findViewById(R.id.questionFormImageView)
 
         viewModel = ViewModelProvider.AndroidViewModelFactory(application)
                 .create(QuestionFormViewModel::class.java)
@@ -128,6 +133,10 @@ class QuestionFormActivity : AppCompatActivity() {
                     //selectedImage = data?.data
                     selectedImages.add(imageIndex, data?.data)
                     imageIndex += 1
+
+                    if(imageIndex == 1) {
+                        questionFormImageView.setImageURI(selectedImages[0])
+                    }
                 }
             }
         }

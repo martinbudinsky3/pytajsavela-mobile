@@ -13,6 +13,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -39,12 +40,10 @@ import java.io.FileOutputStream
 class AnswerFormActivity : AppCompatActivity() {
     private lateinit var viewModel: AnswerFormViewModel
     private lateinit var rootLayout: View
-
-    //private var selectedImage : Uri? = null
+    private lateinit var answerFormImageView: ImageView
     private var selectedImages = mutableListOf<Uri?>()
     private var imageIndex = 0
     var images = mutableListOf<MultipartBody.Part>()
-    //var images = MutableList<MultipartBody.Part>?
 
     private var questionId: Long = 0
 
@@ -54,9 +53,13 @@ class AnswerFormActivity : AppCompatActivity() {
 
         questionId = intent.getLongExtra("question_id", 0)
 
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setHomeButtonEnabled(true)
+
         rootLayout = findViewById(R.id.answerFormRoot)
         viewModel = ViewModelProvider.AndroidViewModelFactory(application)
                 .create(AnswerFormViewModel::class.java)
+        answerFormImageView = findViewById(R.id.answerFormImageView)
 
         val editTextAnswerBody: EditText = findViewById(R.id.editTextAnswerBody)
 
@@ -126,6 +129,10 @@ class AnswerFormActivity : AppCompatActivity() {
                     //selectedImage = data?.data
                     selectedImages.add(imageIndex, data?.data)
                     imageIndex += 1
+
+                    if(imageIndex == 1) {
+                        answerFormImageView.setImageURI(selectedImages[0])
+                    }
                 }
             }
         }

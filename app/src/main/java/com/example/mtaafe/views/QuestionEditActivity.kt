@@ -39,6 +39,9 @@ class QuestionEditActivity: AppCompatActivity() {
 
         questionId = intent.getLongExtra("question_id", 0)
 
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setHomeButtonEnabled(true)
+
         questionTitleEditET = findViewById(R.id.questionTitleEditET)
         questionBodyEditET = findViewById(R.id.questionBodyEditET)
 //        tagsEditET = findViewById(R.id.tagsEditET)
