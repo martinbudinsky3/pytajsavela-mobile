@@ -95,6 +95,7 @@ class AnswerFormActivity : AppCompatActivity() {
                             val intent = Intent(this, QuestionDetailActivity::class.java)
                             intent.putExtra("question_id", questionId)
                             startActivity(intent)
+                            finish()
                         }
                         is ApiResult.Error -> handleError(it.error)
                         else -> {}

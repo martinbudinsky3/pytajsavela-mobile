@@ -107,6 +107,7 @@ class QuestionFormActivity : AppCompatActivity() {
 
                     val intent = Intent(this, QuestionsListActivity::class.java)
                     startActivity(intent)
+                    finish()
                 }
                 is ApiResult.Error -> handleError(it.error)
             }

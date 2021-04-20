@@ -20,7 +20,7 @@
             android:layout_height="match_parent"
             android:layout_marginTop="30dp"
             android:textAlignment="center"
-            android:text="Nová otázka"
+            android:text="Nová odpoveď"
             android:textSize="24sp"
             android:textStyle="bold"  />
 
