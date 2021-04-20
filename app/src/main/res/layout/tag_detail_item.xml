@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tagDetailItemRoot"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="12dp"
+    android:layout_marginBottom="25dp"
+    android:orientation="vertical">
+    <TextView
+        android:id="@+id/tagNameText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tag name"
+        android:textSize="20sp"
+        android:textStyle="bold"/>
+    <TextView
+        android:id="@+id/questionsCountText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="Questions count"
+        android:textSize="14sp"
+        />
+</LinearLayout>

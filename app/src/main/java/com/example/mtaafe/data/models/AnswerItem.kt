@@ -14,8 +14,9 @@ data class AnswerItem (
         var createdAt: LocalDate,
 
         @SerializedName("author")
-        var author: Author,
+        var author: User,
 
         @SerializedName("images")
         var images: List<Image>
 )
+
