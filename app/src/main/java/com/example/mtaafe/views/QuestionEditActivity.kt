@@ -99,6 +99,7 @@ class QuestionEditActivity: AppCompatActivity() {
                     val intent = Intent(this, QuestionDetailActivity::class.java)
                     intent.putExtra("question_id", questionId)
                     startActivity(intent)
+                    finish()
                 }
                 is ApiResult.Error -> handleError(it.error)
                 else -> {}
@@ -149,6 +150,20 @@ class QuestionEditActivity: AppCompatActivity() {
             is ErrorEntity.Unauthorized -> {
                 val intent = Intent(this, LoginActivity::class.java)
                 startActivity(intent)
+            }
+            is ErrorEntity.NotFound -> {
+                Snackbar.make(rootLayout, "Otázka neexistuje", Snackbar.LENGTH_INDEFINITE)
+                    .setAction("Späť") {
+                        finish()
+                    }
+                    .show()
+            }
+            is ErrorEntity.AccessDenied -> {
+                Snackbar.make(rootLayout, "Na danú akciu nemate práva", Snackbar.LENGTH_INDEFINITE)
+                    .setAction("Späť") {
+                        finish()
+                    }
+                    .show()
             }
             else -> {
                 Snackbar.make(rootLayout, "Oops, niečo sa pokazilo.", Snackbar.LENGTH_LONG)

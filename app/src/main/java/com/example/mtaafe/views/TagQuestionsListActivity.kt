@@ -123,6 +123,8 @@ class TagQuestionsListActivity : AppCompatActivity(), IPageButtonClickListener, 
     }
 
     override fun openQuestionDetailActivity(questionId: Long) {
-        // TODO open question detail activity
+        val intent = Intent(this, QuestionDetailActivity::class.java)
+        intent.putExtra("question_id", questionId)
+        startActivity(intent)
     }
 }

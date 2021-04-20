@@ -1,5 +1,6 @@
 package com.example.mtaafe.views
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -55,6 +56,8 @@ class UserProfileActivity : DrawerActivity(), IQuestionDetailOpener {
     }
 
     override fun openQuestionDetailActivity(questionId: Long) {
-        // TODO open question detail activity
+        val intent = Intent(this, QuestionDetailActivity::class.java)
+        intent.putExtra("question_id", questionId)
+        startActivity(intent)
     }
 }

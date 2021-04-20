@@ -196,6 +196,20 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
                 val intent = Intent(this, LoginActivity::class.java)
                 startActivity(intent)
             }
+            is ErrorEntity.AccessDenied -> {
+                Snackbar.make(rootLayout, "Na danú akciu nemate práva", Snackbar.LENGTH_INDEFINITE)
+                    .setAction("Späť") {
+                        finish()
+                    }
+                    .show()
+            }
+            is ErrorEntity.NotFound -> {
+                Snackbar.make(rootLayout, "Daná položka neexistuje", Snackbar.LENGTH_INDEFINITE)
+                    .setAction("Späť") {
+                        finish()
+                    }
+                    .show()
+            }
             else -> {
                 Snackbar.make(rootLayout, "Oops, niečo sa pokazilo.", Snackbar.LENGTH_LONG)
                         .setAction("Skúsiť znovu") {

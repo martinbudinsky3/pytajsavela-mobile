@@ -53,7 +53,6 @@ class QuestionDetailViewModel(application: Application): AndroidViewModel(applic
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun deleteQuestion(questionId: Long) {
         CoroutineScope(Dispatchers.IO).launch {
             val response = questionsRepository?.deleteQuestion(sessionManager?.fetchApiToken().toString(), questionId)
@@ -64,7 +63,6 @@ class QuestionDetailViewModel(application: Application): AndroidViewModel(applic
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun deleteAnswer(answerId: Long) {
         CoroutineScope(Dispatchers.IO).launch {
             val response = answersRepository?.deleteAnswer(sessionManager?.fetchApiToken().toString(), answerId)
