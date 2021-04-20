@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/profile_menu_item"
+        android:icon="@drawable/ic_baseline_account_circle_24"
+        android:title="Profil" />
+    <item android:id="@+id/questions_menu_item"
+        android:icon="@drawable/question_mark_icon"
+        android:title="Otázky" />
+    <item android:id="@+id/tags_menu_item"
+        android:icon="@drawable/hashtag_icon"
+        android:title="Tagy" />
+    <item android:id="@+id/logout_menu_item"
+        android:icon="@drawable/logout_icon"
+        android:title="Odhlásiť sa" />
+</menu>

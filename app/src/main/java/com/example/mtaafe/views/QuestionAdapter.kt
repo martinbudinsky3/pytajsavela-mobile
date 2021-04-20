@@ -6,8 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.mtaafe.R
 import com.example.mtaafe.data.models.QuestionItem
 
-class QuestionAdapter (private val questionsList: ArrayList<QuestionItem>,
-                        private val listener: OnQuestionClickListener):
+class QuestionAdapter (private val questionsList: ArrayList<QuestionItem>):
         RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val TYPE_ITEM = 0
     private val TYPE_FOOTER = 1
@@ -35,7 +34,7 @@ class QuestionAdapter (private val questionsList: ArrayList<QuestionItem>,
         }
 
         if(holder is PaginationViewHolder) {
-            // TODO
+
         }
     }
 
@@ -57,7 +56,4 @@ class QuestionAdapter (private val questionsList: ArrayList<QuestionItem>,
         notifyDataSetChanged()
     }
 
-    fun getQuestion(position: Int): QuestionItem{
-        return questionsList[position]
-    }
 }

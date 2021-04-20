@@ -19,7 +19,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mtaafe.R
-import com.example.mtaafe.databinding.ActivityLoginBinding
 import com.example.mtaafe.network.ApiClient
 import com.example.mtaafe.network.ApiInterface
 import androidx.lifecycle.Observer

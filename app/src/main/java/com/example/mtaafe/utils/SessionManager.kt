@@ -31,4 +31,15 @@ class SessionManager(context: Context) {
     fun fetchUserId(): Long? {
         return prefs.getLong(USER_ID, 0L)
     }
+
+    fun isUserLoggedIn(): Boolean {
+        return prefs.contains(USER_TOKEN) && prefs.contains(USER_ID)
+    }
+
+    fun logout() {
+        val editor = prefs.edit()
+        editor.remove(USER_ID)
+        editor.remove(USER_TOKEN)
+        editor.apply()
+    }
 }

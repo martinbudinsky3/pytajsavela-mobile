@@ -1,14 +1,11 @@
 package com.example.mtaafe.network
 
-import android.database.Observable
 import com.example.mtaafe.data.models.*
 import com.example.mtaafe.data.models.Tag
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*
-import java.util.*
 
 interface ApiInterface {
     @Headers("Accept: application/json")
@@ -18,7 +15,7 @@ interface ApiInterface {
     @Headers("Accept: application/json")
     @GET("questions")
     suspend fun getQuestionsList(
-            @Header("Authorization") apiToken: String,
+            @Header("Authorization") bearerToken: String,
             @Query("page") page: Int?
     ): Response<QuestionsList>
 
@@ -79,4 +76,42 @@ interface ApiInterface {
             @Header("Authorization") apiToken: String,
             @Body body : RequestBody):
             Response<Any>
+
+
+    @Headers("Accept: application/json")
+    @GET("tags")
+    suspend fun getTagsList(
+        @Header("Authorization") bearerToken: String,
+        @Query("page") page: Int?,
+        @Query("search") search: String?
+    ): Response<TagsList>
+
+    @Headers("Accept: application/json")
+    @GET("tags/{id}/questions")
+    suspend fun getTagQuestionsList(
+        @Header("Authorization") bearerToken: String,
+        @Path("id") tagId: Long,
+        @Query("page") page: Int?
+    ): Response<TagQuestionsList>
+
+    @Headers("Accept: application/json")
+    @GET("users/{id}")
+    suspend fun getUserInfo(
+        @Header("Authorization") bearerToken: String,
+        @Path("id") userId: Long
+    ): Response<User>
+
+    @Headers("Accept: application/json")
+    @GET("users/{id}/questions")
+    suspend fun getUserQuestionsList(
+        @Header("Authorization") bearerToken: String,
+        @Path("id") userId: Long
+    ): Response<UserQuestionsList>
+
+    @Headers("Accept: application/json")
+    @GET("users/{id}/answers")
+    suspend fun getUserAnswersList(
+        @Header("Authorization") bearerToken: String,
+        @Path("id") userId: Long
+    ): Response<UserAnswersList>
 }

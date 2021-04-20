@@ -14,7 +14,6 @@ import retrofit2.Retrofit
 import java.lang.Exception
 import java.util.ArrayList
 
-@RequiresApi(Build.VERSION_CODES.O)
 class QuestionsRepository {
     private var apiInterface: ApiInterface?=null
 

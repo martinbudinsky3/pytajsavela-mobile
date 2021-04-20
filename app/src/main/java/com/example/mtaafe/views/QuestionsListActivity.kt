@@ -1,13 +1,10 @@
 package com.example.mtaafe.views
 
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -17,50 +14,62 @@ import com.example.mtaafe.viewmodels.QuestionsListViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 
-class QuestionsListActivity : AppCompatActivity(), IPageButtonClickListener, OnQuestionClickListener {
+
+class QuestionsListActivity : DrawerActivity(), IPageButtonClickListener, IQuestionDetailOpener {
     private lateinit var viewModel: QuestionsListViewModel
-    private lateinit var rootLayout: View
+    private lateinit var questionsListRecycler: RecyclerView
+    private lateinit var questionsListRoot: View
+    private lateinit var fab: FloatingActionButton
+    private lateinit var emptyQuestionsListText: TextView
     private lateinit var adapter: QuestionAdapter
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_questions_list)
+        //setContentView(R.layout.activity_questions_list)
 
-        rootLayout = findViewById(R.id.questionsListRoot)
+        // inject activity_questions_list layout into drawer layout
+        val dynamicContent: LinearLayout = findViewById(R.id.dynamicContent)
+        val questionsListView: View = layoutInflater.inflate(R.layout.activity_questions_list, dynamicContent, false)
+        dynamicContent.addView(questionsListView)
 
-        val questionsListRecycler: RecyclerView = findViewById(R.id.questionsListRecycler)
+        supportActionBar?.title = "Otázky"
+
+        questionsListRoot = findViewById(R.id.questionsListRoot)
+        fab = findViewById(R.id.fab)
+        emptyQuestionsListText = findViewById(R.id.emptyQuestionsListText)
+        questionsListRecycler = findViewById(R.id.questionsListRecycler)
+
         viewModel = ViewModelProvider.AndroidViewModelFactory(application)
                 .create(QuestionsListViewModel::class.java)
 
-        adapter = QuestionAdapter(ArrayList<QuestionItem>(), this)
+
+        adapter = QuestionAdapter(ArrayList())
+
         questionsListRecycler.layoutManager = LinearLayoutManager(this)
         questionsListRecycler.adapter = adapter
 
         viewModel.getFirstPage()
 
-        viewModel.result.observe(this, Observer {
-            when(it) {
-                is ApiResult.Success -> {
-                    if(it.data is QuestionsList) {
-                        //questionsListRecycler.adapter = QuestionAdapter(it.data.questions)
-                        adapter.updateData(it.data.questions)
-                    }
-                }
-                is ApiResult.Error -> handleError(it.error)
-                else -> {}
+        viewModel.questionsList.observe(this, {
+            if (it.questions.isNotEmpty()) {
+                hideEmptyListMessage()
+                adapter.updateData(it.questions)
+                questionsListRecycler.scrollToPosition(0)
+            } else {
+                showEmptyListMessage()
             }
         })
 
-        val askQuestionBtn: FloatingActionButton = findViewById(R.id.askQuestionBtn)
+        viewModel.error.observe(this, {
+            handleError(it)
+        })
 
-        askQuestionBtn.setOnClickListener(){
+        fab.setOnClickListener{
             val intent = Intent(this, QuestionFormActivity::class.java)
             startActivity(intent)
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun handleError(error: ErrorEntity) {
         when(error) {
             is ErrorEntity.Unauthorized -> {
@@ -68,7 +77,11 @@ class QuestionsListActivity : AppCompatActivity(), IPageButtonClickListener, OnQ
                 startActivity(intent)
             }
             else -> {
-                Snackbar.make(rootLayout, "Oops, niečo sa pokazilo.", Snackbar.LENGTH_LONG)
+                Snackbar.make(
+                    questionsListRoot,
+                    "Nepodarilo sa načítať otázky",
+                    Snackbar.LENGTH_INDEFINITE
+                )
                     .setAction("Skúsiť znovu") {
                         viewModel.retry()
                     }
@@ -77,32 +90,35 @@ class QuestionsListActivity : AppCompatActivity(), IPageButtonClickListener, OnQ
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
+    private fun showEmptyListMessage() {
+        emptyQuestionsListText.visibility = View.VISIBLE
+        questionsListRecycler.visibility = View.GONE
+    }
+
+    private fun hideEmptyListMessage() {
+        emptyQuestionsListText.visibility = View.GONE
+        questionsListRecycler.visibility = View.VISIBLE
+    }
+
     override fun handleFirstPageButtonClick() {
         viewModel.getFirstPage()
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun handlePreviousPageButtonClick() {
         viewModel.getPrevioustPage()
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun handleNextPageButtonClick() {
         viewModel.getNextPage()
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun handleLastPageButtonClick() {
         viewModel.getLastPage()
     }
 
-    override fun onQuestionClick(position: Int) {
-        val clickedQuestion: QuestionItem = adapter.getQuestion(position)
-        Log.d("qes", "Question with id = " + clickedQuestion.id + " was clicked!")
-
+    override fun openQuestionDetailActivity(questionId: Long) {
         val intent = Intent(this, QuestionDetailActivity::class.java)
-        intent.putExtra("question_id", clickedQuestion.id)
+        intent.putExtra("question_id", questionId)
         startActivity(intent)
     }
 }
