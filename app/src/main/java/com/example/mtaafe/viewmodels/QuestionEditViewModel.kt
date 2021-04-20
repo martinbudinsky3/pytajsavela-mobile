@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.RequestBody
 
-@RequiresApi(Build.VERSION_CODES.O)
+//@RequiresApi(Build.VERSION_CODES.O)
 class QuestionEditViewModel(application: Application): AndroidViewModel(application) {
 
     private var questionsRepository: QuestionsRepository? = null
@@ -32,7 +32,7 @@ class QuestionEditViewModel(application: Application): AndroidViewModel(applicat
         sessionManager = SessionManager(application)
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
+//    @RequiresApi(Build.VERSION_CODES.O)
     fun getQuestionEditForm(questionId: Long) {
         CoroutineScope(Dispatchers.IO).launch {
             val response = questionsRepository?.getQuestionEditForm(sessionManager?.fetchApiToken().toString(), questionId)

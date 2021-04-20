@@ -3,9 +3,7 @@ package com.example.mtaafe.views
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.widget.Button
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -26,7 +24,7 @@ class QuestionDetailActivity: AppCompatActivity() {
 
     private var questionId: Long = 0
 
-    @RequiresApi(Build.VERSION_CODES.O)
+//    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.question_detail)
@@ -38,7 +36,7 @@ class QuestionDetailActivity: AppCompatActivity() {
         viewModel = ViewModelProvider.AndroidViewModelFactory(application)
                 .create(QuestionDetailViewModel::class.java)
 
-        answerAdapter = AnswerAdapter(ArrayList<AnswerItem>())
+        answerAdapter = AnswerAdapter(ArrayList())
         answersListRecycler.layoutManager = LinearLayoutManager(this)
         answersListRecycler.adapter = answerAdapter
 
@@ -88,7 +86,7 @@ class QuestionDetailActivity: AppCompatActivity() {
         tagsQdetailRecyclerView.adapter = adapter
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
+//    @RequiresApi(Build.VERSION_CODES.O)
     private fun handleError(error: ErrorEntity) {
         when(error) {
             is ErrorEntity.Unauthorized -> {

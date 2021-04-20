@@ -28,7 +28,7 @@ interface ApiInterface {
 
     @Headers("Accept: application/json")
     @Multipart
-    @JvmSuppressWildcards
+//    @JvmSuppressWildcards
     @POST("questions")
     suspend fun postQuestion(
             @Header("Authorization") apiToken: String,
@@ -40,7 +40,7 @@ interface ApiInterface {
 
     @Headers("Accept: application/json")
     @Multipart
-    @JvmSuppressWildcards
+//    @JvmSuppressWildcards
     @POST("questions/{id}/answers")
     suspend fun postAnswer(
             @Header("Authorization") apiToken: String,
@@ -57,7 +57,7 @@ interface ApiInterface {
     ): Response<Question>
 
     @Headers("Accept: application/json")
-    @JvmSuppressWildcards
+//    @JvmSuppressWildcards
     @PUT("questions/{id}")
     suspend fun editQuestion(
             @Header("Authorization") apiToken: String,
@@ -70,7 +70,7 @@ interface ApiInterface {
             Response<Any>
 
     @Headers("Accept: application/json", "Content-Type: application/json")
-    @JvmSuppressWildcards
+//    @JvmSuppressWildcards
     @PUT("answers/{id}")
     suspend fun editAnswer(
             @Header("Authorization") apiToken: String,

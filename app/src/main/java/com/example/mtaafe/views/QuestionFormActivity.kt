@@ -38,7 +38,6 @@ import java.util.ArrayList
 class QuestionFormActivity : AppCompatActivity() {
     private lateinit var viewModel: QuestionFormViewModel
     private lateinit var rootLayout: View
-    private lateinit var adapter: QuestionAdapter
 
     //private var selectedImage : Uri? = null
     private var selectedImages = mutableListOf<Uri?>()

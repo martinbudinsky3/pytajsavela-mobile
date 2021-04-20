@@ -17,7 +17,7 @@ data class Question (
         var createdAt: LocalDate,
 
         @SerializedName("author")
-        var author: Author,
+        var author: User,
 
         @SerializedName("tags")
         var tags: ArrayList<Tag>,

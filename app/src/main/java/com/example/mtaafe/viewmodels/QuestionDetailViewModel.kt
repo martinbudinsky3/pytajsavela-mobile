@@ -15,7 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-@RequiresApi(Build.VERSION_CODES.O)
+//@RequiresApi(Build.VERSION_CODES.O)
 class QuestionDetailViewModel(application: Application): AndroidViewModel(application) {
 
     private var questionsRepository: QuestionsRepository? = null
@@ -30,7 +30,7 @@ class QuestionDetailViewModel(application: Application): AndroidViewModel(applic
         sessionManager = SessionManager(application)
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
+//    @RequiresApi(Build.VERSION_CODES.O)
     fun getQuestionDetails(questionId: Long) {
         CoroutineScope(Dispatchers.IO).launch {
             val response = questionsRepository?.getQuestionDetails(sessionManager?.fetchApiToken().toString(), questionId)

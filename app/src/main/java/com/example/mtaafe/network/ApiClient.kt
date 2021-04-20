@@ -20,7 +20,7 @@ class ApiClient {
     companion object {
         private var retrofit: Retrofit? = null
 
-        @RequiresApi(Build.VERSION_CODES.O)
+//        @RequiresApi(Build.VERSION_CODES.O)
         fun getApiClient(): Retrofit {
             val gson = GsonBuilder()
                 .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())

@@ -20,7 +20,7 @@ import okhttp3.RequestBody
 import retrofit2.Response
 import java.util.ArrayList
 
-@RequiresApi(Build.VERSION_CODES.O)
+//@RequiresApi(Build.VERSION_CODES.O)
 class QuestionFormViewModel(application: Application): AndroidViewModel(application) {
     private var questionsRepository: QuestionsRepository? = null
     private var sessionManager: SessionManager? = null

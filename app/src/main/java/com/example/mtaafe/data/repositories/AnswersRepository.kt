@@ -14,7 +14,7 @@ import retrofit2.HttpException
 import retrofit2.Retrofit
 import java.lang.Exception
 
-@RequiresApi(Build.VERSION_CODES.O)
+//@RequiresApi(Build.VERSION_CODES.O)
 class AnswersRepository {
     private var apiInterface: ApiInterface?=null
 

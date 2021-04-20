@@ -28,7 +28,7 @@ class AnswerEditActivity: AppCompatActivity() {
 
     private var questionId: Long = 0
 
-    @RequiresApi(Build.VERSION_CODES.O)
+//    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.answer_edit)
@@ -68,7 +68,7 @@ class AnswerEditActivity: AppCompatActivity() {
         answerBodyEditET.setText(answer.body)
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
+//    @RequiresApi(Build.VERSION_CODES.O)
     private fun handleError(error: ErrorEntity) {
         when(error) {
             is ErrorEntity.Unauthorized -> {

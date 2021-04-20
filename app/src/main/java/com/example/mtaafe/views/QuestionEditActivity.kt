@@ -33,7 +33,7 @@ class QuestionEditActivity: AppCompatActivity() {
 
     private var questionId: Long = 0
 
-    @RequiresApi(Build.VERSION_CODES.O)
+//    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.question_edit)
@@ -68,7 +68,7 @@ class QuestionEditActivity: AppCompatActivity() {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
+//    @RequiresApi(Build.VERSION_CODES.O)
     private fun editQuestion(){
         val newTitle = createPartFromString(questionTitleEditET?.text.toString())
         val newBody = createPartFromString(questionBodyEditET?.text.toString())
@@ -130,7 +130,7 @@ class QuestionEditActivity: AppCompatActivity() {
         tagsEditRecyclerView.adapter = adapter
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
+//    @RequiresApi(Build.VERSION_CODES.O)
     private fun handleError(error: ErrorEntity) {
         when(error) {
             is ErrorEntity.Unauthorized -> {
