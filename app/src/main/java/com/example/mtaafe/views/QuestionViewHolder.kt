@@ -16,6 +16,8 @@ class QuestionViewHolder(private val view: View): RecyclerView.ViewHolder(view) 
     private val createdAtText: TextView? = view.findViewById(R.id.createdAtText)
     private val answersCountText: TextView? = view.findViewById(R.id.answersCountText)
     private val tagsListRecycler: RecyclerView = view.findViewById(R.id.tagsRecyclerView)
+    private var activity: IQuestionDetailOpener = view.context as IQuestionDetailOpener
+
 
     fun setQuestionItemData(questionItem: QuestionItem) {
         titleText?.text = questionItem.title
@@ -31,5 +33,9 @@ class QuestionViewHolder(private val view: View): RecyclerView.ViewHolder(view) 
         val layoutManager = FlexboxLayoutManager(view.context)
         tagsListRecycler.layoutManager = layoutManager
         tagsListRecycler.adapter = adapter
+
+        view.setOnClickListener{
+            activity.openQuestionDetailActivity(questionItem.id)
+        }
     }
 }

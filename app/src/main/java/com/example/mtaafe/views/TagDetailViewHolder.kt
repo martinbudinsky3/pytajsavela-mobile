@@ -27,10 +27,4 @@ class TagDetailViewHolder(private val view: View): RecyclerView.ViewHolder(view)
             activity.openTagQuestionsListActivity(tag.id)
         }
     }
-
-    private fun removeMargin() {
-        val params = view.findViewById<LinearLayout>(R.id.tagDetailItemRoot).layoutParams as ViewGroup.MarginLayoutParams
-        params.leftMargin = 0
-        view.layoutParams = params
-    }
 }

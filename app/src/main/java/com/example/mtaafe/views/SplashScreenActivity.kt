@@ -24,7 +24,7 @@ class SplashScreenActivity : AppCompatActivity() {
         sessionManager = SessionManager(this)
         context = this
 
-        Timer().schedule(3000) {
+        Timer().schedule(1500) {
             if(sessionManager.isUserLoggedIn()) {
                 val intent = Intent(context, QuestionsListActivity::class.java)
                 startActivity(intent)

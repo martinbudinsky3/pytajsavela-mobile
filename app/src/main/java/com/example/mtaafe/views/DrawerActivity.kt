@@ -32,8 +32,6 @@ open class DrawerActivity: AppCompatActivity(), NavigationView.OnNavigationItemS
 
         toggle = ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         drawer.addDrawerListener(toggle)
-//        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-//        supportActionBar?.setHomeButtonEnabled(true)
 
         val navigationView: NavigationView = findViewById(R.id.navigation)
         navigationView.setNavigationItemSelectedListener(this)

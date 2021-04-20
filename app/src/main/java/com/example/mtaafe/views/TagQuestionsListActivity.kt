@@ -2,6 +2,8 @@ package com.example.mtaafe.views
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -13,7 +15,7 @@ import com.example.mtaafe.data.models.*
 import com.example.mtaafe.viewmodels.TagQuestionsListViewModel
 import com.google.android.material.snackbar.Snackbar
 
-class TagQuestionsListActivity : AppCompatActivity(), IPageButtonClickListener {
+class TagQuestionsListActivity : AppCompatActivity(), IPageButtonClickListener, IQuestionDetailOpener {
     private lateinit var viewModel: TagQuestionsListViewModel
     private lateinit var tagQuestionsListRecycler: RecyclerView
     private lateinit var questionsListRoot: View
@@ -25,6 +27,9 @@ class TagQuestionsListActivity : AppCompatActivity(), IPageButtonClickListener {
         setContentView(R.layout.activity_tag_questions_list)
 
         val tagId = intent.getLongExtra("tagId", 1)
+
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setHomeButtonEnabled(true)
 
         questionsListRoot = findViewById(R.id.questionsListRoot)
         emptyTagQuestionsListText = findViewById(R.id.emptyTagQuestionsListText)
@@ -79,6 +84,18 @@ class TagQuestionsListActivity : AppCompatActivity(), IPageButtonClickListener {
         }
     }
 
+    override fun onContextItemSelected(item: MenuItem): Boolean {
+        when(item.itemId) {
+            android.R.id.home -> {
+                Log.d("TagQuestionsListActivit", "Back button pressed")
+                onBackPressed()
+                return true
+            }
+        }
+
+        return super.onContextItemSelected(item)
+    }
+
     private fun showEmptyListMessage() {
         emptyTagQuestionsListText.visibility = View.VISIBLE
         tagQuestionsListRecycler.visibility = View.GONE
@@ -103,5 +120,9 @@ class TagQuestionsListActivity : AppCompatActivity(), IPageButtonClickListener {
 
     override fun handleLastPageButtonClick() {
         viewModel.getLastPage()
+    }
+
+    override fun openQuestionDetailActivity(questionId: Long) {
+        // TODO open question detail activity
     }
 }

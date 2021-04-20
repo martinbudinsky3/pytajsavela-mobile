@@ -13,7 +13,7 @@ import com.example.mtaafe.viewmodels.UserProfileViewModel
 import com.google.android.material.tabs.TabLayout
 
 
-class UserProfileActivity : DrawerActivity() {
+class UserProfileActivity : DrawerActivity(), IQuestionDetailOpener {
     private lateinit var viewModel: UserProfileViewModel
     private lateinit var viewPager: ViewPager
     private lateinit var tabLayout: TabLayout
@@ -52,5 +52,9 @@ class UserProfileActivity : DrawerActivity() {
         pagerAdapter.addFragment(userAnswersFragment)
 
         viewPager.adapter = pagerAdapter
+    }
+
+    override fun openQuestionDetailActivity(questionId: Long) {
+        // TODO open question detail activity
     }
 }

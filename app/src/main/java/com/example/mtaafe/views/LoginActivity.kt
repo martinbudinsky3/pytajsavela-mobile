@@ -49,8 +49,12 @@ class LoginActivity : AppCompatActivity() {
     fun handleError(error: ErrorEntity) {
         // TODO snackbar
         when(error) {
-            is ErrorEntity.Unauthorized -> Toast.makeText(this, "Nesprávne prihlasovacie údaje", Toast.LENGTH_LONG).show()
-            else -> Toast.makeText(this, "Oops, niečo sa pokazilo. Vyskúšajte akciu neskôr prosím", Toast.LENGTH_LONG).show()
+            is ErrorEntity.Unauthorized -> {
+                Toast.makeText(this, "Nesprávne prihlasovacie údaje", Toast.LENGTH_LONG).show()
+            }
+            else -> {
+                Toast.makeText(this, "Oops, niečo sa pokazilo. Vyskúšajte akciu neskôr prosím", Toast.LENGTH_LONG).show()
+            }
         }
     }
 }

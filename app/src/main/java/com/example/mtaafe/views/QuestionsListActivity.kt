@@ -11,13 +11,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.mtaafe.R
 import com.example.mtaafe.data.models.*
 import com.example.mtaafe.viewmodels.QuestionsListViewModel
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 
 
-class QuestionsListActivity : DrawerActivity(), IPageButtonClickListener {
+class QuestionsListActivity : DrawerActivity(), IPageButtonClickListener, IQuestionDetailOpener {
     private lateinit var viewModel: QuestionsListViewModel
     private lateinit var questionsListRecycler: RecyclerView
     private lateinit var questionsListRoot: View
+    private lateinit var fab: FloatingActionButton
     private lateinit var emptyQuestionsListText: TextView
     private lateinit var adapter: QuestionAdapter
 
@@ -33,6 +35,7 @@ class QuestionsListActivity : DrawerActivity(), IPageButtonClickListener {
         supportActionBar?.title = "Otázky"
 
         questionsListRoot = findViewById(R.id.questionsListRoot)
+        fab = findViewById(R.id.fab)
         emptyQuestionsListText = findViewById(R.id.emptyQuestionsListText)
         questionsListRecycler = findViewById(R.id.questionsListRecycler)
 
@@ -58,6 +61,10 @@ class QuestionsListActivity : DrawerActivity(), IPageButtonClickListener {
         viewModel.error.observe(this, {
             handleError(it)
         })
+
+        fab.setOnClickListener{
+            // TODO open activity for question creation
+        }
     }
 
     private fun handleError(error: ErrorEntity) {
@@ -104,5 +111,9 @@ class QuestionsListActivity : DrawerActivity(), IPageButtonClickListener {
 
     override fun handleLastPageButtonClick() {
         viewModel.getLastPage()
+    }
+
+    override fun openQuestionDetailActivity(questionId: Long) {
+        // TODO open question detail activity
     }
 }
