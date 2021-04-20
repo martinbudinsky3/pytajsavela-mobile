@@ -77,25 +77,32 @@ class AnswerFormActivity : AppCompatActivity() {
             Log.d("message", "Body : " + body)
             images.forEachIndexed{index, element -> (Log.d("message", "Image no."+ index + " : "+ element))}
 
-            viewModel.postAnswer(
-                    questionId,
-                    createPartFromString(body),
-                    images
-            )
+            if (body != ""){
+                viewModel.postAnswer(
+                        questionId,
+                        createPartFromString(body),
+                        images
+                )
 
-            viewModel.result.observe(this, Observer {
-                when(it) {
-                    is ApiResult.Success -> {
-                        Log.d("Success", "Answer was posted.")
+                viewModel.result.observe(this, Observer {
+                    when(it) {
+                        is ApiResult.Success -> {
+                            Log.d("Success", "Answer was posted.")
 
-                        val intent = Intent(this, QuestionDetailActivity::class.java)
-                        intent.putExtra("question_id", questionId)
-                        startActivity(intent)
+                            val intent = Intent(this, QuestionDetailActivity::class.java)
+                            intent.putExtra("question_id", questionId)
+                            startActivity(intent)
+                        }
+                        is ApiResult.Error -> handleError(it.error)
+                        else -> {}
                     }
-                    is ApiResult.Error -> handleError(it.error)
-                    else -> {}
-                }
-            })
+                })
+            }
+            else {
+                Snackbar.make(rootLayout, "Treba vyplniť všetky povinné údaje!", Snackbar.LENGTH_LONG)
+                        .show()
+            }
+
         }
     }
 

@@ -200,6 +200,7 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onClickDeleteAnswer(position: Int) {
         val clickedAnswer: AnswerItem = answerAdapter.getAnswer(position)
         Log.d("qes", "Question with id = " + clickedAnswer.id + " was clicked to delete!")

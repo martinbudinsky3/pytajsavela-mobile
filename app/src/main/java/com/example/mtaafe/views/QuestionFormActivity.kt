@@ -81,26 +81,30 @@ class QuestionFormActivity : AppCompatActivity() {
             val tagList = mutableListOf<Long>() // postovanie otazky s tagmi nefunguje
 //            tagList.add(1)
 //            tagList.add(2)
+            if (title != "" && body != ""){
+                viewModel.postQuestion(
+                        createPartFromString(title),
+                        createPartFromString(body),
+                        tagList,
+                        images
+                )
+                viewModel.result.observe(this, Observer {
+                    when(it) {
+                        is ApiResult.Success -> {
+                            Log.d("Success", "Question was posted.")
 
-            viewModel.postQuestion(
-                    createPartFromString(title),
-                    createPartFromString(body),
-                    tagList,
-                    images
-            )
-
-            viewModel.result.observe(this, Observer {
-                when(it) {
-                    is ApiResult.Success -> {
-                        Log.d("Success", "Question was posted.")
-
-                        val intent = Intent(this, QuestionsListActivity::class.java)
-                        startActivity(intent)
+                            val intent = Intent(this, QuestionsListActivity::class.java)
+                            startActivity(intent)
+                        }
+                        is ApiResult.Error -> handleError(it.error)
+                        else -> {}
                     }
-                    is ApiResult.Error -> handleError(it.error)
-                    else -> {}
-                }
-            })
+                })
+            }
+            else {
+                Snackbar.make(rootLayout, "Treba vyplniť všetky povinné údaje!", Snackbar.LENGTH_LONG)
+                        .show()
+            }
         }
     }
 
@@ -145,6 +149,7 @@ class QuestionFormActivity : AppCompatActivity() {
         return RequestBody.create(MultipartBody.FORM, partString)
     }
 
+    @RequiresApi(Build.VERSION_CODES.KITKAT)
     private fun prepareFilePart(partName : String, fileUri : Uri?) : MultipartBody.Part {
         val parcelFileDescriptor = contentResolver.openFileDescriptor(fileUri!!, "r", null)
 
