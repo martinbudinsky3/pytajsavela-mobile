@@ -27,7 +27,7 @@ class QuestionEditActivity: AppCompatActivity() {
 
     private var questionTitleEditET: EditText? = null
     private var questionBodyEditET: EditText? = null
-    private var tagsEditET: EditText? = null
+//    private var tagsEditET: EditText? = null
 
     private lateinit var originalTags: List<Tag>
 
@@ -41,7 +41,7 @@ class QuestionEditActivity: AppCompatActivity() {
 
         questionTitleEditET = findViewById(R.id.questionTitleEditET)
         questionBodyEditET = findViewById(R.id.questionBodyEditET)
-        tagsEditET = findViewById(R.id.tagsEditET)
+//        tagsEditET = findViewById(R.id.tagsEditET)
 
         viewModel = ViewModelProvider.AndroidViewModelFactory(application)
                 .create(QuestionEditViewModel::class.java)
@@ -71,11 +71,11 @@ class QuestionEditActivity: AppCompatActivity() {
         Log.d("msg", "NEW TITLE: " + questionTitleEditET?.text.toString())
         Log.d("msg", "NEW BODY: " + questionBodyEditET?.text.toString())
 
-        val newTagsString = tagsEditET?.text.toString().split(",").map { it.trim() }
-        val deletedTagsString = getDeletedTags(originalTags, newTagsString)
+//        val newTagsString = tagsEditET?.text.toString().split(",").map { it.trim() }
+//        val deletedTagsString = getDeletedTags(originalTags, newTagsString)
 
-        val newTagsPart : List<RequestBody>? = getTags(newTagsString)
-        val deletedTagsPart : List<RequestBody>? = getTags(deletedTagsString!!)
+//        val newTagsPart : List<RequestBody>? = getTags(newTagsString)
+//        val deletedTagsPart : List<RequestBody>? = getTags(deletedTagsString!!)
 
         val tgs = mutableListOf<Long>()
 
@@ -131,14 +131,14 @@ class QuestionEditActivity: AppCompatActivity() {
         questionTitleEditET?.setText(question.title)
         questionBodyEditET?.setText(question.body)
 
-        originalTags = question.tags
-
-        val tagsEditRecyclerView: RecyclerView = findViewById(R.id.tagsEditRecyclerView)
-        val adapter = TagAdapter(question.tags)
-        val layoutManager = LinearLayoutManager(this)
-
-        tagsEditRecyclerView.layoutManager = layoutManager
-        tagsEditRecyclerView.adapter = adapter
+//        originalTags = question.tags
+//
+//        val tagsEditRecyclerView: RecyclerView = findViewById(R.id.tagsEditRecyclerView)
+//        val adapter = TagAdapter(question.tags)
+//        val layoutManager = LinearLayoutManager(this)
+//
+//        tagsEditRecyclerView.layoutManager = layoutManager
+//        tagsEditRecyclerView.adapter = adapter
     }
 
     private fun handleError(error: ErrorEntity) {

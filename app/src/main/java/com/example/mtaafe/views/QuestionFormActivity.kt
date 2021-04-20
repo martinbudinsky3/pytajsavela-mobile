@@ -1,62 +1,60 @@
 package com.example.mtaafe.views
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ContentResolver
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
+import android.opengl.Visibility
 import android.os.Bundle
-import android.os.FileUtils
 import android.provider.OpenableColumns
 import android.util.Log
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
-import androidx.annotation.RequiresApi
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.databinding.DataBindingUtil
+import androidx.core.widget.doOnTextChanged
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mtaafe.R
-import com.example.mtaafe.network.ApiClient
-import com.example.mtaafe.network.ApiInterface
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import com.example.mtaafe.data.models.*
 import com.example.mtaafe.viewmodels.QuestionFormViewModel
-import com.example.mtaafe.viewmodels.QuestionsListViewModel
 import com.google.android.material.snackbar.Snackbar
-import com.google.gson.annotations.SerializedName
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
-import java.time.LocalDate
-import java.util.ArrayList
+
 
 class QuestionFormActivity : AppCompatActivity() {
     private lateinit var viewModel: QuestionFormViewModel
     private lateinit var rootLayout: View
+    private lateinit var titleErrorMessageText: TextView
+    private lateinit var bodyErrorMessageText: TextView
 
-    //private var selectedImage : Uri? = null
+//    private lateinit var tagAutoCompText: AutoCompleteTextView
+//    private lateinit var tagsAdapter: ArrayAdapter<Tag>
+
     private var selectedImages = mutableListOf<Uri?>()
     private var imageIndex = 0
     var images = mutableListOf<MultipartBody.Part>()
+    private var tagList = mutableListOf<Long>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.question_form)
 
         rootLayout = findViewById(R.id.questionFormRoot)
+        titleErrorMessageText = findViewById(R.id.titleErrorMessageText)
+        bodyErrorMessageText = findViewById(R.id.bodyErrorMessageText)
+//        tagAutoCompText = findViewById(R.id.tagAutoCompText)
+
         viewModel = ViewModelProvider.AndroidViewModelFactory(application)
                 .create(QuestionFormViewModel::class.java)
 
         val editTextQuestionTitle: EditText = findViewById(R.id.editTextQuestionTitle)
         val editTextQuestionBody: EditText = findViewById(R.id.editTextQuestionBody)
-        val tagsRecyclerView: RecyclerView = findViewById(R.id.tagsRecyclerView)
+//        val tagsRecyclerView: RecyclerView = findViewById(R.id.tagsRecyclerView)
 
         val selectImageBtn : Button = findViewById(R.id.selectImageBtn)
         val askButton : Button = findViewById(R.id.askButton)
@@ -73,36 +71,71 @@ class QuestionFormActivity : AppCompatActivity() {
                 images = getImages(selectedImages)
             }
 
-            Log.d("message", "Title : " + title)
-            Log.d("message", "Body : " + body)
+            images.forEachIndexed{ index, element -> (Log.d(
+                "message",
+                "Image no." + index + " : " + element
+            ))}
 
-            images.forEachIndexed{index, element -> (Log.d("message", "Image no."+ index + " : "+ element))}
-
-            val tagList = mutableListOf<Long>() // postovanie otazky s tagmi nefunguje
-//            tagList.add(1)
-//            tagList.add(2)
+            titleErrorMessageText.visibility = View.GONE
+            bodyErrorMessageText.visibility = View.GONE
 
             viewModel.postQuestion(
-                    createPartFromString(title),
-                    createPartFromString(body),
-                    tagList,
-                    images
+                title,
+                body,
+                tagList,
+                images
             )
 
-            viewModel.result.observe(this, Observer {
-                when(it) {
-                    is ApiResult.Success -> {
-                        Log.d("Success", "Question was posted.")
-
-                        val intent = Intent(this, QuestionsListActivity::class.java)
-                        startActivity(intent)
-                    }
-                    is ApiResult.Error -> handleError(it.error)
-                    else -> {}
-                }
-            })
         }
+
+        viewModel.titleErrorMessage.observe(this, {
+            titleErrorMessageText.visibility = View.VISIBLE
+            titleErrorMessageText.text = it
+        })
+
+        viewModel.bodyErrorMessage.observe(this, {
+            bodyErrorMessageText.visibility = View.VISIBLE
+            bodyErrorMessageText.text = it
+        })
+
+        viewModel.result.observe(this, {
+            when (it) {
+                is ApiResult.Success -> {
+                    Log.d("Success", "Question was posted.")
+
+                    val intent = Intent(this, QuestionsListActivity::class.java)
+                    startActivity(intent)
+                }
+                is ApiResult.Error -> handleError(it.error)
+            }
+        })
+
+//        tagAutoCompText.threshold = 5
+//        tagsAdapter = ArrayAdapter<Tag>(this, android.R.layout.select_dialog_item, ArrayList())
+//        tagAutoCompText.setAdapter(tagsAdapter)
+//
+//        initTagsSearch()
+//
+//        viewModel.tagsList.observe(this, {
+//            if (it.tags.isNotEmpty()) {
+//                Log.d("Tags", it.tags.toString())
+//                tagsAdapter.clear()
+//                tagsAdapter.addAll(it.tags)
+//                tagsAdapter.notifyDataSetChanged()
+//            }
+//        })
+//
+//        viewModel.errorTagsList.observe(this, {
+//            handleError(it)
+//        })
     }
+
+//    private fun initTagsSearch() {
+//        tagAutoCompText.doOnTextChanged { text, _, _, _ ->
+//            viewModel.searchQuery = text.toString()
+//            viewModel.getTagsList()
+//        }
+//    }
 
     private fun imageSelection(){
         Intent(Intent.ACTION_PICK).also {
@@ -133,19 +166,15 @@ class QuestionFormActivity : AppCompatActivity() {
         private const val REQUEST_CODE_IMAGE_PCIKER = 100
     }
 
-    private fun getImages(imageUris : MutableList<Uri?>) : MutableList<MultipartBody.Part>{
+    private fun getImages(imageUris: MutableList<Uri?>) : MutableList<MultipartBody.Part>{
         val images = mutableListOf<MultipartBody.Part>()
 
-        imageUris.forEachIndexed{index, element -> images.add(prepareFilePart("" + index, element))}
+        imageUris.forEachIndexed{ index, element -> images.add(prepareFilePart("" + index, element))}
 
         return images
     }
 
-    private fun createPartFromString(partString : String) : RequestBody{
-        return RequestBody.create(MultipartBody.FORM, partString)
-    }
-
-    private fun prepareFilePart(partName : String, fileUri : Uri?) : MultipartBody.Part {
+    private fun prepareFilePart(partName: String, fileUri: Uri?) : MultipartBody.Part {
         val parcelFileDescriptor = contentResolver.openFileDescriptor(fileUri!!, "r", null)
 
         val file = File(cacheDir, contentResolver.getFileName(fileUri))
@@ -153,12 +182,22 @@ class QuestionFormActivity : AppCompatActivity() {
         val outputStream = FileOutputStream(file)
         inputStream.copyTo(outputStream)
 
-        val requestFile : RequestBody = RequestBody.create(MediaType.parse(contentResolver.getFileName(fileUri)), file)
+        val requestFile : RequestBody = RequestBody.create(
+            MediaType.parse(
+                contentResolver.getFileName(
+                    fileUri
+                )
+            ), file
+        )
 
-        return MultipartBody.Part.createFormData(partName, contentResolver.getFileName(fileUri), requestFile)
+        return MultipartBody.Part.createFormData(
+            partName,
+            contentResolver.getFileName(fileUri),
+            requestFile
+        )
     }
 
-    private fun ContentResolver.getFileName(uri : Uri) : String{
+    private fun ContentResolver.getFileName(uri: Uri) : String{
         var name = ""
         var cursor = query(uri, null, null, null, null)
 

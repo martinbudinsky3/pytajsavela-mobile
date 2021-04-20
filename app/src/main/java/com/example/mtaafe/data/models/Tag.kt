@@ -11,4 +11,9 @@ data class Tag (
 
         @SerializedName("questions_count")
         var questionsCount: Int
-)
+) {
+
+        override fun toString(): String {
+                return name
+        }
+}

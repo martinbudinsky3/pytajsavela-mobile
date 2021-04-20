@@ -35,7 +35,7 @@ interface ApiInterface {
             @Header("Authorization") apiToken: String,
             @Part("title") title : RequestBody,
             @Part("body") body : RequestBody,
-            @Part("tags") tags : List<Long>,
+            @Part("tags[]") tags : List<Long>,
             @Part images : List<MultipartBody.Part>?
     ): Response<Any>
 

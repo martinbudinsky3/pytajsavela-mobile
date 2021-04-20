@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.mtaafe.R
 import com.example.mtaafe.data.models.*
 import com.example.mtaafe.viewmodels.QuestionDetailViewModel
+import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 
@@ -95,7 +96,6 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun openDeleteDialog(){
         val builder = AlertDialog.Builder(this)
         val inflater = layoutInflater
@@ -118,7 +118,6 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun openDeleteAnswerDialog(answerId: Long){
         val builder = AlertDialog.Builder(this)
         val inflater = layoutInflater
@@ -175,7 +174,7 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
 
         val tagsQdetailRecyclerView: RecyclerView = findViewById(R.id.tagsQdetailRecyclerView)
         val adapter = TagAdapter(question.tags)
-        val layoutManager = LinearLayoutManager(this)
+        val layoutManager = FlexboxLayoutManager(this)
 
         answerAdapter.updateData(question.answers)
         imageAdapter.updateData(question.images)

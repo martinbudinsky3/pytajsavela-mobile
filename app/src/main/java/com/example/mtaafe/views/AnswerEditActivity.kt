@@ -64,7 +64,6 @@ class AnswerEditActivity: AppCompatActivity() {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun editAnswer(){
         //val newBody = createPartFromString(answerBodyEditET.text.toString())
 
