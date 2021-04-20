@@ -7,6 +7,7 @@ import com.example.mtaafe.data.models.*
 import com.example.mtaafe.network.ApiClient
 import com.example.mtaafe.network.ApiInterface
 import com.example.mtaafe.utils.ErrorHandler
+import com.google.gson.Gson
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.HttpException
@@ -130,19 +131,10 @@ class QuestionsRepository {
         }
     }
 
-//    suspend fun editQuestion(apiToken: String, questionId: Long, newTitle: RequestBody, newBody: RequestBody,
-//                             newTags: List<RequestBody>?, deletedTags: List<RequestBody>?): ApiResult<out Any> {
 suspend fun editQuestion(apiToken: String, questionId: Long, questionEdit: QuestionEdit): ApiResult<out Any> {
         try {
             Log.d("Edit question api call", "Putting new question details")
 
-//            apiInterface?.editQuestion(
-//                    "Bearer $apiToken",
-//                    questionId,
-//                    newTitle,
-//                    newBody,
-//                    newTags,
-//                    deletedTags
             apiInterface?.editQuestion(
                     "Bearer $apiToken",
                     questionId,
@@ -151,7 +143,7 @@ suspend fun editQuestion(apiToken: String, questionId: Long, questionEdit: Quest
                 // server returns 200
                 if (it?.isSuccessful == true) {
                     Log.i("Edit question api call", "Successful question edit api call")
-                    return ApiResult.Success(it.body()!!)
+                    return ApiResult.Success(it)
                 }
 
                 // server returns response with error code
@@ -165,6 +157,32 @@ suspend fun editQuestion(apiToken: String, questionId: Long, questionEdit: Quest
         // something else went wrong
         catch (exception: Exception) {
             Log.e("Edit question api call", "Error while connecting to server.", exception)
+            return ApiResult.Error<ErrorEntity>(ErrorHandler.getError(exception))
+        }
+    }
+
+    suspend fun deleteQuestion(apiToken: String, questionId: Long): ApiResult<out Any> {
+        try {
+            Log.d("Ques delete api call", "Deleting question")
+
+            apiInterface?.deleteQuestion("Bearer $apiToken", questionId).let {
+                // server returns 200
+                if (it?.isSuccessful == true) {
+                    Log.i("Ques delete api call", "Successful question delete api call")
+                    return ApiResult.Success(it)
+                }
+
+                // server returns response with error code
+                else {
+                    val exception = HttpException(it!!)
+                    Log.e("Ques delete api call", "Server returns response with error code.", exception)
+                    return ApiResult.Error<ErrorEntity>(ErrorHandler.getError(exception))
+                }
+            }
+        }
+        // something else went wrong
+        catch (exception: Exception) {
+            Log.e("Ques edit-form api call", "Error while connecting to server.", exception)
             return ApiResult.Error<ErrorEntity>(ErrorHandler.getError(exception))
         }
     }

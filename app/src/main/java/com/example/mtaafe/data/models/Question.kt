@@ -23,7 +23,7 @@ data class Question (
         var tags: ArrayList<Tag>,
 
         @SerializedName("images")
-        var images: List<Image>,
+        var images: ArrayList<Image>,
 
         @SerializedName("answers")
         var answers: ArrayList<AnswerItem>

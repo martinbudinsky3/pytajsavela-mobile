@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.mtaafe.data.models.ApiResult
 import com.example.mtaafe.data.models.Question
+import com.example.mtaafe.data.models.QuestionEdit
 import com.example.mtaafe.data.models.Tag
 import com.example.mtaafe.data.repositories.QuestionsRepository
 import com.example.mtaafe.utils.SessionManager
@@ -45,6 +46,5 @@ class QuestionFormViewModel(application: Application): AndroidViewModel(applicat
                 result.value = response
             }
         }
-
     }
 }

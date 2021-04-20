@@ -2,6 +2,7 @@ package com.example.mtaafe.network
 
 import com.example.mtaafe.data.models.*
 import com.example.mtaafe.data.models.Tag
+import com.example.mtaafe.views.AnswerEdit
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response
@@ -34,7 +35,7 @@ interface ApiInterface {
             @Header("Authorization") apiToken: String,
             @Part("title") title : RequestBody,
             @Part("body") body : RequestBody,
-            @Query("tags") tags : List<Long>,
+            @Part("tags") tags : List<Long>,
             @Part images : List<MultipartBody.Part>?
     ): Response<Any>
 
@@ -58,14 +59,18 @@ interface ApiInterface {
 
     @Headers("Accept: application/json")
 //    @JvmSuppressWildcards
+    @GET("answers/{id}/edit-form")
+    suspend fun getAnswerEditForm(
+            @Header("Authorization") apiToken: String,
+            @Path("id") id: Long?
+    ): Response<Answer>
+
+    @Headers("Accept: application/json")
+//    @JvmSuppressWildcards
     @PUT("questions/{id}")
     suspend fun editQuestion(
             @Header("Authorization") apiToken: String,
             @Path("id") id: Long?,
-//            @Body title : RequestBody,
-//            @Body body : RequestBody,
-//            @Body tags : List<RequestBody>?,
-//            @Body deleted_tags : List<RequestBody>?):
             @Body questionEdit: QuestionEdit):
             Response<Any>
 
@@ -74,7 +79,24 @@ interface ApiInterface {
     @PUT("answers/{id}")
     suspend fun editAnswer(
             @Header("Authorization") apiToken: String,
-            @Body body : RequestBody):
+            @Path("id") id: Long?,
+            @Body answerEdit : AnswerEdit):
+            Response<Any>
+
+    @Headers("Accept: application/json")
+    @JvmSuppressWildcards
+    @DELETE("questions/{id}")
+    suspend fun deleteQuestion(
+            @Header("Authorization") apiToken: String,
+            @Path("id") id: Long?):
+            Response<Any>
+
+    @Headers("Accept: application/json")
+    @JvmSuppressWildcards
+    @DELETE("answers/{id}")
+    suspend fun deleteAnswer(
+            @Header("Authorization") apiToken: String,
+            @Path("id") id: Long?):
             Response<Any>
 
 

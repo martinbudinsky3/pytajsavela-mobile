@@ -14,30 +14,36 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mtaafe.R
-import com.example.mtaafe.data.models.Answer
-import com.example.mtaafe.data.models.ApiResult
-import com.example.mtaafe.data.models.ErrorEntity
-import com.example.mtaafe.data.models.Question
+import com.example.mtaafe.data.models.*
 import com.example.mtaafe.viewmodels.AnswerEditViewModel
 import com.example.mtaafe.viewmodels.QuestionEditViewModel
 import com.google.android.material.snackbar.Snackbar
+import com.google.gson.annotations.SerializedName
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 
 class AnswerEditActivity: AppCompatActivity() {
     private lateinit var viewModel: AnswerEditViewModel
     private lateinit var rootLayout: View
 
+    private lateinit var answerBodyEditET: EditText
+
+    private var answerId: Long = 0
     private var questionId: Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.answer_edit)
 
+        answerId = intent.getLongExtra("answer_id", 0)
         questionId = intent.getLongExtra("question_id", 0)
+
+        answerBodyEditET = findViewById(R.id.answerBodyEditET)
 
         viewModel = ViewModelProvider.AndroidViewModelFactory(application)
                 .create(AnswerEditViewModel::class.java)
 
-        viewModel.getQuestionDetails(questionId)
+        viewModel.getAnswerEditForm(answerId)
 
         viewModel.result.observe(this, Observer {
             when(it) {
@@ -58,8 +64,32 @@ class AnswerEditActivity: AppCompatActivity() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun editAnswer(){
+        //val newBody = createPartFromString(answerBodyEditET.text.toString())
 
+        Log.d("msg", "NEW BODY: " + answerBodyEditET.text.toString())
+
+        val answerEdit = AnswerEdit(
+                answerId,
+                answerBodyEditET.text.toString()
+        )
+
+        viewModel.editAnswer(answerEdit)
+
+        viewModel.result.observe(this, Observer {
+            when(it) {
+                is ApiResult.Success -> {
+                    Log.d("Success", "Answer was edited.")
+
+                    val intent = Intent(this, QuestionDetailActivity::class.java)
+                    intent.putExtra("question_id", questionId)
+                    startActivity(intent)
+                }
+                is ApiResult.Error -> handleError(it.error)
+                else -> {}
+            }
+        })
     }
 
     private fun setAnswerData(answer: Answer){
@@ -76,10 +106,18 @@ class AnswerEditActivity: AppCompatActivity() {
             else -> {
                 Snackbar.make(rootLayout, "Oops, niečo sa pokazilo.", Snackbar.LENGTH_LONG)
                         .setAction("Skúsiť znovu") {
-                            viewModel.retry(questionId)
+                            viewModel.retry(answerId)
                         }
                         .show()
             }
         }
     }
 }
+
+data class AnswerEdit (
+        @SerializedName("id")
+        var id: Long,
+
+        @SerializedName("body")
+        var body: String,
+)
