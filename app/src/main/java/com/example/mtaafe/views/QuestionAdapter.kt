@@ -33,7 +33,7 @@ class QuestionAdapter (private val questionsList: ArrayList<QuestionItem>): Recy
         }
 
         if(holder is PaginationViewHolder) {
-            // TODO
+
         }
     }
 

@@ -34,7 +34,7 @@ class TagDetailAdapter(private val tagsList: ArrayList<Tag>): RecyclerView.Adapt
         }
 
         if(holder is PaginationViewHolder) {
-            // TODO
+
         }
     }
 
