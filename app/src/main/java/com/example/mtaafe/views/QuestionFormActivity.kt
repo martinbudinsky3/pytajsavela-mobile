@@ -44,7 +44,6 @@ class QuestionFormActivity : AppCompatActivity() {
     private var imageIndex = 0
     var images = mutableListOf<MultipartBody.Part>()
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.question_form)
@@ -130,7 +129,6 @@ class QuestionFormActivity : AppCompatActivity() {
         private const val REQUEST_CODE_IMAGE_PCIKER = 100
     }
 
-    @RequiresApi(Build.VERSION_CODES.KITKAT)
     private fun getImages(imageUris : MutableList<Uri?>) : MutableList<MultipartBody.Part>{
         val images = mutableListOf<MultipartBody.Part>()
 
@@ -143,7 +141,6 @@ class QuestionFormActivity : AppCompatActivity() {
         return RequestBody.create(MultipartBody.FORM, partString)
     }
 
-    @RequiresApi(Build.VERSION_CODES.KITKAT)
     private fun prepareFilePart(partName : String, fileUri : Uri?) : MultipartBody.Part {
         val parcelFileDescriptor = contentResolver.openFileDescriptor(fileUri!!, "r", null)
 
@@ -168,7 +165,6 @@ class QuestionFormActivity : AppCompatActivity() {
         return name
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun handleError(error: ErrorEntity) {
         when(error) {
             is ErrorEntity.Unauthorized -> {

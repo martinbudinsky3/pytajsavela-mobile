@@ -14,7 +14,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-//@RequiresApi(Build.VERSION_CODES.O)
 class AnswerEditViewModel(application: Application): AndroidViewModel(application) {
 
     private var questionsRepository: QuestionsRepository? = null
@@ -29,7 +28,6 @@ class AnswerEditViewModel(application: Application): AndroidViewModel(applicatio
         sessionManager = SessionManager(application)
     }
 
-//    @RequiresApi(Build.VERSION_CODES.O)
     fun getQuestionDetails(questionId: Long) {
         CoroutineScope(Dispatchers.IO).launch {
             val response = questionsRepository?.getQuestionDetails(sessionManager?.fetchApiToken().toString(), questionId)

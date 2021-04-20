@@ -19,7 +19,6 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response
 
-//@RequiresApi(Build.VERSION_CODES.O)
 class AnswerFormViewModel(application: Application): AndroidViewModel(application) {
     private var answersRepository: AnswersRepository? = null
     private var sessionManager: SessionManager? = null

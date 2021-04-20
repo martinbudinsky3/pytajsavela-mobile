@@ -24,7 +24,6 @@ class QuestionDetailActivity: AppCompatActivity() {
 
     private var questionId: Long = 0
 
-//    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.question_detail)
@@ -86,7 +85,6 @@ class QuestionDetailActivity: AppCompatActivity() {
         tagsQdetailRecyclerView.adapter = adapter
     }
 
-//    @RequiresApi(Build.VERSION_CODES.O)
     private fun handleError(error: ErrorEntity) {
         when(error) {
             is ErrorEntity.Unauthorized -> {

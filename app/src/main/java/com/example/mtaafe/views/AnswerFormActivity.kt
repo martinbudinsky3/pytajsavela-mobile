@@ -48,7 +48,6 @@ class AnswerFormActivity : AppCompatActivity() {
 
     private var questionId: Long = 0
 
-//    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.answer_form)
@@ -129,7 +128,6 @@ class AnswerFormActivity : AppCompatActivity() {
         private const val REQUEST_CODE_IMAGE_PCIKER = 100
     }
 
-//    @RequiresApi(Build.VERSION_CODES.KITKAT)
     private fun getImages(imageUris : MutableList<Uri?>) : MutableList<MultipartBody.Part>{
         val images = mutableListOf<MultipartBody.Part>()
 
@@ -142,7 +140,6 @@ class AnswerFormActivity : AppCompatActivity() {
         return RequestBody.create(MultipartBody.FORM, partString)
     }
 
-//    @RequiresApi(Build.VERSION_CODES.KITKAT)
     private fun prepareFilePart(partName : String, fileUri : Uri?) : MultipartBody.Part {
         val parcelFileDescriptor = contentResolver.openFileDescriptor(fileUri!!, "r", null)
 
@@ -167,7 +164,6 @@ class AnswerFormActivity : AppCompatActivity() {
         return name
     }
 
-//    @RequiresApi(Build.VERSION_CODES.O)
     private fun handleError(error: ErrorEntity) {
         when(error) {
             is ErrorEntity.Unauthorized -> {

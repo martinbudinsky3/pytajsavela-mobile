@@ -12,7 +12,6 @@ import com.example.mtaafe.utils.ErrorHandler
 import retrofit2.HttpException
 import java.lang.Exception
 
-//@RequiresApi(Build.VERSION_CODES.O)
 class AuthRepository {
     private var apiInterface: ApiInterface?=null
 

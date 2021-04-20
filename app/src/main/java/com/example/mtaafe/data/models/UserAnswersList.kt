@@ -10,5 +10,5 @@ data class UserAnswersList(
     var name: String,
 
     @SerializedName("answers")
-    var answers: ArrayList<AnswerItem>
+    var answers: ArrayList<UserAnswer>
 )
