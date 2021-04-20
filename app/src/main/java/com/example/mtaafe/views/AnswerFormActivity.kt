@@ -147,6 +147,7 @@ class AnswerFormActivity : AppCompatActivity() {
         return RequestBody.create(MultipartBody.FORM, partString)
     }
 
+    @RequiresApi(Build.VERSION_CODES.KITKAT)
     private fun prepareFilePart(partName : String, fileUri : Uri?) : MultipartBody.Part {
         val parcelFileDescriptor = contentResolver.openFileDescriptor(fileUri!!, "r", null)
 

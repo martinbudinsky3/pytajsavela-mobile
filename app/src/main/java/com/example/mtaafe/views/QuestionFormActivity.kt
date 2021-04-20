@@ -4,10 +4,13 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ContentResolver
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.FileUtils
+import android.provider.MediaStore
+import android.provider.MediaStore.Images.Media.getBitmap
 import android.provider.OpenableColumns
 import android.util.Log
 import android.view.View
@@ -46,6 +49,7 @@ class QuestionFormActivity : AppCompatActivity() {
     private var imageIndex = 0
     var images = mutableListOf<MultipartBody.Part>()
 
+    @RequiresApi(Build.VERSION_CODES.KITKAT)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.question_form)
@@ -137,6 +141,7 @@ class QuestionFormActivity : AppCompatActivity() {
         private const val REQUEST_CODE_IMAGE_PCIKER = 100
     }
 
+    @RequiresApi(Build.VERSION_CODES.KITKAT)
     private fun getImages(imageUris : MutableList<Uri?>) : MutableList<MultipartBody.Part>{
         val images = mutableListOf<MultipartBody.Part>()
 
