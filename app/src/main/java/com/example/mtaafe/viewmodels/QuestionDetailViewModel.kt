@@ -34,10 +34,18 @@ class QuestionDetailViewModel(application: Application): AndroidViewModel(applic
     }
 
     fun getQuestionDetails(questionId: Long) {
-        Log.d("Post answer api call", "TOKEN 1 = " + sessionManager?.fetchApiToken().toString())
-
         CoroutineScope(Dispatchers.IO).launch {
             val response = questionsRepository?.getQuestionDetails(sessionManager?.fetchApiToken().toString(), questionId)
+
+            withContext(Dispatchers.Main) {
+                _result.value = response!!
+            }
+        }
+    }
+
+    fun getImage(imageId: Long) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val response = questionsRepository?.getImage(sessionManager?.fetchApiToken().toString(), imageId)
 
             withContext(Dispatchers.Main) {
                 _result.value = response!!

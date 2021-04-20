@@ -3,9 +3,13 @@ package com.example.mtaafe.views
 import android.app.Activity
 import android.content.ContentResolver
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import android.opengl.Visibility
 import android.os.Bundle
+import android.os.FileUtils
+import android.provider.MediaStore
+import android.provider.MediaStore.Images.Media.getBitmap
 import android.provider.OpenableColumns
 import android.util.Log
 import android.view.View
@@ -31,10 +35,6 @@ class QuestionFormActivity : AppCompatActivity() {
     private lateinit var rootLayout: View
     private lateinit var titleErrorMessageText: TextView
     private lateinit var bodyErrorMessageText: TextView
-
-//    private lateinit var tagAutoCompText: AutoCompleteTextView
-//    private lateinit var tagsAdapter: ArrayAdapter<Tag>
-
     private var selectedImages = mutableListOf<Uri?>()
     private var imageIndex = 0
     var images = mutableListOf<MultipartBody.Part>()
@@ -47,14 +47,12 @@ class QuestionFormActivity : AppCompatActivity() {
         rootLayout = findViewById(R.id.questionFormRoot)
         titleErrorMessageText = findViewById(R.id.titleErrorMessageText)
         bodyErrorMessageText = findViewById(R.id.bodyErrorMessageText)
-//        tagAutoCompText = findViewById(R.id.tagAutoCompText)
 
         viewModel = ViewModelProvider.AndroidViewModelFactory(application)
                 .create(QuestionFormViewModel::class.java)
 
         val editTextQuestionTitle: EditText = findViewById(R.id.editTextQuestionTitle)
         val editTextQuestionBody: EditText = findViewById(R.id.editTextQuestionBody)
-//        val tagsRecyclerView: RecyclerView = findViewById(R.id.tagsRecyclerView)
 
         val selectImageBtn : Button = findViewById(R.id.selectImageBtn)
         val askButton : Button = findViewById(R.id.askButton)
@@ -85,7 +83,6 @@ class QuestionFormActivity : AppCompatActivity() {
                 tagList,
                 images
             )
-
         }
 
         viewModel.titleErrorMessage.observe(this, {
@@ -109,33 +106,7 @@ class QuestionFormActivity : AppCompatActivity() {
                 is ApiResult.Error -> handleError(it.error)
             }
         })
-
-//        tagAutoCompText.threshold = 5
-//        tagsAdapter = ArrayAdapter<Tag>(this, android.R.layout.select_dialog_item, ArrayList())
-//        tagAutoCompText.setAdapter(tagsAdapter)
-//
-//        initTagsSearch()
-//
-//        viewModel.tagsList.observe(this, {
-//            if (it.tags.isNotEmpty()) {
-//                Log.d("Tags", it.tags.toString())
-//                tagsAdapter.clear()
-//                tagsAdapter.addAll(it.tags)
-//                tagsAdapter.notifyDataSetChanged()
-//            }
-//        })
-//
-//        viewModel.errorTagsList.observe(this, {
-//            handleError(it)
-//        })
     }
-
-//    private fun initTagsSearch() {
-//        tagAutoCompText.doOnTextChanged { text, _, _, _ ->
-//            viewModel.searchQuery = text.toString()
-//            viewModel.getTagsList()
-//        }
-//    }
 
     private fun imageSelection(){
         Intent(Intent.ACTION_PICK).also {
@@ -166,7 +137,8 @@ class QuestionFormActivity : AppCompatActivity() {
         private const val REQUEST_CODE_IMAGE_PCIKER = 100
     }
 
-    private fun getImages(imageUris: MutableList<Uri?>) : MutableList<MultipartBody.Part>{
+
+    private fun getImages(imageUris : MutableList<Uri?>) : MutableList<MultipartBody.Part>{
         val images = mutableListOf<MultipartBody.Part>()
 
         imageUris.forEachIndexed{ index, element -> images.add(prepareFilePart("" + index, element))}
@@ -174,7 +146,8 @@ class QuestionFormActivity : AppCompatActivity() {
         return images
     }
 
-    private fun prepareFilePart(partName: String, fileUri: Uri?) : MultipartBody.Part {
+
+    private fun prepareFilePart(partName : String, fileUri : Uri?) : MultipartBody.Part {
         val parcelFileDescriptor = contentResolver.openFileDescriptor(fileUri!!, "r", null)
 
         val file = File(cacheDir, contentResolver.getFileName(fileUri))

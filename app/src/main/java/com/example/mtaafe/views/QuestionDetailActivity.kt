@@ -34,6 +34,7 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
 
     private var questionId: Long = 0
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.question_detail)
@@ -57,7 +58,7 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
         answersListRecycler.layoutManager = LinearLayoutManager(this)
         answersListRecycler.adapter = answerAdapter
 
-        imageAdapter = ImageAdapter(ArrayList<Image>())
+        imageAdapter = ImageAdapter(ArrayList<ByteArray>())
         imagesRecyclerView.layoutManager = LinearLayoutManager(this)
         imagesRecyclerView.adapter = imageAdapter
 
@@ -177,7 +178,13 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
         val layoutManager = FlexboxLayoutManager(this)
 
         answerAdapter.updateData(question.answers)
-        imageAdapter.updateData(question.images)
+
+        for (image in question.images){
+            Log.d("msg", "IMAGE ID: $image")
+        }
+
+        val images: List<ByteArray> = getImagesContents(question.images)
+        imageAdapter.updateData(images)
 
         tagsQdetailRecyclerView.layoutManager = layoutManager
         tagsQdetailRecyclerView.adapter = adapter
@@ -199,6 +206,29 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
         }
     }
 
+    private fun getImagesContents(images: ArrayList<Image>) : List<ByteArray>{
+
+        var imagesContents = mutableListOf<ByteArray>()
+
+        for (image in images){
+            viewModel.getImage(image.id)
+
+            viewModel.result.observe(this, Observer {
+                when(it) {
+                    is ApiResult.Success -> {
+                        if(it.data is ByteArray) {
+                            imagesContents.add(it.data)
+                        }
+                    }
+                    is ApiResult.Error -> handleError(it.error)
+                    else -> {}
+                }
+            })
+        }
+        return imagesContents
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onClickDeleteAnswer(position: Int) {
         val clickedAnswer: AnswerItem = answerAdapter.getAnswer(position)
         Log.d("qes", "Question with id = " + clickedAnswer.id + " was clicked to delete!")

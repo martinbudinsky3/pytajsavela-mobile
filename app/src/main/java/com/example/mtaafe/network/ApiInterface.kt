@@ -21,6 +21,13 @@ interface ApiInterface {
     ): Response<QuestionsList>
 
     @Headers("Accept: application/json")
+    @GET("images/{id}")
+    suspend fun getImage(
+            @Header("Authorization") bearerToken: String,
+            @Path("id") id: Long?
+    ): Response<ByteArray>
+
+    @Headers("Accept: application/json")
     @GET("questions/{id}")
     suspend fun getQuestionDetails(
             @Header("Authorization") apiToken: String,

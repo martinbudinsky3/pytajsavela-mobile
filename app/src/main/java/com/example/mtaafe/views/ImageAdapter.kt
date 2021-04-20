@@ -1,5 +1,6 @@
 package com.example.mtaafe.views
 
+import android.text.method.TextKeyListener.clear
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -7,7 +8,7 @@ import com.example.mtaafe.R
 import com.example.mtaafe.data.models.AnswerItem
 import com.example.mtaafe.data.models.Image
 
-class ImageAdapter (private val images: ArrayList<Image>): RecyclerView.Adapter<RecyclerView.ViewHolder>(){
+class ImageAdapter (private var images: List<ByteArray>): RecyclerView.Adapter<RecyclerView.ViewHolder>(){
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         var view = LayoutInflater.from(parent.context)
@@ -27,9 +28,11 @@ class ImageAdapter (private val images: ArrayList<Image>): RecyclerView.Adapter<
         return images.size
     }
 
-    fun updateData(imagesNew: ArrayList<Image>) {
-        images.clear()
-        images.addAll(imagesNew)
+    fun updateData(imagesNew: List<ByteArray>) {
+        images = mutableListOf<ByteArray>()
+        for (image in imagesNew) {
+            (images as MutableList<ByteArray>).add(image)
+        }
         notifyDataSetChanged()
     }
 }
