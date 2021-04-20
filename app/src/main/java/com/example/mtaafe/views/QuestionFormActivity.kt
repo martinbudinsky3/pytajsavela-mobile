@@ -28,12 +28,14 @@ import com.example.mtaafe.data.models.*
 import com.example.mtaafe.viewmodels.QuestionFormViewModel
 import com.example.mtaafe.viewmodels.QuestionsListViewModel
 import com.google.android.material.snackbar.Snackbar
+import com.google.gson.annotations.SerializedName
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.time.LocalDate
 import java.util.ArrayList
 
 class QuestionFormActivity : AppCompatActivity() {
@@ -57,7 +59,7 @@ class QuestionFormActivity : AppCompatActivity() {
 
         val editTextQuestionTitle: EditText = findViewById(R.id.editTextQuestionTitle)
         val editTextQuestionBody: EditText = findViewById(R.id.editTextQuestionBody)
-        val editTextQuestionTags: EditText = findViewById(R.id.editTextQuestionTags)
+        val tagsRecyclerView: RecyclerView = findViewById(R.id.tagsRecyclerView)
 
         val selectImageBtn : Button = findViewById(R.id.selectImageBtn)
         val askButton : Button = findViewById(R.id.askButton)
@@ -80,6 +82,8 @@ class QuestionFormActivity : AppCompatActivity() {
             images.forEachIndexed{index, element -> (Log.d("message", "Image no."+ index + " : "+ element))}
 
             val tagList = mutableListOf<Long>() // postovanie otazky s tagmi nefunguje
+//            tagList.add(1)
+//            tagList.add(2)
 
             viewModel.postQuestion(
                     createPartFromString(title),

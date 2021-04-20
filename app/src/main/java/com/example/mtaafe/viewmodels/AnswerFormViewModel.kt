@@ -2,6 +2,7 @@ package com.example.mtaafe.viewmodels
 
 import android.app.Application
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
@@ -32,6 +33,8 @@ class AnswerFormViewModel(application: Application): AndroidViewModel(applicatio
     }
 
     fun postAnswer(questionId: Long, body : RequestBody, images : List<MultipartBody.Part>?){
+        Log.d("Post answer api call", "TOKEN 2 = " + sessionManager?.fetchApiToken().toString())
+
         CoroutineScope(Dispatchers.IO).launch {
             val response = answersRepository?.postAnswer(
                     sessionManager?.fetchApiToken().toString(),

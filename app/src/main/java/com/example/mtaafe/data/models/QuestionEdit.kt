@@ -14,8 +14,8 @@ data class QuestionEdit (
     var body: String,
 
     @SerializedName("tags")
-    var tags: List<Tag>,
+    var tags: List<Long>,
 
     @SerializedName("deleted_tags")
-    var deleted_tags: List<Tag>,
+    var deleted_tags: List<Long>,
 )

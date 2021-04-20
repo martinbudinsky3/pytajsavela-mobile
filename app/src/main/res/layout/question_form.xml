@@ -10,16 +10,27 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/tagsRecyclerView"
+            android:layout_width="wrap_content"
+            android:layout_height="200dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toStartOf="@+id/textView10"
+            app:layout_constraintTop_toBottomOf="@+id/textView10" />
+
         <Button
             android:id="@+id/askButton"
+            style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="172dp"
+            android:layout_marginRight="172dp"
+            android:layout_marginBottom="32dp"
             android:text="Opýtať sa"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.424"
-            app:layout_constraintStart_toStartOf="@+id/editTextQuestionTags"
-            app:layout_constraintTop_toBottomOf="@+id/editTextQuestionTags" />
+            app:layout_constraintTop_toBottomOf="@+id/tagsRecyclerView" />
 
         <TextView
             android:id="@+id/textView4"
@@ -27,6 +38,7 @@
             android:layout_height="wrap_content"
             android:text="Nová otázka"
             android:textSize="24sp"
+            android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/textView5"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.497"
@@ -52,7 +64,7 @@
             android:layout_marginStart="4dp"
             android:layout_marginLeft="4dp"
             android:layout_marginTop="32dp"
-            android:text="Nadpis"
+            android:text=" Nadpis *"
             android:textSize="18sp"
             app:layout_constraintStart_toStartOf="@+id/textView5"
             app:layout_constraintTop_toBottomOf="@+id/textView5" />
@@ -62,7 +74,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="Otázka"
+            android:text="Otázka *"
             android:textSize="18sp"
             app:layout_constraintStart_toStartOf="@+id/editTextQuestionTitle"
             app:layout_constraintTop_toBottomOf="@+id/editTextQuestionTitle" />
@@ -119,16 +131,6 @@
             android:textSize="18sp"
             app:layout_constraintStart_toStartOf="@+id/textView9"
             app:layout_constraintTop_toBottomOf="@+id/selectImageBtn" />
-
-        <EditText
-            android:id="@+id/editTextQuestionTags"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:ems="10"
-            android:inputType="textPersonName"
-            app:layout_constraintStart_toStartOf="@+id/textView10"
-            app:layout_constraintTop_toBottomOf="@+id/textView10" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

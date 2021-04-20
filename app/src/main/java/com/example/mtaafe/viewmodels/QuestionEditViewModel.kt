@@ -44,17 +44,8 @@ class QuestionEditViewModel(application: Application): AndroidViewModel(applicat
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    //fun editQuestion(questionId: Long, newTitle: RequestBody, newBody: RequestBody, newTags: List<RequestBody>?, deletedTags: List<RequestBody>?) {
     fun editQuestion(questionId: Long, questionEdit: QuestionEdit){
         CoroutineScope(Dispatchers.IO).launch {
-//            val response = questionsRepository?.editQuestion(
-//                    sessionManager?.fetchApiToken().toString(),
-//                    questionId,
-//                    newTitle,
-//                    newBody,
-//                    newTags,
-//                    deletedTags
-//            )
 
             val response = questionsRepository?.editQuestion(
                     sessionManager?.fetchApiToken().toString(),

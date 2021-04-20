@@ -70,9 +70,6 @@ class QuestionEditActivity: AppCompatActivity() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun editQuestion(){
-        val newTitle = createPartFromString(questionTitleEditET?.text.toString())
-        val newBody = createPartFromString(questionBodyEditET?.text.toString())
-
         Log.d("msg", "NEW TITLE: " + questionTitleEditET?.text.toString())
         Log.d("msg", "NEW BODY: " + questionBodyEditET?.text.toString())
 
@@ -82,14 +79,30 @@ class QuestionEditActivity: AppCompatActivity() {
         val newTagsPart : List<RequestBody>? = getTags(newTagsString)
         val deletedTagsPart : List<RequestBody>? = getTags(deletedTagsString!!)
 
+        val tgs = mutableListOf<Long>()
+
         val questionEdit = QuestionEdit(questionId,
                 questionTitleEditET?.text.toString(),
                 questionBodyEditET?.text.toString(),
-                originalTags,
-                originalTags
+                tgs,
+                tgs
         )
         //viewModel.editQuestion(questionId, newTitle, newBody, newTagsPart, deletedTagsPart)
         viewModel.editQuestion(questionId, questionEdit)
+
+        viewModel.result.observe(this, Observer {
+            when(it) {
+                is ApiResult.Success -> {
+                    Log.d("Success", "Question was edited.")
+
+                    val intent = Intent(this, QuestionDetailActivity::class.java)
+                    intent.putExtra("question_id", questionId)
+                    startActivity(intent)
+                }
+                is ApiResult.Error -> handleError(it.error)
+                else -> {}
+            }
+        })
     }
 
     private fun createPartFromString(partString : String) : RequestBody {
