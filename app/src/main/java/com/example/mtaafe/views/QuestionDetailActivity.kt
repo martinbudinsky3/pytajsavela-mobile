@@ -25,16 +25,12 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
     private lateinit var viewModel: QuestionDetailViewModel
     private lateinit var rootLayout: View
     private lateinit var answerAdapter: AnswerAdapter
-    private lateinit var imageAdapter: ImageAdapter
-
+//    private lateinit var imageAdapter: ImageAdapter
     private lateinit var deleteButton : Button
     private lateinit var editButton : Button
-
     private lateinit var question : Question
-
     private var questionId: Long = 0
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.question_detail)
@@ -42,7 +38,7 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
         questionId = intent.getLongExtra("question_id", 0)
 
         val answersListRecycler: RecyclerView = findViewById(R.id.answersListRecycler)
-        val imagesRecyclerView: RecyclerView = findViewById(R.id.imagesRecyclerView)
+//        val imagesRecyclerView: RecyclerView = findViewById(R.id.imagesRecyclerView)
 
         deleteButton = findViewById(R.id.deleteBtn)
         editButton = findViewById(R.id.editBtn)
@@ -58,9 +54,9 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
         answersListRecycler.layoutManager = LinearLayoutManager(this)
         answersListRecycler.adapter = answerAdapter
 
-        imageAdapter = ImageAdapter(ArrayList<ByteArray>())
-        imagesRecyclerView.layoutManager = LinearLayoutManager(this)
-        imagesRecyclerView.adapter = imageAdapter
+//        imageAdapter = ImageAdapter(ArrayList<ByteArray>())
+//        imagesRecyclerView.layoutManager = LinearLayoutManager(this)
+//        imagesRecyclerView.adapter = imageAdapter
 
         viewModel.getQuestionDetails(questionId)
 
@@ -150,6 +146,7 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
         val intent = Intent(this, this::class.java)
         intent.putExtra("question_id", questionId)
         startActivity(intent)
+        finish()
     }
 
 
@@ -179,12 +176,12 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
 
         answerAdapter.updateData(question.answers)
 
-        for (image in question.images){
-            Log.d("msg", "IMAGE ID: $image")
-        }
+//        for (image in question.images){
+//            Log.d("msg", "IMAGE ID: $image")
+//        }
 
-        val images: List<ByteArray> = getImagesContents(question.images)
-        imageAdapter.updateData(images)
+//        val images: List<ByteArray> = getImagesContents(question.images)
+//        imageAdapter.updateData(images)
 
         tagsQdetailRecyclerView.layoutManager = layoutManager
         tagsQdetailRecyclerView.adapter = adapter
