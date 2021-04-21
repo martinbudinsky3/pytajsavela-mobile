@@ -96,9 +96,9 @@ class QuestionEditActivity: AppCompatActivity() {
                 is ApiResult.Success -> {
                     Log.d("Success", "Question was edited.")
 
-                    val intent = Intent(this, QuestionDetailActivity::class.java)
-                    intent.putExtra("question_id", questionId)
-                    startActivity(intent)
+//                    val intent = Intent(this, QuestionDetailActivity::class.java)
+//                    intent.putExtra("question_id", questionId)
+//                    startActivity(intent)
                     finish()
                 }
                 is ApiResult.Error -> handleError(it.error)

@@ -93,6 +93,11 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
         }
     }
 
+    override fun onRestart() {
+        super.onRestart()
+        recreate()
+    }
+
     private fun openDeleteDialog(){
         val builder = AlertDialog.Builder(this)
         val inflater = layoutInflater
@@ -103,7 +108,8 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
             setPositiveButton("Áno"){dialog, which ->
                 viewModel.deleteQuestion(questionId)
 
-                changeActivity()
+//                changeActivity()
+                finish()
             }
 
             setNegativeButton("Nie"){dialog, which ->
@@ -125,7 +131,8 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
             setPositiveButton("Áno"){dialog, which ->
                 viewModel.deleteAnswer(answerId)
 
-                reloadActivity()
+//                reloadActivity()
+                recreate()
             }
 
             setNegativeButton("Nie"){dialog, which ->

@@ -105,8 +105,8 @@ class QuestionFormActivity : AppCompatActivity() {
                 is ApiResult.Success -> {
                     Log.d("Success", "Question was posted.")
 
-                    val intent = Intent(this, QuestionsListActivity::class.java)
-                    startActivity(intent)
+//                    val intent = Intent(this, QuestionsListActivity::class.java)
+//                    startActivity(intent)
                     finish()
                 }
                 is ApiResult.Error -> handleError(it.error)

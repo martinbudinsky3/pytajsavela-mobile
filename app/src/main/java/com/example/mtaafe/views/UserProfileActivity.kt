@@ -55,6 +55,11 @@ class UserProfileActivity : DrawerActivity(), IQuestionDetailOpener {
         viewPager.adapter = pagerAdapter
     }
 
+    override fun onRestart() {
+        super.onRestart()
+        recreate()
+    }
+
     override fun openQuestionDetailActivity(questionId: Long) {
         val intent = Intent(this, QuestionDetailActivity::class.java)
         intent.putExtra("question_id", questionId)

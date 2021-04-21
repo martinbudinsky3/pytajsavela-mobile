@@ -61,6 +61,11 @@ class TagQuestionsListActivity : AppCompatActivity(), IPageButtonClickListener, 
         })
     }
 
+    override fun onRestart() {
+        super.onRestart()
+        recreate()
+    }
+
     private fun handleError(error: ErrorEntity) {
         when(error) {
             is ErrorEntity.Unauthorized -> {
