@@ -9,7 +9,7 @@
     android:layout_height="match_parent"
     android:paddingHorizontal="25dp"
     android:paddingTop="25dp"
-    tools:context=".views.TagsListActivity">
+    tools:context=".views.activities.TagsListActivity">
 
     <EditText
         android:id="@+id/searchText"

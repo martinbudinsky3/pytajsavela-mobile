@@ -14,7 +14,7 @@
         android:usesCleartextTraffic="true" >
 
         <activity
-            android:name=".views.SplashScreenActivity"
+            android:name=".views.activities.SplashScreenActivity"
             android:theme="@style/AppThemeNoBar"
             android:noHistory="true">
 
@@ -25,46 +25,46 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".views.QuestionFormActivity">
+        <activity android:name=".views.activities.QuestionFormActivity">
 
         </activity>
 
-        <activity android:name=".views.AnswerFormActivity">
+        <activity android:name=".views.activities.AnswerFormActivity">
 
         </activity>
 
-        <activity android:name=".views.QuestionDetailActivity">
+        <activity android:name=".views.activities.QuestionDetailActivity">
 
         </activity>
 
-        <activity android:name=".views.QuestionEditActivity">
+        <activity android:name=".views.activities.QuestionEditActivity">
 
         </activity>
 
-        <activity android:name=".views.AnswerEditActivity">
+        <activity android:name=".views.activities.AnswerEditActivity">
 
         </activity>
         <activity
-            android:name=".views.DrawerActivity"
+            android:name=".views.activities.DrawerActivity"
             android:theme="@style/AppThemeNoBar">
 
         </activity>
         <activity
-            android:name=".views.LoginActivity"
+            android:name=".views.activities.LoginActivity"
             android:theme="@style/AppThemeNoBar"
             android:noHistory="true">
 
         </activity>
-        <activity android:name=".views.QuestionsListActivity" android:theme="@style/AppThemeNoBar">
+        <activity android:name=".views.activities.QuestionsListActivity" android:theme="@style/AppThemeNoBar">
 
         </activity>
-        <activity android:name=".views.TagsListActivity" android:theme="@style/AppThemeNoBar">
+        <activity android:name=".views.activities.TagsListActivity" android:theme="@style/AppThemeNoBar">
 
         </activity>
-        <activity android:name=".views.TagQuestionsListActivity" >
+        <activity android:name=".views.activities.TagQuestionsListActivity" >
 
         </activity>
-        <activity android:name=".views.UserProfileActivity" android:theme="@style/AppThemeNoBar">
+        <activity android:name=".views.activities.UserProfileActivity" android:theme="@style/AppThemeNoBar">
 
         </activity>
     </application>

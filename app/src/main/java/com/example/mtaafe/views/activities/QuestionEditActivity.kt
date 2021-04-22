@@ -1,0 +1,172 @@
+package com.example.mtaafe.views.activities
+
+import android.content.Intent
+import android.os.Bundle
+import android.util.Log
+import android.view.View
+import android.widget.Button
+import android.widget.EditText
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import com.example.mtaafe.R
+import com.example.mtaafe.data.models.*
+import com.example.mtaafe.viewmodels.QuestionEditViewModel
+import com.google.android.material.snackbar.Snackbar
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+
+class QuestionEditActivity: AppCompatActivity() {
+    private lateinit var viewModel: QuestionEditViewModel
+    private lateinit var rootLayout: View
+
+    private var questionTitleEditET: EditText? = null
+    private var questionBodyEditET: EditText? = null
+//    private var tagsEditET: EditText? = null
+
+    private lateinit var originalTags: List<Tag>
+
+    private var questionId: Long = 0
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.question_edit)
+
+        questionId = intent.getLongExtra("question_id", 0)
+
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setHomeButtonEnabled(true)
+
+        questionTitleEditET = findViewById(R.id.questionTitleEditET)
+        questionBodyEditET = findViewById(R.id.questionBodyEditET)
+//        tagsEditET = findViewById(R.id.tagsEditET)
+
+        viewModel = ViewModelProvider.AndroidViewModelFactory(application)
+                .create(QuestionEditViewModel::class.java)
+
+        viewModel.getQuestionEditForm(questionId)
+
+        viewModel.result.observe(this, Observer {
+            when(it) {
+                is ApiResult.Success -> {
+                    if(it.data is Question) {
+                        setQuestionData(it.data)
+                    }
+                }
+                is ApiResult.Error -> handleError(it.error)
+                else -> {}
+            }
+        })
+
+        val questionEditBtn : Button = findViewById(R.id.questionEditBtn)
+
+        questionEditBtn.setOnClickListener {
+            editQuestion()
+        }
+    }
+
+    private fun editQuestion(){
+        Log.d("msg", "NEW TITLE: " + questionTitleEditET?.text.toString())
+        Log.d("msg", "NEW BODY: " + questionBodyEditET?.text.toString())
+
+//        val newTagsString = tagsEditET?.text.toString().split(",").map { it.trim() }
+//        val deletedTagsString = getDeletedTags(originalTags, newTagsString)
+
+//        val newTagsPart : List<RequestBody>? = getTags(newTagsString)
+//        val deletedTagsPart : List<RequestBody>? = getTags(deletedTagsString!!)
+
+        val tgs = mutableListOf<Long>()
+
+        val questionEdit = QuestionEdit(questionId,
+                questionTitleEditET?.text.toString(),
+                questionBodyEditET?.text.toString(),
+                tgs,
+                tgs
+        )
+        //viewModel.editQuestion(questionId, newTitle, newBody, newTagsPart, deletedTagsPart)
+        viewModel.editQuestion(questionId, questionEdit)
+
+        viewModel.result.observe(this, Observer {
+            when(it) {
+                is ApiResult.Success -> {
+                    Log.d("Success", "Question was edited.")
+
+//                    val intent = Intent(this, QuestionDetailActivity::class.java)
+//                    intent.putExtra("question_id", questionId)
+//                    startActivity(intent)
+                    finish()
+                }
+                is ApiResult.Error -> handleError(it.error)
+                else -> {}
+            }
+        })
+    }
+
+    private fun createPartFromString(partString : String) : RequestBody {
+        return RequestBody.create(MultipartBody.FORM, partString)
+    }
+
+    private fun getTags(tagsString : List<String>): List<RequestBody>? {
+        val tagsRequestBody = mutableListOf<RequestBody>()
+
+        tagsString.forEachIndexed{index, element -> tagsRequestBody.add(index, createPartFromString(element)) }
+
+        return tagsRequestBody
+    }
+
+    private fun getDeletedTags(originalTags: List<Tag>, newTags: List<String>): List<String>?{
+        val deletedTags = mutableListOf<String>()
+
+        for (tag in originalTags){
+            if (tag.name !in newTags){
+                deletedTags.add(tag.name)
+            }
+        }
+
+        return deletedTags
+    }
+
+    private fun setQuestionData(question: Question){
+        questionTitleEditET?.setText(question.title)
+        questionBodyEditET?.setText(question.body)
+
+//        originalTags = question.tags
+//
+//        val tagsEditRecyclerView: RecyclerView = findViewById(R.id.tagsEditRecyclerView)
+//        val adapter = TagAdapter(question.tags)
+//        val layoutManager = LinearLayoutManager(this)
+//
+//        tagsEditRecyclerView.layoutManager = layoutManager
+//        tagsEditRecyclerView.adapter = adapter
+    }
+
+    private fun handleError(error: ErrorEntity) {
+        when(error) {
+            is ErrorEntity.Unauthorized -> {
+                val intent = Intent(this, LoginActivity::class.java)
+                startActivity(intent)
+            }
+            is ErrorEntity.NotFound -> {
+                Snackbar.make(rootLayout, "Otázka neexistuje", Snackbar.LENGTH_INDEFINITE)
+                    .setAction("Späť") {
+                        finish()
+                    }
+                    .show()
+            }
+            is ErrorEntity.AccessDenied -> {
+                Snackbar.make(rootLayout, "Na danú akciu nemate práva", Snackbar.LENGTH_INDEFINITE)
+                    .setAction("Späť") {
+                        finish()
+                    }
+                    .show()
+            }
+            else -> {
+                Snackbar.make(rootLayout, "Oops, niečo sa pokazilo.", Snackbar.LENGTH_LONG)
+                        .setAction("Skúsiť znovu") {
+                            viewModel.retry(questionId)
+                        }
+                        .show()
+            }
+        }
+    }
+}

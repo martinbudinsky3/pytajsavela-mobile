@@ -35,8 +35,7 @@ class QuestionFormViewModel(application: Application): AndroidViewModel(applicat
     val errorTagsList: LiveData<ErrorEntity>
         get() = _errorTagsList
 
-//    val titleErrorBoolean: MutableLiveData<Boolean> = MutableLiveData()
-//    val bodyErrorBoolean: MutableLiveData<Boolean> = MutableLiveData()
+    val validationError: MutableLiveData<Boolean> = MutableLiveData()
     val titleErrorMessage: MutableLiveData<String> = MutableLiveData()
     val bodyErrorMessage: MutableLiveData<String> = MutableLiveData()
 
@@ -49,6 +48,7 @@ class QuestionFormViewModel(application: Application): AndroidViewModel(applicat
     }
 
      fun postQuestion(title : String, body : String, tags : List<Long>, images : List<MultipartBody.Part>?){
+         validationError.value = false
          if(validate(title, body)) {
              CoroutineScope(Dispatchers.IO).launch {
                  val response = questionsRepository!!.postQuestion(
@@ -63,6 +63,8 @@ class QuestionFormViewModel(application: Application): AndroidViewModel(applicat
                      result.value = response
                  }
              }
+         } else {
+             validationError.value = true
          }
     }
 

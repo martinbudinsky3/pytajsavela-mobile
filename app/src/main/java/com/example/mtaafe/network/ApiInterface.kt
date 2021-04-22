@@ -1,8 +1,7 @@
 package com.example.mtaafe.network
 
 import com.example.mtaafe.data.models.*
-import com.example.mtaafe.data.models.Tag
-import com.example.mtaafe.views.AnswerEdit
+import com.example.mtaafe.views.activities.AnswerEdit
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response
@@ -87,7 +86,8 @@ interface ApiInterface {
     suspend fun editAnswer(
             @Header("Authorization") apiToken: String,
             @Path("id") id: Long?,
-            @Body answerEdit : AnswerEdit):
+            @Body answerEdit : AnswerEdit
+    ):
             Response<Any>
 
     @Headers("Accept: application/json")

@@ -6,8 +6,8 @@
     android:id="@+id/questionsListRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".views.QuestionsListActivity">
-
+    tools:context=".views.activities.QuestionsListActivity">
+    
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/questionsListRecycler"
         android:layout_width="0dp"

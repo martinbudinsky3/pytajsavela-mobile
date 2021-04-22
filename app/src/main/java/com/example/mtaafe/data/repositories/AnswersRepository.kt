@@ -1,19 +1,15 @@
 package com.example.mtaafe.data.repositories
 
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import com.example.mtaafe.data.models.ApiResult
 import com.example.mtaafe.data.models.ErrorEntity
-import com.example.mtaafe.data.models.QuestionEdit
 import com.example.mtaafe.network.ApiClient
 import com.example.mtaafe.network.ApiInterface
 import com.example.mtaafe.utils.ErrorHandler
-import com.example.mtaafe.views.AnswerEdit
+import com.example.mtaafe.views.activities.AnswerEdit
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.HttpException
-import retrofit2.Retrofit
 import java.lang.Exception
 
 class AnswersRepository {
