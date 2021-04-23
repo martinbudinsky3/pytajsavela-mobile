@@ -28,9 +28,15 @@ class ImageFormAdapter (private var images: ArrayList<Uri?>): RecyclerView.Adapt
         return images.size
     }
 
-    fun updateData(imagesNew: ArrayList<Uri?>) {
-        images.clear()
-        images.addAll(imagesNew)
-        notifyDataSetChanged()
+    fun removeItem(position: Int) {
+        images.removeAt(position)
+        notifyItemRemoved(position)
+        notifyItemRangeRemoved(position, 1)
+    }
+
+    fun addItem(uri: Uri?) {
+        images.add(uri)
+        notifyItemInserted(itemCount + 1)
+        notifyItemRangeInserted(itemCount, 1)
     }
 }

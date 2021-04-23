@@ -39,6 +39,7 @@
             android:ems="10"
             android:inputType="textPersonName" />
 
+
         <TextView
             android:id="@+id/titleErrorMessageText"
             android:layout_width="wrap_content"
@@ -100,7 +101,7 @@
             android:id="@+id/askButton"
             android:background="@color/colorPrimary"
             android:textColor="@android:color/white"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="50dp"
             android:paddingVertical="20dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

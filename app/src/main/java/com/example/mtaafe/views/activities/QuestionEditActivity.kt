@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -19,13 +20,12 @@ import okhttp3.RequestBody
 class QuestionEditActivity: AppCompatActivity() {
     private lateinit var viewModel: QuestionEditViewModel
     private lateinit var rootLayout: View
-
-    private var questionTitleEditET: EditText? = null
-    private var questionBodyEditET: EditText? = null
-//    private var tagsEditET: EditText? = null
+    private lateinit var questionTitleEditText: EditText
+    private lateinit var questionBodyEditText: EditText
+    private lateinit var titleErrorMessageText: TextView
+    private lateinit var bodyErrorMessageText: TextView
 
     private lateinit var originalTags: List<Tag>
-
     private var questionId: Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,99 +36,94 @@ class QuestionEditActivity: AppCompatActivity() {
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeButtonEnabled(true)
+        supportActionBar?.title = "Editovanie otázky"
 
-        questionTitleEditET = findViewById(R.id.questionTitleEditET)
-        questionBodyEditET = findViewById(R.id.questionBodyEditET)
-//        tagsEditET = findViewById(R.id.tagsEditET)
+        rootLayout = findViewById(R.id.questionEditRoot)
+        questionTitleEditText = findViewById(R.id.questionTitleEditText)
+        questionBodyEditText = findViewById(R.id.questionBodyEditText)
+        titleErrorMessageText = findViewById(R.id.titleErrorMessageText)
+        bodyErrorMessageText = findViewById(R.id.bodyErrorMessageText)
 
         viewModel = ViewModelProvider.AndroidViewModelFactory(application)
                 .create(QuestionEditViewModel::class.java)
 
         viewModel.getQuestionEditForm(questionId)
 
-        viewModel.result.observe(this, Observer {
-            when(it) {
-                is ApiResult.Success -> {
-                    if(it.data is Question) {
-                        setQuestionData(it.data)
-                    }
-                }
-                is ApiResult.Error -> handleError(it.error)
-                else -> {}
-            }
-        })
-
         val questionEditBtn : Button = findViewById(R.id.questionEditBtn)
 
         questionEditBtn.setOnClickListener {
             editQuestion()
         }
-    }
 
-    private fun editQuestion(){
-        Log.d("msg", "NEW TITLE: " + questionTitleEditET?.text.toString())
-        Log.d("msg", "NEW BODY: " + questionBodyEditET?.text.toString())
 
-//        val newTagsString = tagsEditET?.text.toString().split(",").map { it.trim() }
-//        val deletedTagsString = getDeletedTags(originalTags, newTagsString)
+        viewModel.successfulEdit.observe(this, {
+            if(it == true) {
+                // TODO pass result to question detail activity
+                finish()
+            }
+        })
 
-//        val newTagsPart : List<RequestBody>? = getTags(newTagsString)
-//        val deletedTagsPart : List<RequestBody>? = getTags(deletedTagsString!!)
+        viewModel.editError.observe(this, {
+            handleEditError(it)
+        })
 
-        val tgs = mutableListOf<Long>()
+        viewModel.editData.observe(this, {
+            setQuestionData(it)
+        })
 
-        val questionEdit = QuestionEdit(questionId,
-                questionTitleEditET?.text.toString(),
-                questionBodyEditET?.text.toString(),
-                tgs,
-                tgs
-        )
-        //viewModel.editQuestion(questionId, newTitle, newBody, newTagsPart, deletedTagsPart)
-        viewModel.editQuestion(questionId, questionEdit)
+        viewModel.getEditDataError.observe(this, {
+            handleGetEditDataError(it)
+        })
 
-        viewModel.result.observe(this, Observer {
-            when(it) {
-                is ApiResult.Success -> {
-                    Log.d("Success", "Question was edited.")
+        viewModel.titleErrorMessage.observe(this, {
+            titleErrorMessageText.visibility = View.VISIBLE
+            titleErrorMessageText.text = it
+        })
 
-//                    val intent = Intent(this, QuestionDetailActivity::class.java)
-//                    intent.putExtra("question_id", questionId)
-//                    startActivity(intent)
-                    finish()
-                }
-                is ApiResult.Error -> handleError(it.error)
-                else -> {}
+        viewModel.bodyErrorMessage.observe(this, {
+            bodyErrorMessageText.visibility = View.VISIBLE
+            bodyErrorMessageText.text = it
+        })
+
+        viewModel.validationError.observe(this, {
+            if(it == true) {
+                Snackbar.make(rootLayout, "Nevyplnili ste správne všetky polia", Snackbar.LENGTH_LONG)
+                    .show()
             }
         })
     }
 
-    private fun createPartFromString(partString : String) : RequestBody {
-        return RequestBody.create(MultipartBody.FORM, partString)
+    private fun editQuestion(){
+        val tgs = ArrayList<Long>()
+        val questionEdit = QuestionEdit(
+            questionId,
+            questionTitleEditText?.text.toString(),
+            questionBodyEditText?.text.toString(),
+            tgs,
+            tgs
+        )
+
+        bodyErrorMessageText.visibility = View.GONE
+        titleErrorMessageText.visibility = View.GONE
+
+        viewModel.editQuestion(questionId, questionEdit)
     }
 
-    private fun getTags(tagsString : List<String>): List<RequestBody>? {
-        val tagsRequestBody = mutableListOf<RequestBody>()
-
-        tagsString.forEachIndexed{index, element -> tagsRequestBody.add(index, createPartFromString(element)) }
-
-        return tagsRequestBody
-    }
-
-    private fun getDeletedTags(originalTags: List<Tag>, newTags: List<String>): List<String>?{
-        val deletedTags = mutableListOf<String>()
-
-        for (tag in originalTags){
-            if (tag.name !in newTags){
-                deletedTags.add(tag.name)
-            }
-        }
-
-        return deletedTags
-    }
+//    private fun getDeletedTags(originalTags: List<Tag>, newTags: List<String>): List<String>?{
+//        val deletedTags = mutableListOf<String>()
+//
+//        for (tag in originalTags){
+//            if (tag.name !in newTags){
+//                deletedTags.add(tag.name)
+//            }
+//        }
+//
+//        return deletedTags
+//    }
 
     private fun setQuestionData(question: Question){
-        questionTitleEditET?.setText(question.title)
-        questionBodyEditET?.setText(question.body)
+        questionTitleEditText?.setText(question.title)
+        questionBodyEditText?.setText(question.body)
 
 //        originalTags = question.tags
 //
@@ -140,7 +135,30 @@ class QuestionEditActivity: AppCompatActivity() {
 //        tagsEditRecyclerView.adapter = adapter
     }
 
-    private fun handleError(error: ErrorEntity) {
+    private fun handleGetEditDataError(error: ErrorEntity) {
+        when(error) {
+            is ErrorEntity.Unauthorized -> {
+                val intent = Intent(this, LoginActivity::class.java)
+                startActivity(intent)
+            }
+            is ErrorEntity.NotFound -> {
+                Snackbar.make(rootLayout, "Otázka neexistuje", Snackbar.LENGTH_INDEFINITE)
+                    .setAction("Späť") {
+                        finish()
+                    }
+                    .show()
+            }
+            else -> {
+                Snackbar.make(rootLayout, "Oops, niečo sa pokazilo.", Snackbar.LENGTH_LONG)
+                    .setAction("Skúsiť znovu") {
+                        viewModel.getQuestionEditForm(questionId)
+                    }
+                    .show()
+            }
+        }
+    }
+
+    private fun handleEditError(error: ErrorEntity) {
         when(error) {
             is ErrorEntity.Unauthorized -> {
                 val intent = Intent(this, LoginActivity::class.java)
@@ -162,10 +180,10 @@ class QuestionEditActivity: AppCompatActivity() {
             }
             else -> {
                 Snackbar.make(rootLayout, "Oops, niečo sa pokazilo.", Snackbar.LENGTH_LONG)
-                        .setAction("Skúsiť znovu") {
-                            viewModel.retry(questionId)
-                        }
-                        .show()
+                    .setAction("Skúsiť znovu") {
+                        editQuestion()
+                    }
+                    .show()
             }
         }
     }

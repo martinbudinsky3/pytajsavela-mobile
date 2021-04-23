@@ -26,7 +26,7 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 
 
-class QuestionFormActivity : AppCompatActivity() {
+class QuestionFormActivity : AppCompatActivity(), ImageClickListener {
     private lateinit var viewModel: QuestionFormViewModel
     private lateinit var imageAdapter: ImageFormAdapter
     private lateinit var rootLayout: View
@@ -109,9 +109,9 @@ class QuestionFormActivity : AppCompatActivity() {
         val title = editTextQuestionTitle.text.toString()
         val body = editTextQuestionBody.text.toString()
 
-        if (selectedImages.isNotEmpty()) {
-            images = getImages(selectedImages)
-        }
+        //if (selectedImages.isNotEmpty()) {
+            val images = getImages(selectedImages)
+        //}
 
         titleErrorMessageText.visibility = View.GONE
         bodyErrorMessageText.visibility = View.GONE
@@ -142,7 +142,8 @@ class QuestionFormActivity : AppCompatActivity() {
             when (requestCode){
                 REQUEST_CODE_IMAGE_PICKER -> {
                     selectedImages.add(data?.data)
-                    imageAdapter.updateData(selectedImages)
+                    //imageAdapter.updateData(selectedImages)
+                    imageAdapter.addItem(data?.data)
                 }
             }
         }
@@ -210,5 +211,10 @@ class QuestionFormActivity : AppCompatActivity() {
                         .show()
             }
         }
+    }
+
+    override fun removeImage(position: Int) {
+        selectedImages.removeAt(position)
+        imageAdapter.removeItem(position)
     }
 }

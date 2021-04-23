@@ -24,10 +24,6 @@ class TagsListViewModel(application: Application): AndroidViewModel(application)
     private var currentPage: Int = 1;
     private var count: Long = 0
 
-    private val _result = MutableLiveData<ApiResult<out Any>>()
-    val result: LiveData<ApiResult<out Any>>
-        get() = _result
-
     private val _tagsList = MutableLiveData<TagsList>()
     val tagsList: LiveData<TagsList>
         get() = _tagsList

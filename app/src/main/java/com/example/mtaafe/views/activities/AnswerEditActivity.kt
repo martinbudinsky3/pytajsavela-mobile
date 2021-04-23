@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -18,8 +19,8 @@ import com.google.gson.annotations.SerializedName
 class AnswerEditActivity: AppCompatActivity() {
     private lateinit var viewModel: AnswerEditViewModel
     private lateinit var rootLayout: View
-
-    private lateinit var answerBodyEditET: EditText
+    private lateinit var answerBodyEditText: EditText
+    private lateinit var bodyErrorMessageText: TextView
 
     private var answerId: Long = 0
     private var questionId: Long = 0
@@ -33,67 +34,93 @@ class AnswerEditActivity: AppCompatActivity() {
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeButtonEnabled(true)
+        supportActionBar?.title = "Editovanie odpovedi"
 
-        answerBodyEditET = findViewById(R.id.answerBodyEditET)
+        rootLayout = findViewById(R.id.answerEditRoot)
+        answerBodyEditText = findViewById(R.id.answerBodyEditText)
+        bodyErrorMessageText = findViewById(R.id.bodyErrorMessageText)
 
         viewModel = ViewModelProvider.AndroidViewModelFactory(application)
             .create(AnswerEditViewModel::class.java)
 
         viewModel.getAnswerEditForm(answerId)
 
-        viewModel.result.observe(this, Observer {
-            when(it) {
-                is ApiResult.Success -> {
-                    if(it.data is Answer) {
-                        setAnswerData(it.data)
-                    }
-                }
-                is ApiResult.Error -> handleError(it.error)
-                else -> {}
-            }
-        })
-
         val answerEditBtn : Button = findViewById(R.id.answerEditBtn)
 
         answerEditBtn.setOnClickListener {
             editAnswer()
         }
-    }
 
-    private fun editAnswer(){
-        //val newBody = createPartFromString(answerBodyEditET.text.toString())
-
-        Log.d("msg", "NEW BODY: " + answerBodyEditET.text.toString())
-
-        val answerEdit = AnswerEdit(
-            answerId,
-            answerBodyEditET.text.toString()
-        )
-
-        viewModel.editAnswer(answerEdit)
-
-        viewModel.result.observe(this, Observer {
-            when(it) {
-                is ApiResult.Success -> {
-                    Log.d("Success", "Answer was edited.")
-
+        viewModel.successfulEdit.observe(this, {
 //                    val intent = Intent(this, QuestionDetailActivity::class.java)
 //                    intent.putExtra("question_id", questionId)
 //                    startActivity(intent)
-                    finish()
-                }
-                is ApiResult.Error -> handleError(it.error)
-                else -> {}
+            // TODO send result to question detail activity
+            finish()
+        })
+
+        viewModel.editError.observe(this, {
+            handleEditError(it)
+        })
+
+        viewModel.editData.observe(this, {
+            setAnswerData(it)
+        })
+
+        viewModel.getEditDataError.observe(this, {
+            handleGetEditDataError(it)
+        })
+
+        viewModel.bodyErrorMessage.observe(this, {
+            bodyErrorMessageText.visibility = View.VISIBLE
+            bodyErrorMessageText.text = it
+        })
+
+        viewModel.validationError.observe(this, {
+            if(it == true) {
+                Snackbar.make(rootLayout, "Nevyplnili ste správne všetky polia", Snackbar.LENGTH_LONG)
+                    .show()
             }
         })
     }
 
-    private fun setAnswerData(answer: Answer){
-        val answerBodyEditET: EditText = findViewById(R.id.answerBodyEditET)
-        answerBodyEditET.setText(answer.body)
+    private fun editAnswer(){
+        val answerEdit = AnswerEdit(
+            answerId,
+            answerBodyEditText.text.toString()
+        )
+
+        viewModel.editAnswer(answerEdit)
     }
 
-    private fun handleError(error: ErrorEntity) {
+    private fun setAnswerData(answer: Answer){
+        answerBodyEditText.setText(answer.body)
+    }
+
+    private fun handleGetEditDataError(error: ErrorEntity) {
+        when(error) {
+            is ErrorEntity.Unauthorized -> {
+                val intent = Intent(this, LoginActivity::class.java)
+                startActivity(intent)
+            }
+            is ErrorEntity.NotFound -> {
+                Snackbar.make(rootLayout, "Odpoveď neexistuje", Snackbar.LENGTH_INDEFINITE)
+                    .setAction("Späť") {
+                        finish()
+                    }
+                    .show()
+            }
+            else -> {
+                Snackbar.make(rootLayout, "Oops, niečo sa pokazilo.", Snackbar.LENGTH_LONG)
+                    .setAction("Skúsiť znovu") {
+                        viewModel.getAnswerEditForm(answerId)
+                    }
+                    .show()
+            }
+        }
+    }
+
+    private fun handleEditError(error: ErrorEntity) {
         when(error) {
             is ErrorEntity.Unauthorized -> {
                 val intent = Intent(this, LoginActivity::class.java)
@@ -116,18 +143,10 @@ class AnswerEditActivity: AppCompatActivity() {
             else -> {
                 Snackbar.make(rootLayout, "Oops, niečo sa pokazilo.", Snackbar.LENGTH_LONG)
                     .setAction("Skúsiť znovu") {
-                        viewModel.retry(answerId)
+                        editAnswer()
                     }
                     .show()
             }
         }
     }
 }
-
-data class AnswerEdit (
-    @SerializedName("id")
-    var id: Long,
-
-    @SerializedName("body")
-    var body: String,
-)

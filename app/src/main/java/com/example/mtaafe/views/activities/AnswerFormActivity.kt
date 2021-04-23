@@ -4,21 +4,20 @@ import android.app.Activity
 import android.content.ContentResolver
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.provider.OpenableColumns
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
-import android.widget.ImageView
-import androidx.annotation.RequiresApi
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.mtaafe.R
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.mtaafe.data.models.*
 import com.example.mtaafe.viewmodels.AnswerFormViewModel
+import com.example.mtaafe.views.adapters.ImageFormAdapter
 import com.google.android.material.snackbar.Snackbar
 import okhttp3.MediaType
 import okhttp3.MultipartBody
@@ -27,13 +26,14 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 
-class AnswerFormActivity : AppCompatActivity() {
+class AnswerFormActivity : AppCompatActivity(), ImageClickListener {
     private lateinit var viewModel: AnswerFormViewModel
+    private lateinit var imageAdapter: ImageFormAdapter
     private lateinit var rootLayout: View
-    private lateinit var answerFormImageView: ImageView
-    private var selectedImages = mutableListOf<Uri?>()
-    private var imageIndex = 0
-    var images = mutableListOf<MultipartBody.Part>()
+    private lateinit var editTextAnswerBody: EditText
+    private lateinit var bodyErrorMessageText: TextView
+    private lateinit var imagesRecycler: RecyclerView
+    private var selectedImages = ArrayList<Uri?>()
 
     private var questionId: Long = 0
 
@@ -45,13 +45,19 @@ class AnswerFormActivity : AppCompatActivity() {
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeButtonEnabled(true)
+        supportActionBar?.title = "Nová odpoveď"
 
         rootLayout = findViewById(R.id.answerFormRoot)
+        editTextAnswerBody = findViewById(R.id.editTextAnswerBody)
+        bodyErrorMessageText = findViewById(R.id.bodyErrorMessageText)
+        imagesRecycler = findViewById(R.id.imagesRecyclerView)
+
+        imageAdapter = ImageFormAdapter(ArrayList())
+        imagesRecycler.layoutManager = LinearLayoutManager(this)
+        imagesRecycler.adapter = imageAdapter
+
         viewModel = ViewModelProvider.AndroidViewModelFactory(application)
                 .create(AnswerFormViewModel::class.java)
-        answerFormImageView = findViewById(R.id.answerFormImageView)
-
-        val editTextAnswerBody: EditText = findViewById(R.id.editTextAnswerBody)
 
         val selectImageBtn : Button = findViewById(R.id.selectImageBtn2)
         val answerBtn : Button = findViewById(R.id.answerBtn)
@@ -61,43 +67,50 @@ class AnswerFormActivity : AppCompatActivity() {
         }
 
         answerBtn.setOnClickListener {
-            val body = editTextAnswerBody.text.toString()
+            answer()
+        }
 
-            if (selectedImages.isNotEmpty()) {
-                images = getImages(selectedImages)
-            }
-
-            Log.d("message", "Body : " + body)
-            images.forEachIndexed{index, element -> (Log.d("message", "Image no."+ index + " : "+ element))}
-
-            if (body != ""){
-                viewModel.postAnswer(
-                        questionId,
-                        createPartFromString(body),
-                        images
-                )
-
-                viewModel.result.observe(this, Observer {
-                    when(it) {
-                        is ApiResult.Success -> {
-                            Log.d("Success", "Answer was posted.")
-
+        viewModel.result.observe(this, {
+            when(it) {
+                is ApiResult.Success -> {
 //                            val intent = Intent(this, QuestionDetailActivity::class.java)
 //                            intent.putExtra("question_id", questionId)
 //                            startActivity(intent)
-                            finish()
-                        }
-                        is ApiResult.Error -> handleError(it.error)
-                        else -> {}
-                    }
-                })
+                    // TODO return result to question detail activity
+                    finish()
+                }
+                is ApiResult.Error -> handleError(it.error)
+                else -> {}
             }
-            else {
-                Snackbar.make(rootLayout, "Treba vyplniť všetky povinné údaje!", Snackbar.LENGTH_LONG)
-                        .show()
-            }
+        })
 
-        }
+        viewModel.bodyErrorMessage.observe(this, {
+            bodyErrorMessageText.visibility = View.VISIBLE
+            bodyErrorMessageText.text = it
+        })
+
+        viewModel.validationError.observe(this, {
+            if(it == true) {
+                Snackbar.make(rootLayout, "Nevyplnili ste správne všetky polia", Snackbar.LENGTH_LONG)
+                    .show()
+            }
+        })
+    }
+
+    private fun answer() {
+        val body = editTextAnswerBody.text.toString()
+
+        //if (selectedImages.isNotEmpty()) {
+        val images = getImages(selectedImages)
+        //}
+
+        bodyErrorMessageText.visibility = View.GONE
+
+        viewModel.postAnswer(
+            questionId,
+            body,
+            images
+        )
     }
 
     private fun imageSelection(){
@@ -106,7 +119,7 @@ class AnswerFormActivity : AppCompatActivity() {
             val mimeTypes = arrayOf("image/jpeg", "image/png")
 
             it.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes)
-            startActivityForResult(it, REQUEST_CODE_IMAGE_PCIKER)
+            startActivityForResult(it, REQUEST_CODE_IMAGE_PICKER)
         }
     }
 
@@ -116,36 +129,25 @@ class AnswerFormActivity : AppCompatActivity() {
         // user selected an image
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode){
-                REQUEST_CODE_IMAGE_PCIKER -> {
-                    //selectedImage = data?.data
-                    selectedImages.add(imageIndex, data?.data)
-                    imageIndex += 1
-
-                    if(imageIndex == 1) {
-                        answerFormImageView.setImageURI(selectedImages[0])
-                    }
+                REQUEST_CODE_IMAGE_PICKER -> {
+                    selectedImages.add(data?.data)
+                    imageAdapter.addItem(data?.data)
                 }
             }
         }
     }
 
     companion object {
-        private const val REQUEST_CODE_IMAGE_PCIKER = 100
+        private const val REQUEST_CODE_IMAGE_PICKER = 100
     }
 
-    private fun getImages(imageUris : MutableList<Uri?>) : MutableList<MultipartBody.Part>{
-        val images = mutableListOf<MultipartBody.Part>()
-
-        imageUris.forEachIndexed{index, element -> images.add(prepareFilePart("" + index, element))}
+    private fun getImages(imageUris : ArrayList<Uri?>) : ArrayList<MultipartBody.Part>{
+        val images = ArrayList<MultipartBody.Part>()
+        imageUris.forEachIndexed{index, element -> images.add(prepareFilePart("images[$index]", element))}
 
         return images
     }
 
-    private fun createPartFromString(partString : String) : RequestBody{
-        return RequestBody.create(MultipartBody.FORM, partString)
-    }
-
-    @RequiresApi(Build.VERSION_CODES.KITKAT)
     private fun prepareFilePart(partName : String, fileUri : Uri?) : MultipartBody.Part {
         val parcelFileDescriptor = contentResolver.openFileDescriptor(fileUri!!, "r", null)
 
@@ -177,9 +179,17 @@ class AnswerFormActivity : AppCompatActivity() {
                 startActivity(intent)
             }
             else -> {
-                Snackbar.make(rootLayout, "Oops, something went wrong.", Snackbar.LENGTH_LONG)
-                        .show()
+                Snackbar.make(rootLayout, "Nepodarilo sa pridať odpoveď", Snackbar.LENGTH_INDEFINITE)
+                    .setAction("Skúsiť znovu") {
+                        answer()
+                    }
+                    .show()
             }
         }
+    }
+
+    override fun removeImage(position: Int) {
+        selectedImages.removeAt(position)
+        imageAdapter.removeItem(position)
     }
 }

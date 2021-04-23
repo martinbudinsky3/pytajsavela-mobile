@@ -14,16 +14,6 @@
         android:padding="15dp">
 
         <TextView
-            android:id="@+id/textView7"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="30dp"
-            android:textAlignment="center"
-            android:text="Editovanie otázky"
-            android:textSize="24sp"
-            android:textStyle="bold"/>
-
-        <TextView
             android:id="@+id/textView5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -43,7 +33,7 @@
             android:textSize="16sp" />
 
         <EditText
-            android:id="@+id/questionTitleEditET"
+            android:id="@+id/questionTitleEditText"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:ems="10"
@@ -66,17 +56,24 @@
             android:textStyle="bold" />
 
         <EditText
-            android:id="@+id/questionBodyEditET"
+            android:id="@+id/questionBodyEditText"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:ems="10"
             android:inputType="textPersonName"  />
+        <TextView
+            android:id="@+id/bodyErrorMessageText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:visibility="gone"
+            android:textColor="@android:color/holo_red_dark" />
 
         <Button
             android:id="@+id/questionEditBtn"
             android:background="@color/colorPrimary"
             android:textColor="@android:color/white"
-            android:layout_marginTop="100dp"
+            android:layout_marginTop="50dp"
             android:paddingVertical="20dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

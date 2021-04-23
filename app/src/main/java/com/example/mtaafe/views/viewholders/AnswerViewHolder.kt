@@ -6,6 +6,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mtaafe.R
 import com.example.mtaafe.data.models.AnswerItem
+import com.example.mtaafe.views.activities.OnAnswerClickListener
 
 class AnswerViewHolder(private val view: View, private val userId : Long): RecyclerView.ViewHolder(view), View.OnClickListener  {
     private val answerBodyText: TextView? = view.findViewById(R.id.answerBodyText)
@@ -41,21 +42,16 @@ class AnswerViewHolder(private val view: View, private val userId : Long): Recyc
     }
 
     override fun onClick(v: View?) {
-        val position: Int = adapterPosition
+        val position: Int = bindingAdapterPosition
 
         if (position != RecyclerView.NO_POSITION)
             listener.onClickDeleteAnswer(position)
     }
 
     fun onClickEdit(v: View?) {
-        val position: Int = adapterPosition
+        val position: Int = bindingAdapterPosition
 
         if (position != RecyclerView.NO_POSITION)
             listener.onClickEditAnswer(position)
     }
-}
-
-interface OnAnswerClickListener {
-    fun onClickDeleteAnswer(position: Int)
-    fun onClickEditAnswer(position: Int)
 }

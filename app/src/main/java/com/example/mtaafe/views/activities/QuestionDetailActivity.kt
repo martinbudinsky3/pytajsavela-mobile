@@ -18,7 +18,6 @@ import com.example.mtaafe.R
 import com.example.mtaafe.data.models.*
 import com.example.mtaafe.viewmodels.QuestionDetailViewModel
 import com.example.mtaafe.views.adapters.AnswerAdapter
-import com.example.mtaafe.views.viewholders.OnAnswerClickListener
 import com.example.mtaafe.views.adapters.TagAdapter
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton

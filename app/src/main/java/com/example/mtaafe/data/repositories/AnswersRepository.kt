@@ -1,12 +1,12 @@
 package com.example.mtaafe.data.repositories
 
 import android.util.Log
+import com.example.mtaafe.data.models.AnswerEdit
 import com.example.mtaafe.data.models.ApiResult
 import com.example.mtaafe.data.models.ErrorEntity
 import com.example.mtaafe.network.ApiClient
 import com.example.mtaafe.network.ApiInterface
 import com.example.mtaafe.utils.ErrorHandler
-import com.example.mtaafe.views.activities.AnswerEdit
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.HttpException

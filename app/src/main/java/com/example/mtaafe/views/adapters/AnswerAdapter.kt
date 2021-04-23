@@ -5,8 +5,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mtaafe.R
 import com.example.mtaafe.data.models.AnswerItem
+import com.example.mtaafe.views.activities.OnAnswerClickListener
 import com.example.mtaafe.views.viewholders.AnswerViewHolder
-import com.example.mtaafe.views.viewholders.OnAnswerClickListener
+
 
 class AnswerAdapter (private val answersList: ArrayList<AnswerItem>,
                      private val userId : Long,

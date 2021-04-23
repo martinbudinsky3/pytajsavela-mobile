@@ -25,27 +25,46 @@ class AnswerFormViewModel(application: Application): AndroidViewModel(applicatio
     private var sessionManager: SessionManager? = null
 
     var result: MutableLiveData<ApiResult<out Any>> = MutableLiveData()
+    val validationError: MutableLiveData<Boolean> = MutableLiveData()
+    val bodyErrorMessage: MutableLiveData<String> = MutableLiveData()
 
     init {
         sessionManager = SessionManager(application)
         answersRepository = AnswersRepository()
     }
 
-    fun postAnswer(questionId: Long, body : RequestBody, images : List<MultipartBody.Part>?){
-        Log.d("Post answer api call", "TOKEN 2 = " + sessionManager?.fetchApiToken().toString())
-
-        CoroutineScope(Dispatchers.IO).launch {
-            val response = answersRepository?.postAnswer(
+    fun postAnswer(questionId: Long, body : String, images : List<MultipartBody.Part>?) {
+        validationError.value = false
+        if(validate(body)) {
+            CoroutineScope(Dispatchers.IO).launch {
+                val response = answersRepository?.postAnswer(
                     sessionManager?.fetchApiToken().toString(),
                     questionId,
-                    body,
+                    createPartFromString(body),
                     images
-            )
+                )
 
-            withContext(Dispatchers.Main) {
-                result.value = response
+                withContext(Dispatchers.Main) {
+                    result.value = response
+                }
             }
+        } else {
+            validationError.value = true
+        }
+    }
+
+    private fun validate(body: String?): Boolean {
+        var flag = true
+
+        if(body==null || "".equals(body)) {
+            bodyErrorMessage.value = "Pole obsah je povinné"
+            flag = false
         }
 
+        return flag
+    }
+
+    private fun createPartFromString(partString: String) : RequestBody{
+        return RequestBody.create(MultipartBody.FORM, partString)
     }
 }
