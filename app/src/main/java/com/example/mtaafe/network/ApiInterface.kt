@@ -3,8 +3,10 @@ package com.example.mtaafe.network
 import com.example.mtaafe.data.models.*
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.*
+import java.io.InputStream
 
 interface ApiInterface {
     @Headers("Accept: application/json")
@@ -18,12 +20,13 @@ interface ApiInterface {
             @Query("page") page: Int?
     ): Response<QuestionsList>
 
-    @Headers("Accept: application/json")
+//    @Headers("Accept: application/octet-stream")
     @GET("images/{id}")
+    @Streaming
     suspend fun getImage(
             @Header("Authorization") bearerToken: String,
             @Path("id") id: Long?
-    ): Response<ByteArray>
+    ): Response<ResponseBody>
 
     @Headers("Accept: application/json")
     @GET("questions/{id}")

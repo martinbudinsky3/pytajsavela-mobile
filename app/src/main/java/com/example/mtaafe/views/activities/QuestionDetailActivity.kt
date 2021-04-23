@@ -1,10 +1,12 @@
 package com.example.mtaafe.views.activities
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -39,6 +41,8 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
 
         questionId = intent.getLongExtra("question_id", 0)
 
+        val imageView: ImageView = findViewById(R.id.image)
+
         rootLayout = findViewById(R.id.questionDetailRoot)
         answersListRecycler = findViewById(R.id.answersListRecycler)
 //        val imagesRecyclerView: RecyclerView = findViewById(R.id.imagesRecyclerView)
@@ -51,6 +55,8 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
 
         viewModel = ViewModelProvider.AndroidViewModelFactory(application)
                 .create(QuestionDetailViewModel::class.java)
+
+        viewModel.getImage(160) //
 
         answerAdapter = AnswerAdapter(ArrayList(), viewModel.sessionManager?.fetchUserId()!!, this)
         answersListRecycler.layoutManager = LinearLayoutManager(this)
@@ -74,6 +80,10 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
                 is ApiResult.Error -> handleError(it.error)
                 else -> {}
             }
+        })
+
+        viewModel.image.observe(this, {
+            imageView.setImageBitmap(it)
         })
 
         val answerButton : FloatingActionButton = findViewById(R.id.answerBtn)

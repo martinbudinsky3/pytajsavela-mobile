@@ -1,19 +1,18 @@
 package com.example.mtaafe.data.repositories
 
-import android.os.Build
+import android.R.attr.bitmap
+import android.graphics.BitmapFactory
 import android.util.Log
-import androidx.annotation.RequiresApi
 import com.example.mtaafe.data.models.*
 import com.example.mtaafe.network.ApiClient
 import com.example.mtaafe.network.ApiInterface
 import com.example.mtaafe.utils.ErrorHandler
-import com.google.gson.Gson
+import com.example.mtaafe.views.adapters.QuestionAdapter
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.HttpException
-import retrofit2.Retrofit
-import java.lang.Exception
-import java.util.ArrayList
+import java.io.InputStream
+
 
 class QuestionsRepository {
     private var apiInterface: ApiInterface?=null
@@ -36,7 +35,11 @@ class QuestionsRepository {
                 // server returns response with error code
                 else {
                     val exception = HttpException(it!!)
-                    Log.e("Questions list api call", "Server returns response with error code.", exception)
+                    Log.e(
+                        "Questions list api call",
+                        "Server returns response with error code.",
+                        exception
+                    )
                     return ApiResult.Error<ErrorEntity>(ErrorHandler.getError(exception))
                 }
             }
@@ -48,16 +51,22 @@ class QuestionsRepository {
         }
     }
 
-    suspend fun postQuestion(apiToken: String, title : RequestBody, body : RequestBody, tags : List<Long>, images : List<MultipartBody.Part>?) : ApiResult<out Any>{
+    suspend fun postQuestion(
+        apiToken: String,
+        title: RequestBody,
+        body: RequestBody,
+        tags: List<Long>,
+        images: List<MultipartBody.Part>?
+    ) : ApiResult<out Any>{
         try {
             Log.d("Post question api call", "Posting question.")
 
             apiInterface!!.postQuestion(
-                    "Bearer $apiToken",
-                    title,
-                    body,
-                    tags,
-                    images
+                "Bearer $apiToken",
+                title,
+                body,
+                tags,
+                images
             ).let {
                 // server returns 200
                 if (it?.isSuccessful == true) {
@@ -68,7 +77,11 @@ class QuestionsRepository {
                 // server returns response with error code
                 else {
                     val exception = HttpException(it!!)
-                    Log.e("Post question api call", "Server returns response with error code.", exception)
+                    Log.e(
+                        "Post question api call",
+                        "Server returns response with error code.",
+                        exception
+                    )
                     return ApiResult.Error<ErrorEntity>(ErrorHandler.getError(exception))
                 }
             }
@@ -93,7 +106,11 @@ class QuestionsRepository {
                 // server returns response with error code
                 else {
                     val exception = HttpException(it!!)
-                    Log.e("Quest. details api call", "Server returns response with error code.", exception)
+                    Log.e(
+                        "Quest. details api call",
+                        "Server returns response with error code.",
+                        exception
+                    )
                     return ApiResult.Error<ErrorEntity>(ErrorHandler.getError(exception))
                 }
             }
@@ -110,18 +127,16 @@ class QuestionsRepository {
             Log.d("Get Image api call", "Getting image")
 
             apiInterface?.getImage("Bearer $apiToken", imageId).let {
-                // server returns 200
-                if (it?.isSuccessful == true) {
-                    Log.i("Get Image api call", "Successful get image api call")
-                    return ApiResult.Success(it.body()!!)
-                }
+                    val inputStream: InputStream = it?.body()!!.byteStream()
+                    val byteArray: ByteArray = inputStream.readBytes()
+                    Log.i("Get Image api call", "Successful get image api call ${byteArray}")
+                    val options = BitmapFactory.Options()
+                    Log.d("Get Image api call", "Getting image1")
 
-                // server returns response with error code
-                else {
-                    val exception = HttpException(it!!)
-                    Log.e("Get Image api call", "Server returns response with error code.", exception)
-                    return ApiResult.Error<ErrorEntity>(ErrorHandler.getError(exception))
-                }
+                    val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size, options)
+                    Log.d("Get Image api call", "Getting image2")
+
+                    return ApiResult.Success(bitmap)
             }
         }
         // something else went wrong
@@ -145,7 +160,11 @@ class QuestionsRepository {
                 // server returns response with error code
                 else {
                     val exception = HttpException(it!!)
-                    Log.e("Ques edit-form api call", "Server returns response with error code.", exception)
+                    Log.e(
+                        "Ques edit-form api call",
+                        "Server returns response with error code.",
+                        exception
+                    )
                     return ApiResult.Error<ErrorEntity>(ErrorHandler.getError(exception))
                 }
             }
@@ -162,9 +181,9 @@ class QuestionsRepository {
             Log.d("Edit question api call", "Putting new question details")
 
             apiInterface?.editQuestion(
-                    "Bearer $apiToken",
-                    questionId,
-                    questionEdit
+                "Bearer $apiToken",
+                questionId,
+                questionEdit
             ).let {
                 // server returns 200
                 if (it?.isSuccessful == true) {
@@ -175,7 +194,11 @@ class QuestionsRepository {
                 // server returns response with error code
                 else {
                     val exception = HttpException(it!!)
-                    Log.e("Edit question api call", "Server returns response with error code.", exception)
+                    Log.e(
+                        "Edit question api call",
+                        "Server returns response with error code.",
+                        exception
+                    )
                     return ApiResult.Error<ErrorEntity>(ErrorHandler.getError(exception))
                 }
             }
@@ -201,7 +224,11 @@ class QuestionsRepository {
                 // server returns response with error code
                 else {
                     val exception = HttpException(it!!)
-                    Log.e("Ques delete api call", "Server returns response with error code.", exception)
+                    Log.e(
+                        "Ques delete api call",
+                        "Server returns response with error code.",
+                        exception
+                    )
                     return ApiResult.Error<ErrorEntity>(ErrorHandler.getError(exception))
                 }
             }

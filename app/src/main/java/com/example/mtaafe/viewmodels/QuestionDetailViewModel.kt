@@ -1,6 +1,7 @@
 package com.example.mtaafe.viewmodels
 
 import android.app.Application
+import android.graphics.Bitmap
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -27,6 +28,10 @@ class QuestionDetailViewModel(application: Application): AndroidViewModel(applic
     val result: LiveData<ApiResult<out Any>>
         get() = _result
 
+    private val _image = MutableLiveData<Bitmap>()
+    val image: LiveData<Bitmap>
+        get() = _image
+
     init {
         questionsRepository = QuestionsRepository()
         answersRepository = AnswersRepository()
@@ -48,7 +53,16 @@ class QuestionDetailViewModel(application: Application): AndroidViewModel(applic
             val response = questionsRepository?.getImage(sessionManager?.fetchApiToken().toString(), imageId)
 
             withContext(Dispatchers.Main) {
-                _result.value = response!!
+                when(response) {
+                    is ApiResult.Success -> {
+                        if(response.data is Bitmap) {
+                            _image.value = response.data!!
+                        }
+                    }
+                    is ApiResult.Error -> {
+
+                    }
+                }
             }
         }
     }
