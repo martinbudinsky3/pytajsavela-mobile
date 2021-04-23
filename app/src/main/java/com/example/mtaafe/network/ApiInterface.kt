@@ -28,16 +28,15 @@ interface ApiInterface {
     @Headers("Accept: application/json")
     @GET("questions/{id}")
     suspend fun getQuestionDetails(
-            @Header("Authorization") apiToken: String,
+            @Header("Authorization") bearerToken: String,
             @Path("id") id: Long?
     ): Response<Question>
 
     @Headers("Accept: application/json")
     @Multipart
-//    @JvmSuppressWildcards
     @POST("questions")
     suspend fun postQuestion(
-            @Header("Authorization") apiToken: String,
+            @Header("Authorization") bearerToken: String,
             @Part("title") title : RequestBody,
             @Part("body") body : RequestBody,
             @Part("tags[]") tags : List<Long>,
@@ -46,10 +45,9 @@ interface ApiInterface {
 
     @Headers("Accept: application/json")
     @Multipart
-//    @JvmSuppressWildcards
     @POST("questions/{id}/answers")
     suspend fun postAnswer(
-            @Header("Authorization") apiToken: String,
+            @Header("Authorization") bearerToken: String,
             @Path("id") question_id: Long?,
             @Part("body") body : RequestBody,
             @Part images : List<MultipartBody.Part>?):
@@ -58,50 +56,44 @@ interface ApiInterface {
     @Headers("Accept: application/json")
     @GET("questions/{id}/edit-form")
     suspend fun getQuestionEditForm(
-            @Header("Authorization") apiToken: String,
+            @Header("Authorization") bearerToken: String,
             @Path("id") id: Long?
     ): Response<Question>
 
     @Headers("Accept: application/json")
-//    @JvmSuppressWildcards
     @GET("answers/{id}/edit-form")
     suspend fun getAnswerEditForm(
-            @Header("Authorization") apiToken: String,
+            @Header("Authorization") bearerToken: String,
             @Path("id") id: Long?
     ): Response<Answer>
 
     @Headers("Accept: application/json")
-//    @JvmSuppressWildcards
     @PUT("questions/{id}")
     suspend fun editQuestion(
-            @Header("Authorization") apiToken: String,
+            @Header("Authorization") bearerToken: String,
             @Path("id") id: Long?,
             @Body questionEdit: QuestionEdit):
             Response<Any>
 
     @Headers("Accept: application/json", "Content-Type: application/json")
-//    @JvmSuppressWildcards
     @PUT("answers/{id}")
     suspend fun editAnswer(
-            @Header("Authorization") apiToken: String,
+            @Header("Authorization") bearerToken: String,
             @Path("id") id: Long?,
             @Body answerEdit : AnswerEdit
-    ):
-            Response<Any>
+    ): Response<Any>
 
     @Headers("Accept: application/json")
-    @JvmSuppressWildcards
     @DELETE("questions/{id}")
     suspend fun deleteQuestion(
-            @Header("Authorization") apiToken: String,
+            @Header("Authorization") bearerToken: String,
             @Path("id") id: Long?):
             Response<Any>
 
     @Headers("Accept: application/json")
-    @JvmSuppressWildcards
     @DELETE("answers/{id}")
     suspend fun deleteAnswer(
-            @Header("Authorization") apiToken: String,
+            @Header("Authorization") bearerToken: String,
             @Path("id") id: Long?):
             Response<Any>
 
@@ -142,4 +134,10 @@ interface ApiInterface {
         @Header("Authorization") bearerToken: String,
         @Path("id") userId: Long
     ): Response<UserAnswersList>
+
+    @Headers("Accept: application/json")
+    @POST("logout")
+    suspend fun logout(
+        @Header("Authorization") bearerToken: String
+    ): Response<Any>
 }

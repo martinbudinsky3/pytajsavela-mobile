@@ -74,7 +74,7 @@
             android:background="@color/colorPrimary"
             android:textColor="@android:color/white"
             android:layout_marginTop="50dp"
-            android:paddingVertical="20dp"
+            android:paddingVertical="30dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="Upraviť" />

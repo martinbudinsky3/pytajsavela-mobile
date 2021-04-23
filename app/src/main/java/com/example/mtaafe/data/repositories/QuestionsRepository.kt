@@ -157,7 +157,7 @@ class QuestionsRepository {
         }
     }
 
-suspend fun editQuestion(apiToken: String, questionId: Long, questionEdit: QuestionEdit): ApiResult<out Any> {
+    suspend fun editQuestion(apiToken: String, questionId: Long, questionEdit: QuestionEdit): ApiResult<out Any> {
         try {
             Log.d("Edit question api call", "Putting new question details")
 

@@ -43,4 +43,29 @@ class AuthRepository {
             return ApiResult.Error<ErrorEntity>(ErrorHandler.getError(exception))
         }
     }
+
+    suspend fun logout(apiToken: String): ApiResult<out Any> {
+        try {
+            apiInterface?.logout("Bearer $apiToken").let {
+                // server returns 200
+                if (it?.isSuccessful == true) {
+                    Log.i("Logout api call", "Successful logout api call")
+                    return ApiResult.Success(it)
+                }
+
+                // server returns response with error code
+                else {
+                    val exception = HttpException(it!!)
+                    Log.e("Logout api call", "Server returns response with error code.", exception)
+                    return ApiResult.Error<ErrorEntity>(ErrorHandler.getError(exception))
+                }
+            }
+        }
+
+        // something else went wrong
+        catch (exception: Exception) {
+            Log.e("Logout api call", "Error while making api call.", exception)
+            return ApiResult.Error<ErrorEntity>(ErrorHandler.getError(exception))
+        }
+    }
 }

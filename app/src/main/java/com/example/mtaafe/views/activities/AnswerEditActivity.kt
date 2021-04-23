@@ -53,10 +53,6 @@ class AnswerEditActivity: AppCompatActivity() {
         }
 
         viewModel.successfulEdit.observe(this, {
-//                    val intent = Intent(this, QuestionDetailActivity::class.java)
-//                    intent.putExtra("question_id", questionId)
-//                    startActivity(intent)
-            // TODO send result to question detail activity
             setResult(Constants.ANSWER_UPDATED)
             finish()
         })
@@ -103,6 +99,7 @@ class AnswerEditActivity: AppCompatActivity() {
         when(error) {
             is ErrorEntity.Unauthorized -> {
                 val intent = Intent(this, LoginActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(intent)
             }
             is ErrorEntity.NotFound -> {

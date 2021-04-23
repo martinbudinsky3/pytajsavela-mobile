@@ -9,20 +9,23 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.ViewModelProvider
 import com.example.mtaafe.R
+import com.example.mtaafe.data.models.ErrorEntity
 import com.example.mtaafe.utils.SessionManager
+import com.example.mtaafe.viewmodels.DrawerViewModel
+import com.example.mtaafe.viewmodels.QuestionsListViewModel
 import com.google.android.material.navigation.NavigationView
+import com.google.android.material.snackbar.Snackbar
 
 open class DrawerActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
-    protected lateinit var drawer: DrawerLayout
+    private lateinit var viewModel: DrawerViewModel
+    private lateinit var drawer: DrawerLayout
     private lateinit var toggle: ActionBarDrawerToggle
-    private lateinit var sessionManager: SessionManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.drawer_activity)
-
-        sessionManager = SessionManager(this)
 
         val toolbar: Toolbar = findViewById(R.id.toolbar_main)
         setSupportActionBar(toolbar)
@@ -34,6 +37,21 @@ open class DrawerActivity: AppCompatActivity(), NavigationView.OnNavigationItemS
 
         val navigationView: NavigationView = findViewById(R.id.navigation)
         navigationView.setNavigationItemSelectedListener(this)
+
+        viewModel = ViewModelProvider.AndroidViewModelFactory(application)
+            .create(DrawerViewModel::class.java)
+
+        viewModel.successfulLogout.observe(this, {
+            if(it == true) {
+                val intent = Intent(this, LoginActivity::class.java)
+                startActivity(intent)
+                finish()
+            }
+        })
+
+        viewModel.error.observe(this, {
+            handleError(it)
+        })
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
@@ -83,12 +101,30 @@ open class DrawerActivity: AppCompatActivity(), NavigationView.OnNavigationItemS
                 }
             }
             R.id.logout_menu_item -> {
-                sessionManager.logout()
-                val intent = Intent(this, LoginActivity::class.java)
-                startActivity(intent)
-                finish()
+                viewModel.logout()
             }
         }
         return true
+    }
+
+    private fun handleError(error: ErrorEntity) {
+        when(error) {
+            is ErrorEntity.Unauthorized -> {
+                val intent = Intent(this, LoginActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+            }
+            else -> {
+                Snackbar.make(
+                    drawer,
+                    "Nepodarilo sa odhlásiť",
+                    Snackbar.LENGTH_INDEFINITE
+                )
+                    .setAction("Skúsiť znovu") {
+                        viewModel.logout()
+                    }
+                    .show()
+            }
+        }
     }
 }

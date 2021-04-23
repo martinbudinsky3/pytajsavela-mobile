@@ -37,6 +37,7 @@ class LoginActivity : AppCompatActivity() {
             sessionManager.saveUserId(it.id)
             val intent = Intent(this, QuestionsListActivity::class.java)
             startActivity(intent)
+            finish()
         })
 
         viewModel.error.observe(this, {
