@@ -47,7 +47,7 @@ class QuestionFormActivity : AppCompatActivity(), ImageClickListener {
         supportActionBar?.setHomeButtonEnabled(true)
         supportActionBar?.title = "Nová otázka"
 
-        rootLayout = findViewById(R.id.questionFormRoot)
+        rootLayout = findViewById(R.id.questionDetailRoot)
         editTextQuestionTitle = findViewById(R.id.editTextQuestionTitle)
         editTextQuestionBody = findViewById(R.id.editTextQuestionBody)
         titleErrorMessageText = findViewById(R.id.titleErrorMessageText)
@@ -95,10 +95,8 @@ class QuestionFormActivity : AppCompatActivity(), ImageClickListener {
                 is ApiResult.Success -> {
                     Log.d("Success", "Question was posted.")
 
-                    val intent = Intent(this, QuestionsListActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                    startActivity(intent)
-                    //finish()
+                    setResult(1)
+                    finish()
                 }
                 is ApiResult.Error -> handleError(it.error)
             }

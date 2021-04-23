@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.mtaafe.R
+import com.example.mtaafe.config.Constants
 import com.example.mtaafe.data.models.*
 import com.example.mtaafe.viewmodels.AnswerEditViewModel
 import com.google.android.material.snackbar.Snackbar
@@ -56,6 +57,7 @@ class AnswerEditActivity: AppCompatActivity() {
 //                    intent.putExtra("question_id", questionId)
 //                    startActivity(intent)
             // TODO send result to question detail activity
+            setResult(Constants.ANSWER_UPDATED)
             finish()
         })
 

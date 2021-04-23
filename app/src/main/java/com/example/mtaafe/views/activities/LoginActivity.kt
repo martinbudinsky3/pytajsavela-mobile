@@ -23,7 +23,6 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        //supportActionBar?.hide()
         loginRoot = findViewById(R.id.loginRoot)
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login)

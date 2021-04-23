@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mtaafe.R
+import com.example.mtaafe.config.Constants
 import com.example.mtaafe.data.models.*
 import com.example.mtaafe.viewmodels.TagQuestionsListViewModel
 import com.example.mtaafe.views.adapters.QuestionAdapter
@@ -132,6 +133,29 @@ class TagQuestionsListActivity : AppCompatActivity(), IPageButtonClickListener,
     override fun openQuestionDetailActivity(questionId: Long) {
         val intent = Intent(this, QuestionDetailActivity::class.java)
         intent.putExtra("question_id", questionId)
-        startActivity(intent)
+        startActivityForResult(intent, Constants.UPDATE_UI)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if(requestCode == Constants.UPDATE_UI) {
+            if(resultCode == Constants.QUESTION_UPDATED) {
+                viewModel.retry()
+            }
+
+            if(resultCode == Constants.QUESTION_DELETED) {
+                viewModel.retry()
+                showInfoSnackbar("Otázka bola odstránená")
+            }
+        }
+    }
+
+    private fun showInfoSnackbar(message: String) {
+        Snackbar.make(
+            questionsListRoot,
+            message,
+            Snackbar.LENGTH_SHORT
+        ).show()
     }
 }

@@ -2,20 +2,17 @@ package com.example.mtaafe.views.activities
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.mtaafe.R
+import com.example.mtaafe.config.Constants
 import com.example.mtaafe.data.models.*
 import com.example.mtaafe.viewmodels.QuestionEditViewModel
 import com.google.android.material.snackbar.Snackbar
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
 
 class QuestionEditActivity: AppCompatActivity() {
     private lateinit var viewModel: QuestionEditViewModel
@@ -58,7 +55,7 @@ class QuestionEditActivity: AppCompatActivity() {
 
         viewModel.successfulEdit.observe(this, {
             if(it == true) {
-                // TODO pass result to question detail activity
+                setResult(Constants.QUESTION_UPDATED)
                 finish()
             }
         })

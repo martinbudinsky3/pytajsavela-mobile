@@ -17,7 +17,6 @@ import com.google.android.material.snackbar.Snackbar
 
 class UserInfoFragment: Fragment() {
     lateinit var binding: UserInfoFragmentBinding
-//    private lateinit var viewModel: UserInfoViewModel
     private lateinit var viewModel: UserProfileViewModel
 
     override fun onCreateView(
@@ -28,23 +27,13 @@ class UserInfoFragment: Fragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.user_info_fragment,
                 container, false)
 
-//        viewModel = activity?.let {
-//            ViewModelProvider.AndroidViewModelFactory(it.application)
-//                .create(UserInfoViewModel::class.java)
-//        }!!
-        viewModel = activity?.let {
-            ViewModelProvider.AndroidViewModelFactory(it.application)
-                .create(UserProfileViewModel::class.java)
-        }!!
+        viewModel = activity?.let { ViewModelProvider(it).get(UserProfileViewModel::class.java) }!!
 
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
 
         viewModel.getUserInfo()
 
-//        viewModel.error.observe(this, {
-//            handleError(it)
-//        })
         viewModel.errorInfo.observe(this, {
             handleError(it)
         })

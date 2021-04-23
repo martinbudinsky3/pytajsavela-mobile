@@ -34,10 +34,7 @@ class UserQuestionsFragment: Fragment() {
         userQuestionsListRecycler= userQuestionsFragmentView.findViewById(R.id.userQuestionsListRecycler)
         emptyUserQuestionsListText = userQuestionsFragmentView.findViewById(R.id.emptyUserQuestionsListText)
 
-        viewModel = activity?.let {
-            ViewModelProvider.AndroidViewModelFactory(it.application)
-                .create(UserProfileViewModel::class.java)
-        }!!
+        viewModel = activity?.let { ViewModelProvider(it).get(UserProfileViewModel::class.java) }!!
 
         adapter = QuestionsAdapterWithoutPagination(ArrayList())
 

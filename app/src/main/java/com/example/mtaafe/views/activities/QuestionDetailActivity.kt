@@ -1,13 +1,11 @@
 package com.example.mtaafe.views.activities
 
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -15,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mtaafe.R
+import com.example.mtaafe.config.Constants
 import com.example.mtaafe.data.models.*
 import com.example.mtaafe.viewmodels.QuestionDetailViewModel
 import com.example.mtaafe.views.adapters.AnswerAdapter
@@ -26,6 +25,7 @@ import com.google.android.material.snackbar.Snackbar
 class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
     private lateinit var viewModel: QuestionDetailViewModel
     private lateinit var rootLayout: View
+    private lateinit var answersListRecycler: RecyclerView
     private lateinit var answerAdapter: AnswerAdapter
 //    private lateinit var imageAdapter: ImageAdapter
     private lateinit var deleteButton : Button
@@ -39,7 +39,8 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
 
         questionId = intent.getLongExtra("question_id", 0)
 
-        val answersListRecycler: RecyclerView = findViewById(R.id.answersListRecycler)
+        rootLayout = findViewById(R.id.questionDetailRoot)
+        answersListRecycler = findViewById(R.id.answersListRecycler)
 //        val imagesRecyclerView: RecyclerView = findViewById(R.id.imagesRecyclerView)
 
         deleteButton = findViewById(R.id.deleteBtn)
@@ -51,8 +52,7 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
         viewModel = ViewModelProvider.AndroidViewModelFactory(application)
                 .create(QuestionDetailViewModel::class.java)
 
-
-        answerAdapter = AnswerAdapter(ArrayList<AnswerItem>(), viewModel.sessionManager?.fetchUserId()!!, this)
+        answerAdapter = AnswerAdapter(ArrayList(), viewModel.sessionManager?.fetchUserId()!!, this)
         answersListRecycler.layoutManager = LinearLayoutManager(this)
         answersListRecycler.adapter = answerAdapter
 
@@ -81,7 +81,7 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
         answerButton.setOnClickListener {
             val intent = Intent(this, AnswerFormActivity::class.java)
             intent.putExtra("question_id", questionId)
-            startActivity(intent)
+            startActivityForResult(intent, Constants.UPDATE_UI)
         }
 
         deleteButton.setOnClickListener {
@@ -91,14 +91,14 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
         editButton.setOnClickListener {
             val intent = Intent(this, QuestionEditActivity::class.java)
             intent.putExtra("question_id", questionId)
-            startActivity(intent)
+            startActivityForResult(intent, Constants.UPDATE_UI)
         }
     }
 
-    override fun onRestart() {
-        super.onRestart()
-        recreate()
-    }
+//    override fun onRestart() {
+//        super.onRestart()
+//        recreate()
+//    }
 
     private fun openDeleteDialog(){
         val builder = AlertDialog.Builder(this)
@@ -106,11 +106,10 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
         val dialogLayout = inflater.inflate(R.layout.delete_dialog, null)
 
         with(builder) {
-            setTitle("Naozaj chceš odstrániť otázku?")
+            setTitle("Naozaj chcete odstrániť otázku?")
             setPositiveButton("Áno"){dialog, which ->
                 viewModel.deleteQuestion(questionId)
-
-//                changeActivity()
+                setResult(Constants.QUESTION_DELETED)
                 finish()
             }
 
@@ -129,12 +128,12 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
         val dialogLayout = inflater.inflate(R.layout.delete_dialog, null)
 
         with(builder) {
-            setTitle("Naozaj chceš odstrániť odpoveď?")
+            setTitle("Naozaj chcete odstrániť odpoveď?")
             setPositiveButton("Áno"){dialog, which ->
                 viewModel.deleteAnswer(answerId)
-
-//                reloadActivity()
-                recreate()
+                setResult(Constants.QUESTION_UPDATED)
+                showInfoSnackbar("Odpoveď bola odstránená")
+                // TODO remove answer from recycler
             }
 
             setNegativeButton("Nie"){dialog, which ->
@@ -145,19 +144,6 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
             show()
         }
     }
-
-    private fun changeActivity(){
-        val intent = Intent(this, QuestionsListActivity::class.java)
-        startActivity(intent)
-    }
-
-    private fun reloadActivity(){
-        val intent = Intent(this, this::class.java)
-        intent.putExtra("question_id", questionId)
-        startActivity(intent)
-        finish()
-    }
-
 
     private fun checkIfAuthor(author: User){
         if (author.id == viewModel.sessionManager?.fetchUserId()){
@@ -248,7 +234,6 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
         return imagesContents
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onClickDeleteAnswer(position: Int) {
         val clickedAnswer: AnswerItem = answerAdapter.getAnswer(position)
         Log.d("qes", "Question with id = " + clickedAnswer.id + " was clicked to delete!")
@@ -262,6 +247,39 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
         val intent = Intent(this, AnswerEditActivity::class.java)
         intent.putExtra("answer_id", clickedAnswer.id)
         intent.putExtra("question_id", questionId)
-        startActivity(intent)
+        startActivityForResult(intent, Constants.UPDATE_UI)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        Log.d("QuestionDetailActivity", "$requestCode $resultCode")
+
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if(requestCode == Constants.UPDATE_UI) {
+            if(resultCode == Constants.QUESTION_UPDATED) {
+                viewModel.getQuestionDetails(questionId)
+                setResult(Constants.QUESTION_UPDATED)
+                showInfoSnackbar("Otázka bola upravená")
+            }
+
+            if(resultCode == Constants.ANSWER_CREATED) {
+                viewModel.getQuestionDetails(questionId)
+                setResult(Constants.QUESTION_UPDATED)
+                showInfoSnackbar("Odpoveď bola pridaná")
+            }
+
+            if(resultCode == Constants.ANSWER_UPDATED) {
+                viewModel.getQuestionDetails(questionId)
+                showInfoSnackbar("Odpoveď bola upravená")
+            }
+        }
+    }
+
+    private fun showInfoSnackbar(message: String) {
+        Snackbar.make(
+            rootLayout,
+            message,
+            Snackbar.LENGTH_SHORT
+        ).show()
     }
 }

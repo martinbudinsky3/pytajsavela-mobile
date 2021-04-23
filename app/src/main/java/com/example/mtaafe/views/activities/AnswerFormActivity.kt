@@ -15,6 +15,7 @@ import com.example.mtaafe.R
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.mtaafe.config.Constants
 import com.example.mtaafe.data.models.*
 import com.example.mtaafe.viewmodels.AnswerFormViewModel
 import com.example.mtaafe.views.adapters.ImageFormAdapter
@@ -73,10 +74,7 @@ class AnswerFormActivity : AppCompatActivity(), ImageClickListener {
         viewModel.result.observe(this, {
             when(it) {
                 is ApiResult.Success -> {
-//                            val intent = Intent(this, QuestionDetailActivity::class.java)
-//                            intent.putExtra("question_id", questionId)
-//                            startActivity(intent)
-                    // TODO return result to question detail activity
+                    setResult(Constants.ANSWER_CREATED)
                     finish()
                 }
                 is ApiResult.Error -> handleError(it.error)

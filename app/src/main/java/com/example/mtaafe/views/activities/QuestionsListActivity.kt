@@ -2,6 +2,7 @@ package com.example.mtaafe.views.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -9,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mtaafe.R
+import com.example.mtaafe.config.Constants
 import com.example.mtaafe.data.models.*
 import com.example.mtaafe.viewmodels.QuestionsListViewModel
 import com.example.mtaafe.views.adapters.QuestionAdapter
@@ -67,14 +69,9 @@ class QuestionsListActivity : DrawerActivity(), IPageButtonClickListener, IQuest
 
         fab.setOnClickListener{
             val intent = Intent(this, QuestionFormActivity::class.java)
-            startActivity(intent)
+            startActivityForResult(intent, Constants.UPDATE_UI)
         }
     }
-
-    /*override fun onRestart() {
-        super.onRestart()
-        recreate()
-    }*/
 
     private fun handleError(error: ErrorEntity) {
         when(error) {
@@ -125,6 +122,36 @@ class QuestionsListActivity : DrawerActivity(), IPageButtonClickListener, IQuest
     override fun openQuestionDetailActivity(questionId: Long) {
         val intent = Intent(this, QuestionDetailActivity::class.java)
         intent.putExtra("question_id", questionId)
-        startActivity(intent)
+        startActivityForResult(intent, Constants.UPDATE_UI)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        Log.d("QuestionsListActivity", "$requestCode $resultCode")
+
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if(requestCode == Constants.UPDATE_UI) {
+            if(resultCode == Constants.QUESTION_CREATED) {
+                viewModel.getFirstPage()
+                showInfoSnackbar("Otázka bola pridaná")
+            }
+
+            if(resultCode == Constants.QUESTION_UPDATED) {
+                viewModel.retry()
+            }
+
+            if(resultCode == Constants.QUESTION_DELETED) {
+                viewModel.retry()
+                showInfoSnackbar("Otázka bola odstránená")
+            }
+        }
+    }
+
+    private fun showInfoSnackbar(message: String) {
+        Snackbar.make(
+            questionsListRoot,
+            message,
+            Snackbar.LENGTH_SHORT
+        ).show()
     }
 }

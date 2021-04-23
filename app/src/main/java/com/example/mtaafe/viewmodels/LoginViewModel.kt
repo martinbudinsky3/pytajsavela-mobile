@@ -14,7 +14,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 
-@RequiresApi(Build.VERSION_CODES.O)
 class LoginViewModel: ViewModel() {
     private var authRepository:AuthRepository?=null
 

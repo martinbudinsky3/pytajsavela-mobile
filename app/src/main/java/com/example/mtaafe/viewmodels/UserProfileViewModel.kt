@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.example.mtaafe.data.models.*
 import com.example.mtaafe.data.repositories.UsersRepository
 import com.example.mtaafe.utils.SessionManager
@@ -12,9 +13,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class UserProfileViewModel(application: Application): AndroidViewModel(application)  {
+class UserProfileViewModel: ViewModel()  {
     private var usersRepository: UsersRepository? = null
-    private var sessionManager: SessionManager? = null
+    var sessionManager: SessionManager? = null
 
     private val _errorInfo = MutableLiveData<ErrorEntity>()
     val errorInfo: LiveData<ErrorEntity>
@@ -40,11 +41,10 @@ class UserProfileViewModel(application: Application): AndroidViewModel(applicati
     val userAnswersList: LiveData<UserAnswersList>
         get() = _userAnswersList
 
-    private var userId: Long = 1
+    private var userId: Long = 3
 
     init {
         usersRepository = UsersRepository()
-        sessionManager = SessionManager(application)
     }
 
     fun setUserId(userId: Long) {

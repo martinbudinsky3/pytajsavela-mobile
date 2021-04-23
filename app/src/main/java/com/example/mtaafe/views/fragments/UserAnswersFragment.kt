@@ -34,10 +34,7 @@ class UserAnswersFragment : Fragment() {
         userAnswersListRecycler = userAnswersFragmentView.findViewById(R.id.userAnswersListRecycler)
         emptyUserAnswersListText = userAnswersFragmentView.findViewById(R.id.emptyUserAnswersListText)
 
-        viewModel = activity?.let {
-            ViewModelProvider.AndroidViewModelFactory(it.application)
-                .create(UserProfileViewModel::class.java)
-        }!!
+        viewModel = activity?.let { ViewModelProvider(it).get(UserProfileViewModel::class.java) }!!
 
         adapter = UserAnswerAdapter(ArrayList())
 
