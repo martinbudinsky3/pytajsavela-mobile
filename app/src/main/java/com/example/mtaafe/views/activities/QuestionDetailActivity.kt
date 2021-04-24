@@ -1,7 +1,6 @@
 package com.example.mtaafe.views.activities
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -19,6 +18,7 @@ import com.example.mtaafe.config.Constants
 import com.example.mtaafe.data.models.*
 import com.example.mtaafe.viewmodels.QuestionDetailViewModel
 import com.example.mtaafe.views.adapters.AnswerAdapter
+import com.example.mtaafe.views.adapters.ImageAdapter
 import com.example.mtaafe.views.adapters.TagAdapter
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -28,12 +28,14 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
     private lateinit var viewModel: QuestionDetailViewModel
     private lateinit var rootLayout: View
     private lateinit var answersListRecycler: RecyclerView
+    private lateinit var imagesListRecycler: RecyclerView
     private lateinit var answerAdapter: AnswerAdapter
-//    private lateinit var imageAdapter: ImageAdapter
+    private lateinit var imageAdapter: ImageAdapter
     private lateinit var deleteButton : Button
     private lateinit var editButton : Button
     private lateinit var question : Question
     private var questionId: Long = 0
+    private var questionImagesLoaded: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,12 +43,9 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
 
         questionId = intent.getLongExtra("question_id", 0)
 
-        val imageView: ImageView = findViewById(R.id.image)
-
         rootLayout = findViewById(R.id.questionDetailRoot)
         answersListRecycler = findViewById(R.id.answersListRecycler)
-//        val imagesRecyclerView: RecyclerView = findViewById(R.id.imagesRecyclerView)
-
+        imagesListRecycler = findViewById(R.id.imagesRecyclerView)
         deleteButton = findViewById(R.id.deleteBtn)
         editButton = findViewById(R.id.editBtn)
 
@@ -56,15 +55,13 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
         viewModel = ViewModelProvider.AndroidViewModelFactory(application)
                 .create(QuestionDetailViewModel::class.java)
 
-        viewModel.getImage(160) //
-
         answerAdapter = AnswerAdapter(ArrayList(), viewModel.sessionManager?.fetchUserId()!!, this)
         answersListRecycler.layoutManager = LinearLayoutManager(this)
         answersListRecycler.adapter = answerAdapter
 
-//        imageAdapter = ImageAdapter(ArrayList<ByteArray>())
-//        imagesRecyclerView.layoutManager = LinearLayoutManager(this)
-//        imagesRecyclerView.adapter = imageAdapter
+        imageAdapter = ImageAdapter(ArrayList())
+        imagesListRecycler.layoutManager = LinearLayoutManager(this)
+        imagesListRecycler.adapter = imageAdapter
 
         viewModel.getQuestionDetails(questionId)
 
@@ -75,6 +72,7 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
                         question = it.data
                         setQuestionData(question)
                         checkIfAuthor(question.author)
+                        getQuestionImages(question.images)
                     }
                 }
                 is ApiResult.Error -> handleError(it.error)
@@ -82,8 +80,9 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
             }
         })
 
-        viewModel.image.observe(this, {
-            imageView.setImageBitmap(it)
+        viewModel.questionImages.observe(this, {
+            it.subList(questionImagesLoaded, it.size).forEach{image -> imageAdapter.addItem(image)}
+            questionImagesLoaded = it.size
         })
 
         val answerButton : FloatingActionButton = findViewById(R.id.answerBtn)
@@ -105,11 +104,6 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
         }
     }
 
-//    override fun onRestart() {
-//        super.onRestart()
-//        recreate()
-//    }
-
     private fun openDeleteDialog(){
         val builder = AlertDialog.Builder(this)
         val inflater = layoutInflater
@@ -117,7 +111,7 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
 
         with(builder) {
             setTitle("Naozaj chcete odstrániť otázku?")
-            setPositiveButton("Áno"){dialog, which ->
+            setPositiveButton("Áno") { dialog, which ->
                 viewModel.deleteQuestion(questionId)
                 setResult(Constants.QUESTION_DELETED)
                 finish()
@@ -139,7 +133,7 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
 
         with(builder) {
             setTitle("Naozaj chcete odstrániť odpoveď?")
-            setPositiveButton("Áno"){dialog, which ->
+            setPositiveButton("Áno"){ dialog, which ->
                 viewModel.deleteAnswer(answerId)
                 setResult(Constants.QUESTION_UPDATED)
                 showInfoSnackbar("Odpoveď bola odstránená")
@@ -173,23 +167,22 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
         questionBodyTV.text = question.body
         authorTV.text = question.author.name
         createdAtTV.text = question.createdAt.toString()
-        answersCountTV.text = ("Odpovede (" + question.answers.size.toString() + "):")
-
-        val tagsQdetailRecyclerView: RecyclerView = findViewById(R.id.tagsQdetailRecyclerView)
-        val adapter = TagAdapter(question.tags)
-        val layoutManager = FlexboxLayoutManager(this)
+        answersCountTV.text = "Odpovede (" + question.answers.size.toString() + "):"
 
         answerAdapter.updateData(question.answers)
 
-//        for (image in question.images){
-//            Log.d("msg", "IMAGE ID: $image")
-//        }
+        val tagsRecyclerView: RecyclerView = findViewById(R.id.tagsQdetailRecyclerView)
+        val adapter = TagAdapter(question.tags)
+        val layoutManager = FlexboxLayoutManager(this)
 
-//        val images: List<ByteArray> = getImagesContents(question.images)
-//        imageAdapter.updateData(images)
+        tagsRecyclerView.layoutManager = layoutManager
+        tagsRecyclerView.adapter = adapter
+    }
 
-        tagsQdetailRecyclerView.layoutManager = layoutManager
-        tagsQdetailRecyclerView.adapter = adapter
+    private fun getQuestionImages(images: ArrayList<Image>) {
+        imageAdapter.updateSize(images.size)
+        val imagesIds: List<Long> = images.map { image -> image.id }
+        imagesIds.forEachIndexed { index, id -> viewModel.getQuestionImage(id, index) }
     }
 
     private fun handleError(error: ErrorEntity) {
@@ -221,28 +214,6 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
                         .show()
             }
         }
-    }
-
-    private fun getImagesContents(images: ArrayList<Image>) : List<ByteArray>{
-
-        var imagesContents = mutableListOf<ByteArray>()
-
-        for (image in images){
-            viewModel.getImage(image.id)
-
-            viewModel.result.observe(this, Observer {
-                when(it) {
-                    is ApiResult.Success -> {
-                        if(it.data is ByteArray) {
-                            imagesContents.add(it.data)
-                        }
-                    }
-                    is ApiResult.Error -> handleError(it.error)
-                    else -> {}
-                }
-            })
-        }
-        return imagesContents
     }
 
     override fun onClickDeleteAnswer(position: Int) {

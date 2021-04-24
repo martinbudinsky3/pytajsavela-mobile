@@ -10,5 +10,5 @@ data class Answer (
         var body: String,
 
         @SerializedName("images")
-        var images: List<Image>
+        var images: List<DecodedImage>
 )

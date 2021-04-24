@@ -128,13 +128,8 @@ class QuestionsRepository {
 
             apiInterface?.getImage("Bearer $apiToken", imageId).let {
                     val inputStream: InputStream = it?.body()!!.byteStream()
-                    val byteArray: ByteArray = inputStream.readBytes()
-                    Log.i("Get Image api call", "Successful get image api call ${byteArray}")
-                    val options = BitmapFactory.Options()
-                    Log.d("Get Image api call", "Getting image1")
 
-                    val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size, options)
-                    Log.d("Get Image api call", "Getting image2")
+                    val bitmap = BitmapFactory.decodeStream(inputStream)
 
                     return ApiResult.Success(bitmap)
             }

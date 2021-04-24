@@ -2,14 +2,11 @@ package com.example.mtaafe.viewmodels
 
 import android.app.Application
 import android.graphics.Bitmap
-import android.os.Build
-import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.mtaafe.data.models.ApiResult
-import com.example.mtaafe.data.models.QuestionsList
+import com.example.mtaafe.data.models.DecodedImage
 import com.example.mtaafe.data.repositories.AnswersRepository
 import com.example.mtaafe.data.repositories.QuestionsRepository
 import com.example.mtaafe.utils.SessionManager
@@ -32,10 +29,15 @@ class QuestionDetailViewModel(application: Application): AndroidViewModel(applic
     val image: LiveData<Bitmap>
         get() = _image
 
+    private val _questionImages = MutableLiveData<ArrayList<DecodedImage>>()
+    val questionImages: LiveData<ArrayList<DecodedImage>>
+        get() = _questionImages
+
     init {
         questionsRepository = QuestionsRepository()
         answersRepository = AnswersRepository()
         sessionManager = SessionManager(application)
+        _questionImages.value = ArrayList()
     }
 
     fun getQuestionDetails(questionId: Long) {
@@ -57,6 +59,26 @@ class QuestionDetailViewModel(application: Application): AndroidViewModel(applic
                     is ApiResult.Success -> {
                         if(response.data is Bitmap) {
                             _image.value = response.data!!
+                        }
+                    }
+                    is ApiResult.Error -> {
+
+                    }
+                }
+            }
+        }
+    }
+
+    fun getQuestionImage(imageId: Long, index: Int) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val response = questionsRepository?.getImage(sessionManager?.fetchApiToken().toString(), imageId)
+
+            withContext(Dispatchers.Main) {
+                when(response) {
+                    is ApiResult.Success -> {
+                        if(response.data is Bitmap) {
+                            _questionImages.value?.add(DecodedImage(index, response.data))
+                            _questionImages.value = _questionImages.value
                         }
                     }
                     is ApiResult.Error -> {

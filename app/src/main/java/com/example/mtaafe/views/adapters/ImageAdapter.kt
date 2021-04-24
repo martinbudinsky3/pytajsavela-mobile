@@ -1,12 +1,16 @@
 package com.example.mtaafe.views.adapters
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mtaafe.R
+import com.example.mtaafe.data.models.DecodedImage
 import com.example.mtaafe.views.viewholders.ImageViewHolder
 
-class ImageAdapter (private var images: List<ByteArray>): RecyclerView.Adapter<RecyclerView.ViewHolder>(){
+class ImageAdapter (private var images: ArrayList<Bitmap?>): RecyclerView.Adapter<RecyclerView.ViewHolder>(){
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         var view = LayoutInflater.from(parent.context)
@@ -18,7 +22,9 @@ class ImageAdapter (private var images: List<ByteArray>): RecyclerView.Adapter<R
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if(holder is ImageViewHolder) {
             val image = images[position]
-            holder.setImage(image)
+            if (image != null) {
+                holder.setImage(image)
+            }
         }
     }
 
@@ -26,11 +32,21 @@ class ImageAdapter (private var images: List<ByteArray>): RecyclerView.Adapter<R
         return images.size
     }
 
-    fun updateData(imagesNew: List<ByteArray>) {
-        images = mutableListOf<ByteArray>()
-        for (image in imagesNew) {
-            (images as MutableList<ByteArray>).add(image)
+//    fun updateData(newImages: ArrayList<Image>) {
+//        images.clear()
+//        notifyDataSetChanged()
+//    }
+
+    fun updateSize(size: Int) {
+        for(i in 0 until size) {
+            images.add(null)
         }
         notifyDataSetChanged()
+    }
+
+    fun addItem(image: DecodedImage) {
+        images.add(image.index, image.bitmap)
+        notifyItemInserted(image.index)
+        notifyItemRangeInserted(itemCount, 1)
     }
 }
