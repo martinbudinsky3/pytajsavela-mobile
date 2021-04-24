@@ -2,20 +2,17 @@ package com.example.mtaafe.views.activities
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.mtaafe.R
 import com.example.mtaafe.config.Constants
 import com.example.mtaafe.data.models.*
 import com.example.mtaafe.viewmodels.AnswerEditViewModel
 import com.google.android.material.snackbar.Snackbar
-import com.google.gson.annotations.SerializedName
 
 class AnswerEditActivity: AppCompatActivity() {
     private lateinit var viewModel: AnswerEditViewModel
@@ -91,7 +88,7 @@ class AnswerEditActivity: AppCompatActivity() {
         viewModel.editAnswer(answerEdit)
     }
 
-    private fun setAnswerData(answer: Answer){
+    private fun setAnswerData(answer: AnswerEdit){
         answerBodyEditText.setText(answer.body)
     }
 

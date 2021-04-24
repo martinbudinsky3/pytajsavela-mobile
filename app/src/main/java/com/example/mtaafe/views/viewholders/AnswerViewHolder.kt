@@ -1,54 +1,65 @@
 package com.example.mtaafe.views.viewholders
 
 import android.view.View
-import android.widget.Button
+import android.widget.ImageButton
 import android.widget.TextView
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mtaafe.R
-import com.example.mtaafe.data.models.AnswerItem
+import com.example.mtaafe.data.models.Answer
+import com.example.mtaafe.data.models.AnswersDecodedImage
 import com.example.mtaafe.views.activities.OnAnswerClickListener
+import com.example.mtaafe.views.adapters.ImageAdapter
 
-class AnswerViewHolder(private val view: View, private val userId : Long): RecyclerView.ViewHolder(view), View.OnClickListener  {
+class AnswerViewHolder(private val view: View, private val userId : Long): RecyclerView.ViewHolder(view)  {
     private val answerBodyText: TextView? = view.findViewById(R.id.answerBodyText)
-    private val authorText2: TextView? = view.findViewById(R.id.authorText2)
-    private val createdAtText2: TextView? = view.findViewById(R.id.createdAtText2)
+    private val authorText: TextView? = view.findViewById(R.id.authorText2)
+    private val createdAtText: TextView? = view.findViewById(R.id.createdAtText2)
+    val imagesListRecycler: RecyclerView = view.findViewById(R.id.imagesRecyclerView)
+    private val editBtn: ImageButton = view.findViewById(R.id.editBtn2)
+    private val deleteBtn: ImageButton = view.findViewById(R.id.deleteBtn2)
 
-    private val editBtn: Button = view.findViewById(R.id.editBtn2)
-    private val deleteBtn: Button = view.findViewById(R.id.deleteBtn2)
-
+    private lateinit var imageAdapter: ImageAdapter
     private var listener: OnAnswerClickListener = view.context as OnAnswerClickListener
 
-    init {
-        view.setOnClickListener(this)
-    }
 
-    fun setAnswerItemData(answerItem: AnswerItem) {
-        answerBodyText?.text = answerItem.body
-        authorText2?.text = answerItem.author.name
-        createdAtText2?.text = answerItem.createdAt.toString()
+    fun setAnswerItemData(answer: Answer) {
+        answerBodyText?.text = answer.body
+        authorText?.text = answer.author.name
+        createdAtText?.text = answer.createdAt.toString()
 
-        deleteBtn.setOnClickListener(View.OnClickListener {
-            onClick(it)
-        })
+        imageAdapter = ImageAdapter(ArrayList())
+        imagesListRecycler.layoutManager = LinearLayoutManager(view.context)
+        imagesListRecycler.adapter = imageAdapter
 
-        editBtn.setOnClickListener(View.OnClickListener {
+        imageAdapter.updateSize(answer.images.size)
+
+        deleteBtn.setOnClickListener{
+            onClickDelete(it)
+        }
+
+        editBtn.setOnClickListener {
             onClickEdit(it)
-        })
+        }
 
-        if (answerItem.author.id != userId) {
-            editBtn.visibility = View.INVISIBLE
-            deleteBtn.visibility = View.INVISIBLE
+        if (answer.author.id != userId) {
+            editBtn.visibility = View.GONE
+            deleteBtn.visibility = View.GONE
         }
     }
 
-    override fun onClick(v: View?) {
+    fun showImage(answersDecodedImage: AnswersDecodedImage) {
+        imageAdapter.addItem(answersDecodedImage.imageIndex, answersDecodedImage.bitmap)
+    }
+
+    private fun onClickDelete(v: View?) {
         val position: Int = bindingAdapterPosition
 
         if (position != RecyclerView.NO_POSITION)
             listener.onClickDeleteAnswer(position)
     }
 
-    fun onClickEdit(v: View?) {
+    private fun onClickEdit(v: View?) {
         val position: Int = bindingAdapterPosition
 
         if (position != RecyclerView.NO_POSITION)

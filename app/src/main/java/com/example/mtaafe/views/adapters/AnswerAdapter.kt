@@ -4,12 +4,12 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mtaafe.R
-import com.example.mtaafe.data.models.AnswerItem
+import com.example.mtaafe.data.models.Answer
 import com.example.mtaafe.views.activities.OnAnswerClickListener
 import com.example.mtaafe.views.viewholders.AnswerViewHolder
 
 
-class AnswerAdapter (private val answersList: ArrayList<AnswerItem>,
+class AnswerAdapter (private val answersList: ArrayList<Answer>,
                      private val userId : Long,
                      private val listener: OnAnswerClickListener
 ): RecyclerView.Adapter<RecyclerView.ViewHolder>(){
@@ -32,13 +32,13 @@ class AnswerAdapter (private val answersList: ArrayList<AnswerItem>,
         return answersList.size
     }
 
-    fun updateData(answersListNew: ArrayList<AnswerItem>) {
+    fun updateData(answersListNew: ArrayList<Answer>) {
         answersList.clear()
         answersList.addAll(answersListNew)
         notifyDataSetChanged()
     }
 
-    fun getAnswer(position: Int): AnswerItem {
+    fun getAnswer(position: Int): Answer {
         return answersList[position]
     }
 }

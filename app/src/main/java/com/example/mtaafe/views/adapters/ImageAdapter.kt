@@ -32,11 +32,6 @@ class ImageAdapter (private var images: ArrayList<Bitmap?>): RecyclerView.Adapte
         return images.size
     }
 
-//    fun updateData(newImages: ArrayList<Image>) {
-//        images.clear()
-//        notifyDataSetChanged()
-//    }
-
     fun updateSize(size: Int) {
         for(i in 0 until size) {
             images.add(null)
@@ -44,9 +39,9 @@ class ImageAdapter (private var images: ArrayList<Bitmap?>): RecyclerView.Adapte
         notifyDataSetChanged()
     }
 
-    fun addItem(image: DecodedImage) {
-        images.add(image.index, image.bitmap)
-        notifyItemInserted(image.index)
+    fun addItem(index: Int, bitmap: Bitmap) {
+        images.add(index, bitmap)
+        notifyItemInserted(index)
         notifyItemRangeInserted(itemCount, 1)
     }
 }

@@ -4,9 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Button
 import android.widget.ImageButton
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -21,6 +19,7 @@ import com.example.mtaafe.viewmodels.QuestionDetailViewModel
 import com.example.mtaafe.views.adapters.AnswerAdapter
 import com.example.mtaafe.views.adapters.ImageAdapter
 import com.example.mtaafe.views.adapters.TagAdapter
+import com.example.mtaafe.views.viewholders.AnswerViewHolder
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
@@ -32,11 +31,13 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
     private lateinit var imagesListRecycler: RecyclerView
     private lateinit var answerAdapter: AnswerAdapter
     private lateinit var imageAdapter: ImageAdapter
+    private lateinit var answerButton : FloatingActionButton
     private lateinit var deleteButton : ImageButton
     private lateinit var editButton : ImageButton
     private lateinit var question : Question
     private var questionId: Long = 0
     private var questionImagesLoaded: Int = 0
+    private var answersImagesLoaded: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,11 +48,12 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
         rootLayout = findViewById(R.id.questionDetailRoot)
         answersListRecycler = findViewById(R.id.answersListRecycler)
         imagesListRecycler = findViewById(R.id.imagesRecyclerView)
+        answerButton = findViewById(R.id.answerBtn)
         deleteButton = findViewById(R.id.deleteBtn)
         editButton = findViewById(R.id.editBtn)
 
-        deleteButton.visibility = View.INVISIBLE
-        editButton.visibility = View.INVISIBLE
+        deleteButton.visibility = View.GONE
+        editButton.visibility = View.GONE
 
         viewModel = ViewModelProvider.AndroidViewModelFactory(application)
                 .create(QuestionDetailViewModel::class.java)
@@ -74,6 +76,7 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
                         setQuestionData(question)
                         checkIfAuthor(question.author)
                         getQuestionImages(question.images)
+                        getAnswersImages(question.answers)
                     }
                 }
                 is ApiResult.Error -> handleError(it.error)
@@ -82,11 +85,14 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
         })
 
         viewModel.questionImages.observe(this, {
-            it.subList(questionImagesLoaded, it.size).forEach{image -> imageAdapter.addItem(image)}
+            it.subList(questionImagesLoaded, it.size).forEach{image -> imageAdapter.addItem(image.index, image.bitmap)}
             questionImagesLoaded = it.size
         })
 
-        val answerButton : FloatingActionButton = findViewById(R.id.answerBtn)
+        viewModel.answersImages.observe(this, {
+            it.subList(answersImagesLoaded, it.size).forEach{image -> showAnswersImage(image)}
+            answersImagesLoaded = it.size
+        })
 
         answerButton.setOnClickListener {
             val intent = Intent(this, AnswerFormActivity::class.java)
@@ -136,6 +142,7 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
             setTitle("Naozaj chcete odstrániť odpoveď?")
             setPositiveButton("Áno"){ dialog, which ->
                 viewModel.deleteAnswer(answerId)
+                // TODO remove to observer on success
                 setResult(Constants.QUESTION_UPDATED)
                 showInfoSnackbar("Odpoveď bola odstránená")
                 // TODO remove answer from recycler
@@ -182,8 +189,27 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
 
     private fun getQuestionImages(images: ArrayList<Image>) {
         imageAdapter.updateSize(images.size)
-        val imagesIds: List<Long> = images.map { image -> image.id }
-        imagesIds.forEachIndexed { index, id -> viewModel.getQuestionImage(id, index) }
+        images.forEachIndexed { index, image -> viewModel.getQuestionImage(image.id, index) }
+    }
+
+    private fun getAnswersImages(answers: ArrayList<Answer>) {
+        answers.forEachIndexed { answerIndex, answer ->
+            run {
+                answer.images.forEachIndexed { imageIndex, image ->
+                    viewModel.getAnswerImage(
+                        image.id,
+                        imageIndex,
+                        answerIndex
+                    )
+                }
+            }
+        }
+    }
+
+    private fun showAnswersImage(answersDecodedImage: AnswersDecodedImage) {
+        val answerViewHolder: AnswerViewHolder =
+            answersListRecycler.findViewHolderForAdapterPosition(answersDecodedImage.answerIndex) as AnswerViewHolder
+        answerViewHolder.showImage(answersDecodedImage)
     }
 
     private fun handleError(error: ErrorEntity) {
@@ -218,13 +244,13 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
     }
 
     override fun onClickDeleteAnswer(position: Int) {
-        val clickedAnswer: AnswerItem = answerAdapter.getAnswer(position)
+        val clickedAnswer: Answer = answerAdapter.getAnswer(position)
         Log.d("qes", "Question with id = " + clickedAnswer.id + " was clicked to delete!")
         openDeleteAnswerDialog(clickedAnswer.id)
     }
 
     override fun onClickEditAnswer(position: Int) {
-        val clickedAnswer: AnswerItem = answerAdapter.getAnswer(position)
+        val clickedAnswer: Answer = answerAdapter.getAnswer(position)
         Log.d("qes", "Question with id = " + clickedAnswer.id + " was clicked to edit!")
 
         val intent = Intent(this, AnswerEditActivity::class.java)

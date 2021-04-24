@@ -1,8 +1,6 @@
 package com.example.mtaafe.viewmodels
 
 import android.app.Application
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -27,8 +25,8 @@ class AnswerEditViewModel(application: Application): AndroidViewModel(applicatio
     val editError: LiveData<ErrorEntity>
         get() = _editError
 
-    private val _editData = MutableLiveData<Answer>()
-    val editData: LiveData<Answer>
+    private val _editData = MutableLiveData<AnswerEdit>()
+    val editData: LiveData<AnswerEdit>
         get() = _editData
 
     var successfulEdit: MutableLiveData<Boolean> = MutableLiveData()
@@ -47,7 +45,7 @@ class AnswerEditViewModel(application: Application): AndroidViewModel(applicatio
             withContext(Dispatchers.Main) {
                 when(response) {
                     is ApiResult.Success -> {
-                        if(response.data is Answer)
+                        if(response.data is AnswerEdit)
                             _editData.value = response.data!!
                     }
                     is ApiResult.Error -> {

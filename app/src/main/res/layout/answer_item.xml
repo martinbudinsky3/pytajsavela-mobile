@@ -2,7 +2,6 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginLeft="15dp"
@@ -20,8 +19,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Answer body"
+            android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/imagesRecyclerView"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/answerBodyText" />
 
         <TextView
             android:id="@+id/authorText2"
@@ -30,7 +37,7 @@
             android:layout_marginTop="10dp"
             android:text="Author"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/answerBodyText" />
+            app:layout_constraintTop_toBottomOf="@+id/imagesRecyclerView" />
 
         <TextView
             android:id="@+id/createdAtText2"
@@ -43,8 +50,8 @@
 
         <ImageButton
             android:id="@+id/editBtn2"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
             android:scaleType="fitXY"
             android:background="@android:color/transparent"
             android:src="@drawable/ic_baseline_edit_24"
@@ -53,8 +60,8 @@
 
         <ImageButton
             android:id="@+id/deleteBtn2"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
             android:scaleType="fitXY"
             android:background="@android:color/transparent"
             android:src="@drawable/ic_baseline_delete_24"

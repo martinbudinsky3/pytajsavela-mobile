@@ -6,7 +6,6 @@ import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.*
-import java.io.InputStream
 
 interface ApiInterface {
     @Headers("Accept: application/json")
@@ -68,7 +67,7 @@ interface ApiInterface {
     suspend fun getAnswerEditForm(
             @Header("Authorization") bearerToken: String,
             @Path("id") id: Long?
-    ): Response<Answer>
+    ): Response<AnswerEdit>
 
     @Headers("Accept: application/json")
     @PUT("questions/{id}")

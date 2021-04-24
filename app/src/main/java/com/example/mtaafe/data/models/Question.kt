@@ -26,5 +26,5 @@ data class Question (
         var images: ArrayList<Image>,
 
         @SerializedName("answers")
-        var answers: ArrayList<AnswerItem>
+        var answers: ArrayList<Answer>
 )

@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.mtaafe.data.models.AnswersDecodedImage
 import com.example.mtaafe.data.models.ApiResult
 import com.example.mtaafe.data.models.DecodedImage
 import com.example.mtaafe.data.repositories.AnswersRepository
@@ -25,19 +26,20 @@ class QuestionDetailViewModel(application: Application): AndroidViewModel(applic
     val result: LiveData<ApiResult<out Any>>
         get() = _result
 
-    private val _image = MutableLiveData<Bitmap>()
-    val image: LiveData<Bitmap>
-        get() = _image
-
     private val _questionImages = MutableLiveData<ArrayList<DecodedImage>>()
     val questionImages: LiveData<ArrayList<DecodedImage>>
         get() = _questionImages
+
+    private val _answersImages = MutableLiveData<ArrayList<AnswersDecodedImage>>()
+    val answersImages: LiveData<ArrayList<AnswersDecodedImage>>
+        get() = _answersImages
 
     init {
         questionsRepository = QuestionsRepository()
         answersRepository = AnswersRepository()
         sessionManager = SessionManager(application)
         _questionImages.value = ArrayList()
+        _answersImages.value = ArrayList()
     }
 
     fun getQuestionDetails(questionId: Long) {
@@ -46,25 +48,6 @@ class QuestionDetailViewModel(application: Application): AndroidViewModel(applic
 
             withContext(Dispatchers.Main) {
                 _result.value = response!!
-            }
-        }
-    }
-
-    fun getImage(imageId: Long) {
-        CoroutineScope(Dispatchers.IO).launch {
-            val response = questionsRepository?.getImage(sessionManager?.fetchApiToken().toString(), imageId)
-
-            withContext(Dispatchers.Main) {
-                when(response) {
-                    is ApiResult.Success -> {
-                        if(response.data is Bitmap) {
-                            _image.value = response.data!!
-                        }
-                    }
-                    is ApiResult.Error -> {
-
-                    }
-                }
             }
         }
     }
@@ -79,6 +62,26 @@ class QuestionDetailViewModel(application: Application): AndroidViewModel(applic
                         if(response.data is Bitmap) {
                             _questionImages.value?.add(DecodedImage(index, response.data))
                             _questionImages.value = _questionImages.value
+                        }
+                    }
+                    is ApiResult.Error -> {
+
+                    }
+                }
+            }
+        }
+    }
+
+    fun getAnswerImage(imageId: Long, imageIndex: Int, answerIndex: Int) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val response = questionsRepository?.getImage(sessionManager?.fetchApiToken().toString(), imageId)
+
+            withContext(Dispatchers.Main) {
+                when(response) {
+                    is ApiResult.Success -> {
+                        if(response.data is Bitmap) {
+                            _answersImages.value?.add(AnswersDecodedImage(answerIndex, imageIndex, response.data))
+                            _answersImages.value = _answersImages.value
                         }
                     }
                     is ApiResult.Error -> {

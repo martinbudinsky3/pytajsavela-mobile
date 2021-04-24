@@ -4,7 +4,6 @@ import android.view.View
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mtaafe.R
-import com.example.mtaafe.data.models.AnswerItem
 import com.example.mtaafe.data.models.UserAnswer
 
 class UserAnswerViewHolder(private val view: View): RecyclerView.ViewHolder(view) {
