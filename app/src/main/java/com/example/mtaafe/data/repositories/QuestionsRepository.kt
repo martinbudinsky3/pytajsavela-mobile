@@ -122,25 +122,6 @@ class QuestionsRepository {
         }
     }
 
-    suspend fun getImage(apiToken: String, imageId: Long): ApiResult<out Any> {
-        try {
-            Log.d("Get Image api call", "Getting image")
-
-            apiInterface?.getImage("Bearer $apiToken", imageId).let {
-                    val inputStream: InputStream = it?.body()!!.byteStream()
-
-                    val bitmap = BitmapFactory.decodeStream(inputStream)
-
-                    return ApiResult.Success(bitmap)
-            }
-        }
-        // something else went wrong
-        catch (exception: Exception) {
-            Log.e("Get Image api call", "Error while connecting to server.", exception)
-            return ApiResult.Error<ErrorEntity>(ErrorHandler.getError(exception))
-        }
-    }
-
     suspend fun getQuestionEditForm(apiToken: String, questionId: Long): ApiResult<out Any> {
         try {
             Log.d("Ques edit-form api call", "Getting question edit-form")

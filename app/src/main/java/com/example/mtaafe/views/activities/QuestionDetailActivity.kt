@@ -36,6 +36,7 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
     private lateinit var editButton : ImageButton
     private lateinit var question : Question
     private var questionId: Long = 0
+    private var answerToDelete: Long = 0
     private var questionImagesLoaded: Int = 0
     private var answersImagesLoaded: Int = 0
 
@@ -58,7 +59,7 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
         viewModel = ViewModelProvider.AndroidViewModelFactory(application)
                 .create(QuestionDetailViewModel::class.java)
 
-        answerAdapter = AnswerAdapter(ArrayList(), viewModel.sessionManager?.fetchUserId()!!, this)
+        answerAdapter = AnswerAdapter(ArrayList(), viewModel.sessionManager?.fetchUserId()!!)
         answersListRecycler.layoutManager = LinearLayoutManager(this)
         answersListRecycler.adapter = answerAdapter
 
@@ -68,20 +69,12 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
 
         viewModel.getQuestionDetails(questionId)
 
-        viewModel.result.observe(this, Observer {
-            when(it) {
-                is ApiResult.Success -> {
-                    if(it.data is Question) {
-                        question = it.data
-                        setQuestionData(question)
-                        checkIfAuthor(question.author)
-                        getQuestionImages(question.images)
-                        getAnswersImages(question.answers)
-                    }
-                }
-                is ApiResult.Error -> handleError(it.error)
-                else -> {}
-            }
+        viewModel.question.observe(this, Observer {
+            question = it
+            setQuestionData(question)
+            checkIfAuthor(question.author)
+            getQuestionImages(question.images)
+            getAnswersImages(question.answers)
         })
 
         viewModel.questionImages.observe(this, {
@@ -92,6 +85,33 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
         viewModel.answersImages.observe(this, {
             it.subList(answersImagesLoaded, it.size).forEach{image -> showAnswersImage(image)}
             answersImagesLoaded = it.size
+        })
+
+        viewModel.successfulQuestionDelete.observe(this, {
+            if(it == true) {
+                setResult(Constants.QUESTION_DELETED)
+                finish()
+            }
+        })
+
+        viewModel.successfulAnswerDelete.observe(this, {
+            if(it == true) {
+                setResult(Constants.QUESTION_UPDATED)
+                answerAdapter.deleteAnswer(answerToDelete)
+                showInfoSnackbar("Odpoveď bola odstránená")
+            }
+        })
+
+        viewModel.questionError.observe(this, {
+            handleQuestionError(it)
+        })
+
+        viewModel.questionDeleteError.observe(this, {
+            handleQuestionDeleteError(it)
+        })
+
+        viewModel.answerDeleteError.observe(this, {
+            handleAnswerDeleteError(it)
         })
 
         answerButton.setOnClickListener {
@@ -120,8 +140,6 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
             setTitle("Naozaj chcete odstrániť otázku?")
             setPositiveButton("Áno") { dialog, which ->
                 viewModel.deleteQuestion(questionId)
-                setResult(Constants.QUESTION_DELETED)
-                finish()
             }
 
             setNegativeButton("Nie"){dialog, which ->
@@ -141,11 +159,8 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
         with(builder) {
             setTitle("Naozaj chcete odstrániť odpoveď?")
             setPositiveButton("Áno"){ dialog, which ->
+                answerToDelete = answerId
                 viewModel.deleteAnswer(answerId)
-                // TODO remove to observer on success
-                setResult(Constants.QUESTION_UPDATED)
-                showInfoSnackbar("Odpoveď bola odstránená")
-                // TODO remove answer from recycler
             }
 
             setNegativeButton("Nie"){dialog, which ->
@@ -194,14 +209,12 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
 
     private fun getAnswersImages(answers: ArrayList<Answer>) {
         answers.forEachIndexed { answerIndex, answer ->
-            run {
-                answer.images.forEachIndexed { imageIndex, image ->
-                    viewModel.getAnswerImage(
-                        image.id,
-                        imageIndex,
-                        answerIndex
-                    )
-                }
+            answer.images.forEachIndexed { imageIndex, image ->
+                viewModel.getAnswerImage(
+                    image.id,
+                    imageIndex,
+                    answerIndex
+                )
             }
         }
     }
@@ -212,22 +225,16 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
         answerViewHolder.showImage(answersDecodedImage)
     }
 
-    private fun handleError(error: ErrorEntity) {
+    private fun handleQuestionError(error: ErrorEntity) {
         when(error) {
             is ErrorEntity.Unauthorized -> {
                 val intent = Intent(this, LoginActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(intent)
             }
-            is ErrorEntity.AccessDenied -> {
-                Snackbar.make(rootLayout, "Na danú akciu nemate práva", Snackbar.LENGTH_INDEFINITE)
-                    .setAction("Späť") {
-                        finish()
-                    }
-                    .show()
-            }
+
             is ErrorEntity.NotFound -> {
-                Snackbar.make(rootLayout, "Daná položka neexistuje", Snackbar.LENGTH_INDEFINITE)
+                Snackbar.make(rootLayout, "Otázka neexistuje", Snackbar.LENGTH_INDEFINITE)
                     .setAction("Späť") {
                         finish()
                     }
@@ -236,9 +243,65 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
             else -> {
                 Snackbar.make(rootLayout, "Oops, niečo sa pokazilo.", Snackbar.LENGTH_LONG)
                         .setAction("Skúsiť znovu") {
-                            viewModel.retry(questionId)
+                            viewModel.getQuestionDetails(questionId)
                         }
                         .show()
+            }
+        }
+    }
+
+    private fun handleQuestionDeleteError(error: ErrorEntity) {
+        when(error) {
+            is ErrorEntity.Unauthorized -> {
+                val intent = Intent(this, LoginActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+            }
+            is ErrorEntity.AccessDenied -> {
+                Snackbar.make(rootLayout, "Nemáte právo na odstránenie otázky", Snackbar.LENGTH_LONG)
+                    .show()
+            }
+            is ErrorEntity.NotFound -> {
+                Snackbar.make(rootLayout, "Otázka neexistuje", Snackbar.LENGTH_INDEFINITE)
+                    .setAction("Späť") {
+                        finish()
+                    }
+                    .show()
+            }
+            else -> {
+                Snackbar.make(rootLayout, "Oops, niečo sa pokazilo.", Snackbar.LENGTH_LONG)
+                    .setAction("Skúsiť znovu") {
+                        viewModel.deleteQuestion(questionId)
+                    }
+                    .show()
+            }
+        }
+    }
+
+    private fun handleAnswerDeleteError(error: ErrorEntity) {
+        when(error) {
+            is ErrorEntity.Unauthorized -> {
+                val intent = Intent(this, LoginActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+            }
+            is ErrorEntity.AccessDenied -> {
+                Snackbar.make(rootLayout, "Nemáte právo na odstránenie odpovedi", Snackbar.LENGTH_LONG)
+                    .show()
+            }
+            is ErrorEntity.NotFound -> {
+                Snackbar.make(rootLayout, "Odpoveď neexistuje", Snackbar.LENGTH_INDEFINITE)
+                    .setAction("Späť") {
+                        finish()
+                    }
+                    .show()
+            }
+            else -> {
+                Snackbar.make(rootLayout, "Oops, niečo sa pokazilo.", Snackbar.LENGTH_LONG)
+                    .setAction("Skúsiť znovu") {
+                        viewModel.deleteAnswer(answerToDelete)
+                    }
+                    .show()
             }
         }
     }

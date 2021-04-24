@@ -29,9 +29,17 @@ class AnswerEditViewModel(application: Application): AndroidViewModel(applicatio
     val editData: LiveData<AnswerEdit>
         get() = _editData
 
-    var successfulEdit: MutableLiveData<Boolean> = MutableLiveData()
-    val validationError: MutableLiveData<Boolean> = MutableLiveData()
-    val bodyErrorMessage: MutableLiveData<String> = MutableLiveData()
+    private val _successfulEdit = MutableLiveData<Boolean>()
+    val successfulEdit: LiveData<Boolean>
+        get() = _successfulEdit
+
+    private val _validationError = MutableLiveData<Boolean>()
+    val validationError: LiveData<Boolean>
+        get() = _validationError
+
+    private val _bodyErrorMessage = MutableLiveData<String>()
+    val bodyErrorMessage: LiveData<String>
+        get() = _bodyErrorMessage
 
     init {
         answersRepository = AnswersRepository()
@@ -57,7 +65,7 @@ class AnswerEditViewModel(application: Application): AndroidViewModel(applicatio
     }
 
     fun editAnswer(answerEdit: AnswerEdit) {
-        validationError.value = false
+        _validationError.value = false
         if(validate(answerEdit.body)) {
             CoroutineScope(Dispatchers.IO).launch {
                 val response = answersRepository?.editAnswer(
@@ -68,7 +76,7 @@ class AnswerEditViewModel(application: Application): AndroidViewModel(applicatio
                 withContext(Dispatchers.Main) {
                     when (response) {
                         is ApiResult.Success -> {
-                            successfulEdit.value = true
+                            _successfulEdit.value = true
                         }
                         is ApiResult.Error -> {
                             _editError.value = response.error
@@ -77,7 +85,7 @@ class AnswerEditViewModel(application: Application): AndroidViewModel(applicatio
                 }
             }
         } else {
-            validationError.value = true
+            _validationError.value = true
         }
     }
 
@@ -85,7 +93,7 @@ class AnswerEditViewModel(application: Application): AndroidViewModel(applicatio
         var flag = true
 
         if(body==null || "".equals(body)) {
-            bodyErrorMessage.value = "Pole obsah je povinné"
+            _bodyErrorMessage.value = "Pole obsah je povinné"
             flag = false
         }
 

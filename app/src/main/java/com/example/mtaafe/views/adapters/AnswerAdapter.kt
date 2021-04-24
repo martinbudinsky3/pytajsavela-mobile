@@ -10,9 +10,8 @@ import com.example.mtaafe.views.viewholders.AnswerViewHolder
 
 
 class AnswerAdapter (private val answersList: ArrayList<Answer>,
-                     private val userId : Long,
-                     private val listener: OnAnswerClickListener
-): RecyclerView.Adapter<RecyclerView.ViewHolder>(){
+                     private val userId : Long
+    ): RecyclerView.Adapter<RecyclerView.ViewHolder>(){
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         var view = LayoutInflater.from(parent.context)
@@ -40,5 +39,20 @@ class AnswerAdapter (private val answersList: ArrayList<Answer>,
 
     fun getAnswer(position: Int): Answer {
         return answersList[position]
+    }
+
+    fun deleteAnswer(id: Long) {
+        for(i in 0 until answersList.size) {
+            if(answersList[i].id == id) {
+                removeItem(i)
+                break
+            }
+        }
+    }
+
+    private fun removeItem(position: Int) {
+        answersList.removeAt(position)
+        notifyItemRemoved(position)
+        notifyItemRangeRemoved(position, 1)
     }
 }

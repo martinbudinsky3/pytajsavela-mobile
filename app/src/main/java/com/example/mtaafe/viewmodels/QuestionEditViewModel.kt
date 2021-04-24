@@ -32,11 +32,21 @@ class QuestionEditViewModel(application: Application): AndroidViewModel(applicat
     val editData: LiveData<Question>
         get() = _editData
 
-    var successfulEdit: MutableLiveData<Boolean> = MutableLiveData()
+    private val _successfulEdit = MutableLiveData<Boolean>()
+    val successfulEdit: LiveData<Boolean>
+        get() = _successfulEdit
 
-    val validationError: MutableLiveData<Boolean> = MutableLiveData()
-    val titleErrorMessage: MutableLiveData<String> = MutableLiveData()
-    val bodyErrorMessage: MutableLiveData<String> = MutableLiveData()
+    private val _validationError = MutableLiveData<Boolean>()
+    val validationError: LiveData<Boolean>
+        get() = _validationError
+
+    private val _titleErrorMessage = MutableLiveData<String>()
+    val titleErrorMessage: LiveData<String>
+        get() = _titleErrorMessage
+
+    private val _bodyErrorMessage = MutableLiveData<String>()
+    val bodyErrorMessage: LiveData<String>
+        get() = _bodyErrorMessage
 
     init {
         questionsRepository = QuestionsRepository()
@@ -63,7 +73,7 @@ class QuestionEditViewModel(application: Application): AndroidViewModel(applicat
     }
 
     fun editQuestion(questionId: Long, questionEdit: QuestionEdit) {
-        validationError.value = false
+        _validationError.value = false
         if(validate(questionEdit.title, questionEdit.body)) {
             CoroutineScope(Dispatchers.IO).launch {
                 val response = questionsRepository?.editQuestion(
@@ -75,7 +85,7 @@ class QuestionEditViewModel(application: Application): AndroidViewModel(applicat
                 withContext(Dispatchers.Main) {
                     when(response) {
                         is ApiResult.Success -> {
-                            successfulEdit.value = true
+                            _successfulEdit.value = true
                         }
                         is ApiResult.Error -> {
                             _editError.value = response.error
@@ -84,30 +94,26 @@ class QuestionEditViewModel(application: Application): AndroidViewModel(applicat
                 }
             }
         } else {
-            validationError.value = true
+            _validationError.value = true
         }
     }
 
     private fun validate(title: String?, body: String?): Boolean {
         var flag = true
         if(title==null || "".equals(title)) {
-            titleErrorMessage.value = "Pole nadpis je povinné"
+            _titleErrorMessage.value = "Pole nadpis je povinné"
             flag = false
         }
         else if(title.length > 255) {
-            titleErrorMessage.value = "Pole nadpis musí mať max. 255 znakov"
+            _titleErrorMessage.value = "Pole nadpis musí mať max. 255 znakov"
             flag = false
         }
 
         if(body==null || "".equals(body)) {
-            bodyErrorMessage.value = "Pole obsah je povinné"
+            _bodyErrorMessage.value = "Pole obsah je povinné"
             flag = false
         }
 
         return flag
-    }
-
-    fun retry(questionId: Long) {
-        getQuestionEditForm(questionId)
     }
 }
