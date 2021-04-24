@@ -1,137 +1,131 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/questionDetailRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/answerBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_gravity="bottom|end"
-        android:layout_marginTop="32dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.876"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editBtn"
-        app:srcCompat="@drawable/ic_baseline_add_24"
-        tools:ignore="VectorDrawableCompat" />
-
-    <TextView
-            android:id="@+id/questionTitleTV"
-            android:layout_width="wrap_content"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Question title"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:padding="20dp">
 
-    <TextView
-        android:id="@+id/questionBodyTV"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="Question body"
-        android:textSize="18sp"
-        app:layout_constraintStart_toStartOf="@+id/tagsQdetailRecyclerView"
-        app:layout_constraintTop_toBottomOf="@+id/tagsQdetailRecyclerView" />
+        <TextView
+                android:id="@+id/questionTitleTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Question title"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/tagsQdetailRecyclerView"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/tagsQdetailRecyclerView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:layout_constraintStart_toStartOf="@+id/questionTitleTV"
+                app:layout_constraintTop_toBottomOf="@+id/questionTitleTV"/>
+
+        <TextView
+            android:id="@+id/questionBodyTV"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            app:layout_constraintStart_toStartOf="@+id/authorTV"
-            app:layout_constraintTop_toBottomOf="@+id/questionTitleTV">
+            android:text="Question body"
+            android:textSize="18sp"
+            app:layout_constraintStart_toStartOf="@+id/tagsQdetailRecyclerView"
+            app:layout_constraintTop_toBottomOf="@+id/tagsQdetailRecyclerView" />
 
-        </androidx.recyclerview.widget.RecyclerView>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/imagesRecyclerView"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/questionBodyTV" />
 
-    <TextView
-        android:id="@+id/authorTV"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="Author"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.117"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/questionBodyTV" />
+            <ImageButton
+                android:id="@+id/editBtn"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:scaleType="fitXY"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_baseline_edit_24"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="@+id/deleteBtn" />
 
-    <TextView
-            android:id="@+id/createdAtTV"
+            <ImageButton
+                android:id="@+id/deleteBtn"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:scaleType="fitXY"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_baseline_delete_24"
+                android:layout_marginLeft="20dp"
+                app:layout_constraintStart_toEndOf="@+id/editBtn"
+                app:layout_constraintBottom_toBottomOf="@+id/createdAtTV" />
+
+        <TextView
+            android:id="@+id/authorTV"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Created at"
+            android:layout_marginTop="15dp"
+            android:text="Author"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imagesRecyclerView" />
+
+            <TextView
+                android:id="@+id/createdAtTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Created at"
+                android:textColor="#A2A2A2"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/authorTV" />
+
+
+        <TextView
+            android:id="@+id/answersCountTV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:text="Answers"
             android:textSize="18sp"
-            app:layout_constraintStart_toStartOf="@+id/authorTV"
-            app:layout_constraintTop_toBottomOf="@+id/authorTV" />
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/editBtn" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/imagesRecyclerView"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintStart_toStartOf="@+id/createdAtTV"
-        app:layout_constraintTop_toBottomOf="@+id/createdAtTV" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/answersListRecycler"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/answersCountTV"
+                app:layout_constraintVertical_bias="0.0" />
 
-    <TextView
-        android:id="@+id/answersCountTV"
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/answerBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Answers"
-        android:textSize="18sp"
-        android:textStyle="bold"
+        android:layout_gravity="bottom|end"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.154"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imagesRecyclerView" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/answersListRecycler"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/answersCountTV"
-            app:layout_constraintVertical_bias="0.0" />
-
-        <Button
-            android:id="@+id/deleteBtn"
-            android:layout_width="101dp"
-            android:layout_height="38dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="24dp"
-            android:text="Odstrániť"
-            app:layout_constraintStart_toEndOf="@+id/editBtn"
-            app:layout_constraintTop_toBottomOf="@+id/questionBodyTV" />
-
-        <Button
-            android:id="@+id/editBtn"
-            android:layout_width="101dp"
-            android:layout_height="38dp"
-            android:layout_marginStart="80dp"
-            android:layout_marginLeft="80dp"
-            android:layout_marginTop="24dp"
-            android:text="Upraviť"
-            app:layout_constraintStart_toEndOf="@+id/authorTV"
-            app:layout_constraintTop_toBottomOf="@+id/questionBodyTV" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</ScrollView>
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:srcCompat="@drawable/ic_baseline_add_24"
+        android:layout_marginEnd="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginBottom="15dp"
+        android:backgroundTint="@color/colorPrimary"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

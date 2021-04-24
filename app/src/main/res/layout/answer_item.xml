@@ -3,27 +3,23 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="350dp"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginLeft="15dp"
-    android:layout_marginTop="25dp"
-    android:layout_marginRight="15dp"
-    android:layout_marginBottom="0dp"
+    android:layout_marginTop="20dp"
     card_view:cardCornerRadius="10dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="8dp">
+        android:padding="15dp"
+        >
 
         <TextView
             android:id="@+id/answerBodyText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
             android:text="Answer body"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.136"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -31,9 +27,7 @@
             android:id="@+id/authorText2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="28dp"
-            android:layout_marginEnd="72dp"
-            android:layout_marginRight="72dp"
+            android:layout_marginTop="10dp"
             android:text="Author"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/answerBodyText" />
@@ -42,36 +36,31 @@
             android:id="@+id/createdAtText2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:layout_marginLeft="4dp"
-            android:layout_marginTop="4dp"
             android:text="Created at"
-            app:layout_constraintStart_toStartOf="@+id/authorText2"
+            android:textColor="#A2A2A2"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/authorText2" />
 
-        <Button
+        <ImageButton
             android:id="@+id/editBtn2"
-            android:layout_width="73dp"
-            android:layout_height="44dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginLeft="24dp"
-            android:layout_marginTop="24dp"
-            android:text="Upraviť"
-            android:textSize="10sp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:scaleType="fitXY"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_baseline_edit_24"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/answerBodyText" />
+            app:layout_constraintBottom_toBottomOf="@+id/deleteBtn2" />
 
-        <Button
+        <ImageButton
             android:id="@+id/deleteBtn2"
-            android:layout_width="80dp"
-            android:layout_height="44dp"
-            android:layout_marginStart="4dp"
-            android:layout_marginLeft="4dp"
-            android:layout_marginTop="24dp"
-            android:text="Odstrániť"
-            android:textSize="10sp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:scaleType="fitXY"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_baseline_delete_24"
+            android:layout_marginLeft="20dp"
             app:layout_constraintStart_toEndOf="@+id/editBtn2"
-            app:layout_constraintTop_toBottomOf="@+id/answerBodyText" />
+            app:layout_constraintBottom_toBottomOf="@+id/createdAtText2" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

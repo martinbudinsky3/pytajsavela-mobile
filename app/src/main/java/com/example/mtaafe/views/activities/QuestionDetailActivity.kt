@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
@@ -31,8 +32,8 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
     private lateinit var imagesListRecycler: RecyclerView
     private lateinit var answerAdapter: AnswerAdapter
     private lateinit var imageAdapter: ImageAdapter
-    private lateinit var deleteButton : Button
-    private lateinit var editButton : Button
+    private lateinit var deleteButton : ImageButton
+    private lateinit var editButton : ImageButton
     private lateinit var question : Question
     private var questionId: Long = 0
     private var questionImagesLoaded: Int = 0
