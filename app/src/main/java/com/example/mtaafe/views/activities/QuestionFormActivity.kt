@@ -67,6 +67,14 @@ class QuestionFormActivity : AppCompatActivity(), ImageClickListener, TagDeleteC
         askButton = findViewById(R.id.askButton)
         tagsAutoCompleteTextView = findViewById(R.id.tagsAutoCompleteTextView)
 
+        selectImageBtn.setOnClickListener {
+            imageSelection()
+        }
+
+        askButton.setOnClickListener {
+            ask()
+        }
+
         imageAdapter = ImageFormAdapter(ArrayList())
         imagesRecycler.layoutManager = LinearLayoutManager(this)
         imagesRecycler.adapter = imageAdapter
@@ -75,12 +83,14 @@ class QuestionFormActivity : AppCompatActivity(), ImageClickListener, TagDeleteC
         tagsRecycler.layoutManager = FlexboxLayoutManager(this)
         tagsRecycler.adapter = selectedTagsAdapter
 
-        selectImageBtn.setOnClickListener {
-            imageSelection()
-        }
+        tagsAdapter = ArrayAdapter(this,
+            android.R.layout.simple_dropdown_item_1line, ArrayList<Tag>())
+        tagsAutoCompleteTextView.setAdapter(tagsAdapter)
 
-        askButton.setOnClickListener {
-            ask()
+        initTagSearch()
+
+        tagsAutoCompleteTextView.setOnItemClickListener { _, _, position, _ ->
+            addTag(position)
         }
 
         viewModel = ViewModelProvider.AndroidViewModelFactory(application)
@@ -103,16 +113,17 @@ class QuestionFormActivity : AppCompatActivity(), ImageClickListener, TagDeleteC
             }
         })
 
-        viewModel.result.observe(this, {
-            when (it) {
-                is ApiResult.Success -> {
-                    Log.d("Success", "Question was posted.")
+        viewModel.successfulPost.observe(this, {
+            if(it == true) {
+                Log.d("Success", "Question was posted.")
 
-                    setResult(Constants.QUESTION_CREATED)
-                    finish()
-                }
-                is ApiResult.Error -> handleError(it.error)
+                setResult(Constants.QUESTION_CREATED)
+                finish()
             }
+        })
+
+        viewModel.postError.observe(this, {
+             handlePostError(it)
         })
 
         viewModel.tagsList.observe(this, {
@@ -123,16 +134,9 @@ class QuestionFormActivity : AppCompatActivity(), ImageClickListener, TagDeleteC
             tagsAdapter.filter.filter(tagsAutoCompleteTextView.text, tagsAutoCompleteTextView)
         })
 
-
-        tagsAdapter = ArrayAdapter(this,
-            android.R.layout.simple_dropdown_item_1line, ArrayList<Tag>())
-        tagsAutoCompleteTextView.setAdapter(tagsAdapter)
-
-        initTagSearch()
-
-        tagsAutoCompleteTextView.setOnItemClickListener { _, _, position, _ ->
-            addTag(position)
-        }
+        viewModel.errorTagsList.observe(this, {
+            handleTagsError(it)
+        })
     }
 
     private fun initTagSearch() {
@@ -249,7 +253,7 @@ class QuestionFormActivity : AppCompatActivity(), ImageClickListener, TagDeleteC
         return name
     }
 
-    private fun handleError(error: ErrorEntity) {
+    private fun handlePostError(error: ErrorEntity) {
         when(error) {
             is ErrorEntity.Unauthorized -> {
                 val intent = Intent(this, LoginActivity::class.java)
@@ -262,6 +266,22 @@ class QuestionFormActivity : AppCompatActivity(), ImageClickListener, TagDeleteC
                             ask()
                         }
                         .show()
+            }
+        }
+    }
+
+    private fun handleTagsError(error: ErrorEntity) {
+        when(error) {
+            is ErrorEntity.Unauthorized -> {
+                val intent = Intent(this, LoginActivity::class.java)
+                startActivity(intent)
+            }
+            else -> {
+                Snackbar.make(rootLayout, "Nepodarilo sa načítať tagy", Snackbar.LENGTH_LONG)
+                    .setAction("Skúsiť znovu") {
+                        viewModel.getTagsList()
+                    }
+                    .show()
             }
         }
     }

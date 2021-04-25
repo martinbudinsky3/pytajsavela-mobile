@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.mtaafe.data.models.*
 import com.example.mtaafe.data.repositories.QuestionsRepository
+import com.example.mtaafe.data.repositories.TagsRepository
 import com.example.mtaafe.utils.SessionManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -18,6 +19,7 @@ import okhttp3.RequestBody
 class QuestionEditViewModel(application: Application): AndroidViewModel(application) {
 
     private var questionsRepository: QuestionsRepository? = null
+    private var tagsRepository: TagsRepository? = null
     private var sessionManager: SessionManager? = null
 
     private val _getEditDataError= MutableLiveData<ErrorEntity>()
@@ -36,6 +38,14 @@ class QuestionEditViewModel(application: Application): AndroidViewModel(applicat
     val successfulEdit: LiveData<Boolean>
         get() = _successfulEdit
 
+    private val _tagsList = MutableLiveData<TagsList>()
+    val tagsList: LiveData<TagsList>
+        get() = _tagsList
+
+    private val _errorTagsList = MutableLiveData<ErrorEntity>()
+    val errorTagsList: LiveData<ErrorEntity>
+        get() = _errorTagsList
+
     private val _validationError = MutableLiveData<Boolean>()
     val validationError: LiveData<Boolean>
         get() = _validationError
@@ -48,8 +58,11 @@ class QuestionEditViewModel(application: Application): AndroidViewModel(applicat
     val bodyErrorMessage: LiveData<String>
         get() = _bodyErrorMessage
 
+    var searchQuery: String = ""
+
     init {
         questionsRepository = QuestionsRepository()
+        tagsRepository = TagsRepository()
         sessionManager = SessionManager(application)
     }
 
@@ -66,6 +79,27 @@ class QuestionEditViewModel(application: Application): AndroidViewModel(applicat
                     }
                     is ApiResult.Error -> {
                         _getEditDataError.value = response.error
+                    }
+                }
+            }
+        }
+    }
+
+    fun getTagsList(){
+        CoroutineScope(Dispatchers.IO).launch {
+            val response = tagsRepository?.getTagsList(sessionManager?.fetchApiToken().toString(), 1, searchQuery)
+
+            withContext(Dispatchers.Main) {
+                when(response) {
+                    is ApiResult.Success -> {
+
+                        if(response.data is TagsList) {
+                            _tagsList.value = response.data!!
+
+                        }
+                    }
+                    is ApiResult.Error -> {
+                        _errorTagsList.value = response.error
                     }
                 }
             }

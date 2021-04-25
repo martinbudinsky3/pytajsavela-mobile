@@ -74,7 +74,7 @@ class UserAnswersFragment : Fragment() {
                     .show()
             }
             else -> {
-                Snackbar.make(userAnswersFragmentView, "Oops, niečo sa pokazilo.", Snackbar.LENGTH_INDEFINITE)
+                Snackbar.make(userAnswersFragmentView, "Nepodarilo sa načítať odpovede", Snackbar.LENGTH_INDEFINITE)
                     .setAction("Skúsiť znovu") {
                         viewModel.getUserAnswersList()
                     }

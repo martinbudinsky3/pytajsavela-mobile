@@ -37,7 +37,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:ems="10"
-            android:inputType="textPersonName"  />
+            android:inputType="text"  />
         <TextView
             android:id="@+id/titleErrorMessageText"
             android:layout_width="wrap_content"
@@ -60,7 +60,9 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:ems="10"
-            android:inputType="textPersonName"  />
+            android:inputType="textMultiLine"
+            android:maxLines="20"
+            android:scrollHorizontally="false"/>
         <TextView
             android:id="@+id/bodyErrorMessageText"
             android:layout_width="wrap_content"
@@ -69,11 +71,33 @@
             android:visibility="gone"
             android:textColor="@android:color/holo_red_dark" />
 
+        <TextView
+            android:id="@+id/tagsLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:text="Tagy"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <AutoCompleteTextView
+            android:id="@+id/tagsAutoCompleteTextView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:completionThreshold="1"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/tagsRecyclerView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="false"
+            />
+
         <Button
             android:id="@+id/questionEditBtn"
             android:background="@color/colorPrimary"
             android:textColor="@android:color/white"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="30dp"
             android:paddingVertical="30dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

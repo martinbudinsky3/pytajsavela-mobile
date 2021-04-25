@@ -39,6 +39,7 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
     private var answerToDelete: Long = 0
     private var questionImagesLoaded: Int = 0
     private var answersImagesLoaded: Int = 0
+    private var shouldGetImages = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,7 +78,11 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
             question = it
             setQuestionData(question)
             checkIfAuthor(question.author)
-            getQuestionImages(question.images)
+
+            if(shouldGetImages) {
+                getQuestionImages(question.images)
+            }
+
             getAnswersImages(question.answers)
         })
 
@@ -245,7 +250,7 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
                     .show()
             }
             else -> {
-                Snackbar.make(rootLayout, "Oops, niečo sa pokazilo.", Snackbar.LENGTH_LONG)
+                Snackbar.make(rootLayout, "Nepodarilo sa načítať otázku", Snackbar.LENGTH_LONG)
                         .setAction("Skúsiť znovu") {
                             viewModel.getQuestionDetails(questionId)
                         }
@@ -273,7 +278,7 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
                     .show()
             }
             else -> {
-                Snackbar.make(rootLayout, "Oops, niečo sa pokazilo.", Snackbar.LENGTH_LONG)
+                Snackbar.make(rootLayout, "Nepodarilo sa odstrániť otázku", Snackbar.LENGTH_LONG)
                     .setAction("Skúsiť znovu") {
                         viewModel.deleteQuestion(questionId)
                     }
@@ -301,7 +306,7 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
                     .show()
             }
             else -> {
-                Snackbar.make(rootLayout, "Oops, niečo sa pokazilo.", Snackbar.LENGTH_LONG)
+                Snackbar.make(rootLayout, "Nemáte právo na odstránenie odpovedi", Snackbar.LENGTH_LONG)
                     .setAction("Skúsiť znovu") {
                         viewModel.deleteAnswer(answerToDelete)
                     }
@@ -333,18 +338,21 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
 
         if(requestCode == Constants.UPDATE_UI) {
             if(resultCode == Constants.QUESTION_UPDATED) {
+                shouldGetImages = false
                 viewModel.getQuestionDetails(questionId)
                 setResult(Constants.QUESTION_UPDATED)
                 showInfoSnackbar("Otázka bola upravená")
             }
 
             if(resultCode == Constants.ANSWER_CREATED) {
+                shouldGetImages = false
                 viewModel.getQuestionDetails(questionId)
                 setResult(Constants.QUESTION_UPDATED)
                 showInfoSnackbar("Odpoveď bola pridaná")
             }
 
             if(resultCode == Constants.ANSWER_UPDATED) {
+                shouldGetImages = false
                 viewModel.getQuestionDetails(questionId)
                 showInfoSnackbar("Odpoveď bola upravená")
             }

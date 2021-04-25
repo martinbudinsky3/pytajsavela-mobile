@@ -53,7 +53,7 @@ class LoginActivity : AppCompatActivity() {
                     .show()
             }
             else -> {
-                Snackbar.make(loginRoot, "Oops, niečo sa pokazilo", Snackbar.LENGTH_INDEFINITE)
+                Snackbar.make(loginRoot, "Nepodarilo sa prihlásiť", Snackbar.LENGTH_INDEFINITE)
                     .setAction("Skúsiť znovu") {
                         viewModel.login()
                     }

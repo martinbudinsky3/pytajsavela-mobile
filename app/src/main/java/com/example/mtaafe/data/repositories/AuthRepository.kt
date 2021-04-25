@@ -21,6 +21,7 @@ class AuthRepository {
 
     suspend fun login(credentials: Credentials): ApiResult<out Any> {
         try {
+            Log.i("Login api call", "Logging in user")
             apiInterface?.login(credentials).let {
                 // server returns 200
                 if (it?.isSuccessful == true) {
@@ -31,7 +32,7 @@ class AuthRepository {
                 // server returns response with error code
                 else {
                     val exception = HttpException(it!!)
-                    Log.e("Login api call", "Server returns response with error code.", exception)
+                    Log.e("Login api call", "Server returns response with error code. Response: $it", exception)
                     return ApiResult.Error<ErrorEntity>(ErrorHandler.getError(exception))
                 }
             }
@@ -46,6 +47,7 @@ class AuthRepository {
 
     suspend fun logout(apiToken: String): ApiResult<out Any> {
         try {
+            Log.i("Logout api call", "Logging out user")
             apiInterface?.logout("Bearer $apiToken").let {
                 // server returns 200
                 if (it?.isSuccessful == true) {
@@ -56,7 +58,7 @@ class AuthRepository {
                 // server returns response with error code
                 else {
                     val exception = HttpException(it!!)
-                    Log.e("Logout api call", "Server returns response with error code.", exception)
+                    Log.e("Logout api call", "Server returns response with error code. Response: $it", exception)
                     return ApiResult.Error<ErrorEntity>(ErrorHandler.getError(exception))
                 }
             }

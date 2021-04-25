@@ -107,7 +107,7 @@ class AnswerEditActivity: AppCompatActivity() {
                     .show()
             }
             else -> {
-                Snackbar.make(rootLayout, "Oops, niečo sa pokazilo.", Snackbar.LENGTH_LONG)
+                Snackbar.make(rootLayout, "Nepodarilo sa načítať otázku", Snackbar.LENGTH_LONG)
                     .setAction("Skúsiť znovu") {
                         viewModel.getAnswerEditForm(answerId)
                     }
@@ -130,14 +130,14 @@ class AnswerEditActivity: AppCompatActivity() {
                     .show()
             }
             is ErrorEntity.AccessDenied -> {
-                Snackbar.make(rootLayout, "Na danú akciu nemate práva", Snackbar.LENGTH_INDEFINITE)
+                Snackbar.make(rootLayout, "Nemate práva na upravenie odpovedi", Snackbar.LENGTH_INDEFINITE)
                     .setAction("Späť") {
                         finish()
                     }
                     .show()
             }
             else -> {
-                Snackbar.make(rootLayout, "Oops, niečo sa pokazilo.", Snackbar.LENGTH_LONG)
+                Snackbar.make(rootLayout, "Nepodarilo sa upraviť otázku", Snackbar.LENGTH_LONG)
                     .setAction("Skúsiť znovu") {
                         editAnswer()
                     }

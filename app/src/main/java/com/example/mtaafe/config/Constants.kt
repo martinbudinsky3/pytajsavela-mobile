@@ -10,7 +10,7 @@ object Constants {
     const val QUESTION_CREATED = 1
     const val QUESTION_UPDATED = 2
     const val QUESTION_DELETED = 3
-    const val ANSWER_CREATED = 1
-    const val ANSWER_UPDATED = 2
-    const val ANSWER_DELETED = 3
+    const val ANSWER_CREATED = 4
+    const val ANSWER_UPDATED = 5
+    const val ANSWER_DELETED = 6
 }

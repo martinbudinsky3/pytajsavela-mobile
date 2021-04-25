@@ -26,6 +26,12 @@ class DeletableTagAdapter(private val tagsList: ArrayList<Tag>): RecyclerView.Ad
         return tagsList.size
     }
 
+    fun updateData(newTags: ArrayList<Tag>) {
+        tagsList.clear()
+        tagsList.addAll(newTags)
+        notifyDataSetChanged()
+    }
+
     fun removeItem(position: Int) {
         tagsList.removeAt(position)
         notifyItemRemoved(position)
@@ -36,5 +42,9 @@ class DeletableTagAdapter(private val tagsList: ArrayList<Tag>): RecyclerView.Ad
         tagsList.add(tag)
         notifyItemInserted(itemCount + 1)
         notifyItemRangeInserted(itemCount, 1)
+    }
+    
+    fun getTag(position: Int): Tag {
+        return tagsList.get(position)
     }
 }

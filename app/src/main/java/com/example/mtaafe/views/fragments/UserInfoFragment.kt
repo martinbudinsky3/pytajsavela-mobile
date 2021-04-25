@@ -56,7 +56,7 @@ class UserInfoFragment: Fragment() {
                     .show()
             }
             else -> {
-                Snackbar.make(binding.root, "Oops, niečo sa pokazilo.", Snackbar.LENGTH_INDEFINITE)
+                Snackbar.make(binding.root, "Nepodarilo sa načítať informácie", Snackbar.LENGTH_INDEFINITE)
                     .setAction("Skúsiť znovu") {
                         viewModel.getUserInfo()
                     }

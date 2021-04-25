@@ -21,7 +21,7 @@ class AnswersRepository {
 
     suspend fun postAnswer(apiToken: String, questionId: Long, body : RequestBody, images : List<MultipartBody.Part>?) : ApiResult<out Any>{
         try {
-            Log.d("Post answer api call", "Posting answer.")
+            Log.i("Post answer api call", "Posting answer.")
 
             apiInterface?.postAnswer(
                     "Bearer $apiToken",
@@ -38,20 +38,20 @@ class AnswersRepository {
                 // server returns response with error code
                 else {
                     val exception = HttpException(it!!)
-                    Log.e("Post answer api call", "Server returns response with error code.", exception)
+                    Log.e("Post answer api call", "Server returns response with error code. Response: $it", exception)
                     return ApiResult.Error<ErrorEntity>(ErrorHandler.getError(exception))
                 }
             }
         }
         catch (exception: Exception) {
-            Log.e("Answers api call", "Error while connecting to server.", exception)
+            Log.e("Post answer api call", "Error while connecting to server.", exception)
             return ApiResult.Error<ErrorEntity>(ErrorHandler.getError(exception))
         }
     }
 
     suspend fun editAnswer(apiToken: String, answerEdit: AnswerEdit): ApiResult<out Any> {
         try {
-            Log.d("Edit answer api call", "Putting new answer details")
+            Log.i("Edit answer api call", "Putting new answer details")
 
             apiInterface?.editAnswer(
                     "Bearer $apiToken",
@@ -67,7 +67,7 @@ class AnswersRepository {
                 // server returns response with error code
                 else {
                     val exception = HttpException(it!!)
-                    Log.e("Edit answer api call", "Server returns response with error code.", exception)
+                    Log.e("Edit answer api call", "Server returns response with error code. Response: $it", exception)
                     return ApiResult.Error<ErrorEntity>(ErrorHandler.getError(exception))
                 }
             }
@@ -81,51 +81,51 @@ class AnswersRepository {
 
     suspend fun getAnswerEditForm(apiToken: String, answerId: Long) : ApiResult<out Any>{
         try {
-            Log.d("Post answer api call", "Posting answer.")
+            Log.i("Answer edit info api call", "Getting answers data for edit form.")
 
             apiInterface?.getAnswerEditForm("Bearer $apiToken", answerId).let {
                 // server returns 200
                 if (it?.isSuccessful == true) {
-                    Log.i("Post answer api call", "Successful post answer api call")
+                    Log.i("Answer edit info api call", "Successful answer edit info api call")
                     return ApiResult.Success(it.body()!!)
                 }
 
                 // server returns response with error code
                 else {
                     val exception = HttpException(it!!)
-                    Log.e("Post answer api call", "Server returns response with error code.", exception)
+                    Log.e("Answer edit info api call", "Server returns response with error code. Response: $it", exception)
                     return ApiResult.Error<ErrorEntity>(ErrorHandler.getError(exception))
                 }
             }
         }
         catch (exception: Exception) {
-            Log.e("Answers api call", "Error while connecting to server.", exception)
+            Log.e("Answer edit info api call", "Error while connecting to server.", exception)
             return ApiResult.Error<ErrorEntity>(ErrorHandler.getError(exception))
         }
     }
 
     suspend fun deleteAnswer(apiToken: String, answerId: Long): ApiResult<out Any> {
         try {
-            Log.d("Ans delete api call", "Deleting answer")
+            Log.i("Answer delete api call", "Deleting answer")
 
             apiInterface?.deleteAnswer("Bearer $apiToken", answerId).let {
                 // server returns 200
                 if (it?.isSuccessful == true) {
-                    Log.i("Ans delete api call", "Successful answer delete api call")
+                    Log.i("Answer delete api call", "Successful answer delete api call")
                     return ApiResult.Success(it)
                 }
 
                 // server returns response with error code
                 else {
                     val exception = HttpException(it!!)
-                    Log.e("Ans delete api call", "Server returns response with error code.", exception)
+                    Log.e("Answer delete api call", "Server returns response with error code. Response: $it", exception)
                     return ApiResult.Error<ErrorEntity>(ErrorHandler.getError(exception))
                 }
             }
         }
         // something else went wrong
         catch (exception: Exception) {
-            Log.e("Ans edit-form api call", "Error while connecting to server.", exception)
+            Log.e("Answer delete api call", "Error while connecting to server.", exception)
             return ApiResult.Error<ErrorEntity>(ErrorHandler.getError(exception))
         }
     }

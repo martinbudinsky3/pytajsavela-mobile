@@ -27,6 +27,14 @@ class QuestionFormViewModel(application: Application): AndroidViewModel(applicat
 
     var result: MutableLiveData<ApiResult<out Any>> = MutableLiveData()
 
+    private val _successfulPost = MutableLiveData<Boolean>()
+    val successfulPost: LiveData<Boolean>
+        get() = _successfulPost
+
+    private val _postError = MutableLiveData<ErrorEntity>()
+    val postError: LiveData<ErrorEntity>
+        get() = _postError
+
     private val _tagsList = MutableLiveData<TagsList>()
     val tagsList: LiveData<TagsList>
         get() = _tagsList
@@ -60,7 +68,14 @@ class QuestionFormViewModel(application: Application): AndroidViewModel(applicat
                  )
 
                  withContext(Dispatchers.Main) {
-                     result.value = response
+                     when(response) {
+                         is ApiResult.Success -> {
+                             _successfulPost.value = true
+                         }
+                         is ApiResult.Error -> {
+                             _postError.value = response.error
+                         }
+                     }
                  }
              }
          } else {

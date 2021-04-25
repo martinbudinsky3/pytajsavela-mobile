@@ -2,27 +2,37 @@ package com.example.mtaafe.views.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.RecyclerView
 import com.example.mtaafe.R
 import com.example.mtaafe.config.Constants
 import com.example.mtaafe.data.models.*
 import com.example.mtaafe.viewmodels.QuestionEditViewModel
+import com.example.mtaafe.views.adapters.DeletableTagAdapter
+import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.material.snackbar.Snackbar
 
-class QuestionEditActivity: AppCompatActivity() {
+class QuestionEditActivity: AppCompatActivity(), TagDeleteClickListener {
     private lateinit var viewModel: QuestionEditViewModel
+    private lateinit var selectedTagsAdapter: DeletableTagAdapter
+    private lateinit var tagsAdapter: ArrayAdapter<Tag>
     private lateinit var rootLayout: View
+    private lateinit var tagsRecycler: RecyclerView
     private lateinit var questionTitleEditText: EditText
     private lateinit var questionBodyEditText: EditText
     private lateinit var titleErrorMessageText: TextView
     private lateinit var bodyErrorMessageText: TextView
+    private lateinit var questionEditBtn : Button
+    private lateinit var tagsAutoCompleteTextView: AutoCompleteTextView
 
-    private lateinit var originalTags: List<Tag>
+    private var newTags = ArrayList<Long>()
+    private var deletedTags = ArrayList<Long>()
+    private var originalTagsSize = 0
     private var questionId: Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,22 +46,36 @@ class QuestionEditActivity: AppCompatActivity() {
         supportActionBar?.title = "Editovanie otázky"
 
         rootLayout = findViewById(R.id.questionEditRoot)
+        tagsRecycler = findViewById(R.id.tagsRecyclerView)
         questionTitleEditText = findViewById(R.id.questionTitleEditText)
         questionBodyEditText = findViewById(R.id.questionBodyEditText)
         titleErrorMessageText = findViewById(R.id.titleErrorMessageText)
         bodyErrorMessageText = findViewById(R.id.bodyErrorMessageText)
-
-        viewModel = ViewModelProvider.AndroidViewModelFactory(application)
-                .create(QuestionEditViewModel::class.java)
-
-        viewModel.getQuestionEditForm(questionId)
-
-        val questionEditBtn : Button = findViewById(R.id.questionEditBtn)
+        questionEditBtn = findViewById(R.id.questionEditBtn)
+        tagsAutoCompleteTextView = findViewById(R.id.tagsAutoCompleteTextView)
 
         questionEditBtn.setOnClickListener {
             editQuestion()
         }
 
+        selectedTagsAdapter = DeletableTagAdapter(ArrayList())
+        tagsRecycler.layoutManager = FlexboxLayoutManager(this)
+        tagsRecycler.adapter = selectedTagsAdapter
+
+        tagsAdapter = ArrayAdapter(this,
+            android.R.layout.simple_dropdown_item_1line, ArrayList<Tag>())
+        tagsAutoCompleteTextView.setAdapter(tagsAdapter)
+
+        initTagSearch()
+
+        tagsAutoCompleteTextView.setOnItemClickListener { _, _, position, _ ->
+            addTag(position)
+        }
+
+        viewModel = ViewModelProvider.AndroidViewModelFactory(application)
+                .create(QuestionEditViewModel::class.java)
+
+        viewModel.getQuestionEditForm(questionId)
 
         viewModel.successfulEdit.observe(this, {
             if(it == true) {
@@ -88,16 +112,52 @@ class QuestionEditActivity: AppCompatActivity() {
                     .show()
             }
         })
+
+        viewModel.tagsList.observe(this, {
+            Log.d("Tags results size", it.tags.size.toString())
+            tagsAdapter.clear()
+            tagsAdapter.addAll(it.tags)
+            tagsAdapter.notifyDataSetChanged()
+            tagsAdapter.filter.filter(tagsAutoCompleteTextView.text, tagsAutoCompleteTextView)
+        })
+
+        viewModel.errorTagsList.observe(this, {
+            handleTagsError(it)
+        })
+    }
+
+    private fun initTagSearch() {
+        tagsAutoCompleteTextView.doAfterTextChanged { text ->
+            if(text != null && text.trim().length > 1) {
+                Log.d("Tag query", text.toString())
+                viewModel.searchQuery = text.toString()
+                viewModel.getTagsList()
+            } else {
+                tagsAdapter.clear()
+            }
+        }
+    }
+
+    private fun addTag(position: Int) {
+        val tag = tagsAdapter.getItem(position)
+        Log.d("Selected tag", tag.toString())
+        selectedTagsAdapter.addItem(tag!!)
+        newTags.add(tag.id)
+        clearTagField()
+    }
+
+    private fun clearTagField() {
+        tagsAutoCompleteTextView.setText("")
+        tagsAdapter.clear()
     }
 
     private fun editQuestion(){
-        val tgs = ArrayList<Long>()
         val questionEdit = QuestionEdit(
             questionId,
             questionTitleEditText?.text.toString(),
             questionBodyEditText?.text.toString(),
-            tgs,
-            tgs
+            newTags,
+            deletedTags
         )
 
         bodyErrorMessageText.visibility = View.GONE
@@ -106,30 +166,11 @@ class QuestionEditActivity: AppCompatActivity() {
         viewModel.editQuestion(questionId, questionEdit)
     }
 
-//    private fun getDeletedTags(originalTags: List<Tag>, newTags: List<String>): List<String>?{
-//        val deletedTags = mutableListOf<String>()
-//
-//        for (tag in originalTags){
-//            if (tag.name !in newTags){
-//                deletedTags.add(tag.name)
-//            }
-//        }
-//
-//        return deletedTags
-//    }
-
     private fun setQuestionData(question: Question){
         questionTitleEditText?.setText(question.title)
         questionBodyEditText?.setText(question.body)
-
-//        originalTags = question.tags
-//
-//        val tagsEditRecyclerView: RecyclerView = findViewById(R.id.tagsEditRecyclerView)
-//        val adapter = TagAdapter(question.tags)
-//        val layoutManager = LinearLayoutManager(this)
-//
-//        tagsEditRecyclerView.layoutManager = layoutManager
-//        tagsEditRecyclerView.adapter = adapter
+        selectedTagsAdapter.updateData(question.tags)
+        originalTagsSize = question.tags.size
     }
 
     private fun handleGetEditDataError(error: ErrorEntity) {
@@ -147,7 +188,7 @@ class QuestionEditActivity: AppCompatActivity() {
                     .show()
             }
             else -> {
-                Snackbar.make(rootLayout, "Oops, niečo sa pokazilo.", Snackbar.LENGTH_LONG)
+                Snackbar.make(rootLayout, "Nepodarilo sa načítať otázku", Snackbar.LENGTH_INDEFINITE)
                     .setAction("Skúsiť znovu") {
                         viewModel.getQuestionEditForm(questionId)
                     }
@@ -170,19 +211,51 @@ class QuestionEditActivity: AppCompatActivity() {
                     .show()
             }
             is ErrorEntity.AccessDenied -> {
-                Snackbar.make(rootLayout, "Na danú akciu nemate práva", Snackbar.LENGTH_INDEFINITE)
+                Snackbar.make(rootLayout, "Nemate práva na upravenie otázky", Snackbar.LENGTH_INDEFINITE)
                     .setAction("Späť") {
                         finish()
                     }
                     .show()
             }
             else -> {
-                Snackbar.make(rootLayout, "Oops, niečo sa pokazilo.", Snackbar.LENGTH_LONG)
+                Snackbar.make(rootLayout, "Nepodarilo sa upraviť otázku", Snackbar.LENGTH_INDEFINITE)
                     .setAction("Skúsiť znovu") {
                         editQuestion()
                     }
                     .show()
             }
         }
+    }
+
+    private fun handleTagsError(error: ErrorEntity) {
+        when(error) {
+            is ErrorEntity.Unauthorized -> {
+                val intent = Intent(this, LoginActivity::class.java)
+                startActivity(intent)
+            }
+            else -> {
+                Snackbar.make(rootLayout, "Nepodarilo sa načítať tagy", Snackbar.LENGTH_LONG)
+                    .setAction("Skúsiť znovu") {
+                        viewModel.getTagsList()
+                    }
+                    .show()
+            }
+        }
+    }
+
+    override fun removeTag(position: Int) {
+        // if original tag has been removed
+        if(position < originalTagsSize) {
+            val tag: Tag = selectedTagsAdapter.getTag(position)
+            deletedTags.add(tag.id)
+            originalTagsSize--
+        }
+
+        // if new tag has been removed
+        else {
+            newTags.removeAt(position)
+        }
+
+        selectedTagsAdapter.removeItem(position)
     }
 }

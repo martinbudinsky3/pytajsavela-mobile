@@ -19,10 +19,11 @@ class ImagesRepository {
 
     suspend fun getImage(apiToken: String, imageId: Long): ApiResult<out Any> {
         try {
-            Log.d("Get image api call", "Getting image")
+            Log.i("Get image api call", "Getting image")
 
             apiInterface?.getImage("Bearer $apiToken", imageId).let {
                 if (it?.isSuccessful == true) {
+                    Log.i("Get image api call", "Succesful get image api call")
                     val inputStream: InputStream = it?.body()!!.byteStream()
 
                     val bitmap = BitmapFactory.decodeStream(inputStream)
@@ -34,7 +35,7 @@ class ImagesRepository {
                     val exception = HttpException(it!!)
                     Log.e(
                         "Get image api call",
-                        "Server returns response with error code.",
+                        "Server returns response with error code. Response: $it",
                         exception
                     )
                     return ApiResult.Error<ErrorEntity>(ErrorHandler.getError(exception))
