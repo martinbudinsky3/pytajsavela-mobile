@@ -26,11 +26,16 @@ import com.google.android.material.snackbar.Snackbar
 
 class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
     private lateinit var viewModel: QuestionDetailViewModel
+    private lateinit var answerAdapter: AnswerAdapter
+    private lateinit var imageAdapter: ImageAdapter
     private lateinit var rootLayout: View
     private lateinit var answersListRecycler: RecyclerView
     private lateinit var imagesListRecycler: RecyclerView
-    private lateinit var answerAdapter: AnswerAdapter
-    private lateinit var imageAdapter: ImageAdapter
+    private lateinit var questionTitleTextView: TextView
+    private lateinit var questionBodyTextView: TextView
+    private lateinit var authorTextView: TextView
+    private lateinit var createdAtTextView: TextView
+    private lateinit var answersCountTextView: TextView
     private lateinit var answerButton : FloatingActionButton
     private lateinit var deleteButton : ImageButton
     private lateinit var editButton : ImageButton
@@ -40,6 +45,7 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
     private var questionImagesLoaded: Int = 0
     private var answersImagesLoaded: Int = 0
     private var shouldGetImages = true
+    private var answersCount = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,7 +82,7 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
 
         viewModel.question.observe(this, Observer {
             question = it
-            setQuestionData(question)
+            setQuestionData()
             checkIfAuthor(question.author)
 
             if(shouldGetImages) {
@@ -107,6 +113,8 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
             if(it == true) {
                 setResult(Constants.QUESTION_UPDATED)
                 answerAdapter.deleteAnswer(answerToDelete)
+                answersCount--
+                answersCountTextView.text = "Odpovede (" + answersCount.toString() + "):"
                 showInfoSnackbar("Odpoveď bola odstránená")
             }
         })
@@ -188,18 +196,20 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
         }
     }
 
-    private fun setQuestionData(question: Question){
-        val questionTitleTV: TextView = findViewById(R.id.questionTitleTV)
-        val questionBodyTV: TextView = findViewById(R.id.questionBodyTV)
-        val authorTV: TextView = findViewById(R.id.authorTV)
-        val createdAtTV: TextView = findViewById(R.id.createdAtTV)
-        val answersCountTV: TextView = findViewById(R.id.answersCountTV)
+    private fun setQuestionData(){
+        questionTitleTextView = findViewById(R.id.questionTitleTV)
+        questionBodyTextView = findViewById(R.id.questionBodyTV)
+        authorTextView = findViewById(R.id.authorTV)
+        createdAtTextView = findViewById(R.id.createdAtTV)
+        answersCountTextView = findViewById(R.id.answersCountTV)
 
-        questionTitleTV.text = question.title
-        questionBodyTV.text = question.body
-        authorTV.text = question.author.name
-        createdAtTV.text = question.createdAt.toString()
-        answersCountTV.text = "Odpovede (" + question.answers.size.toString() + "):"
+        questionTitleTextView.text = question.title
+        questionBodyTextView.text = question.body
+        authorTextView.text = question.author.name
+        createdAtTextView.text = question.createdAt.toString()
+        answersCountTextView.text = "Odpovede (" + question.answers.size.toString() + "):"
+
+        answersCount = question.answers.size
 
         answerAdapter.updateData(question.answers)
 

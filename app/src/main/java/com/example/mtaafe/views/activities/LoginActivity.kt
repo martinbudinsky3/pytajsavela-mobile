@@ -48,12 +48,12 @@ class LoginActivity : AppCompatActivity() {
     private fun handleError(error: ErrorEntity) {
         when(error) {
             is ErrorEntity.Unauthorized -> {
-                Snackbar.make(loginRoot, "Nesprávne prihlasovacie údaje", Snackbar.LENGTH_INDEFINITE)
+                Snackbar.make(binding.root, "Nesprávne prihlasovacie údaje", Snackbar.LENGTH_INDEFINITE)
                     .setAction("OK") {}
                     .show()
             }
             else -> {
-                Snackbar.make(loginRoot, "Nepodarilo sa prihlásiť", Snackbar.LENGTH_INDEFINITE)
+                Snackbar.make(binding.root, "Nepodarilo sa prihlásiť", Snackbar.LENGTH_INDEFINITE)
                     .setAction("Skúsiť znovu") {
                         viewModel.login()
                     }

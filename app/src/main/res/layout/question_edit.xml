@@ -31,6 +31,11 @@
             android:text="Nadpis *"
             android:textStyle="bold"
             android:textSize="16sp" />
+        <TextView
+            android:id="@+id/titleHelp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Buďte čo najviac špecifický (max. 255 znakov)"/>
 
         <EditText
             android:id="@+id/questionTitleEditText"
@@ -54,7 +59,11 @@
             android:text="Obsah *"
             android:textSize="16sp"
             android:textStyle="bold" />
-
+        <TextView
+            android:id="@+id/contentHelp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Uveďte všetky informácie potrebné k zodpovedaniu otázky"/>
         <EditText
             android:id="@+id/questionBodyEditText"
             android:layout_width="match_parent"
@@ -79,7 +88,11 @@
             android:text="Tagy"
             android:textSize="16sp"
             android:textStyle="bold" />
-
+        <TextView
+            android:id="@+id/tagsHelp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Uveďte tagy, ktoré opisujú o čom je Vaša otázka"/>
         <AutoCompleteTextView
             android:id="@+id/tagsAutoCompleteTextView"
             android:layout_width="match_parent"
