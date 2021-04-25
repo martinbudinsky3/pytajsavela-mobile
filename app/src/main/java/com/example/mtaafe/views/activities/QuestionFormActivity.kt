@@ -10,13 +10,17 @@ import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mtaafe.R
+import com.example.mtaafe.config.Constants
 import com.example.mtaafe.data.models.*
 import com.example.mtaafe.viewmodels.QuestionFormViewModel
+import com.example.mtaafe.views.adapters.DeletableTagAdapter
 import com.example.mtaafe.views.adapters.ImageFormAdapter
+import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import okhttp3.MediaType
 import okhttp3.MultipartBody
@@ -26,18 +30,23 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 
 
-class QuestionFormActivity : AppCompatActivity(), ImageClickListener {
+class QuestionFormActivity : AppCompatActivity(), ImageClickListener, TagDeleteClickListener {
     private lateinit var viewModel: QuestionFormViewModel
     private lateinit var imageAdapter: ImageFormAdapter
+    private lateinit var selectedTagsAdapter: DeletableTagAdapter
+    private lateinit var tagsAdapter: ArrayAdapter<Tag>
     private lateinit var rootLayout: View
     private lateinit var titleErrorMessageText: TextView
     private lateinit var bodyErrorMessageText: TextView
     private lateinit var imagesRecycler: RecyclerView
+    private lateinit var tagsRecycler: RecyclerView
     private lateinit var editTextQuestionTitle: EditText
     private lateinit var editTextQuestionBody: EditText
+    private lateinit var selectImageBtn : Button
+    private lateinit var askButton : Button
+    private lateinit var tagsAutoCompleteTextView: AutoCompleteTextView
     private var selectedImages = ArrayList<Uri?>()
-    var images = ArrayList<MultipartBody.Part>()
-    private var tagList = ArrayList<Long>()
+    private var selectedTags = ArrayList<Long>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,17 +62,18 @@ class QuestionFormActivity : AppCompatActivity(), ImageClickListener {
         titleErrorMessageText = findViewById(R.id.titleErrorMessageText)
         bodyErrorMessageText = findViewById(R.id.bodyErrorMessageText)
         imagesRecycler = findViewById(R.id.imagesRecyclerView)
+        tagsRecycler = findViewById(R.id.tagsRecyclerView)
+        selectImageBtn = findViewById(R.id.selectImageBtn)
+        askButton = findViewById(R.id.askButton)
+        tagsAutoCompleteTextView = findViewById(R.id.tagsAutoCompleteTextView)
 
         imageAdapter = ImageFormAdapter(ArrayList())
         imagesRecycler.layoutManager = LinearLayoutManager(this)
         imagesRecycler.adapter = imageAdapter
 
-        viewModel = ViewModelProvider.AndroidViewModelFactory(application)
-                .create(QuestionFormViewModel::class.java)
-
-
-        val selectImageBtn : Button = findViewById(R.id.selectImageBtn)
-        val askButton : Button = findViewById(R.id.askButton)
+        selectedTagsAdapter = DeletableTagAdapter(ArrayList())
+        tagsRecycler.layoutManager = FlexboxLayoutManager(this)
+        tagsRecycler.adapter = selectedTagsAdapter
 
         selectImageBtn.setOnClickListener {
             imageSelection()
@@ -72,6 +82,9 @@ class QuestionFormActivity : AppCompatActivity(), ImageClickListener {
         askButton.setOnClickListener {
             ask()
         }
+
+        viewModel = ViewModelProvider.AndroidViewModelFactory(application)
+                .create(QuestionFormViewModel::class.java)
 
         viewModel.titleErrorMessage.observe(this, {
             titleErrorMessageText.visibility = View.VISIBLE
@@ -95,21 +108,62 @@ class QuestionFormActivity : AppCompatActivity(), ImageClickListener {
                 is ApiResult.Success -> {
                     Log.d("Success", "Question was posted.")
 
-                    setResult(1)
+                    setResult(Constants.QUESTION_CREATED)
                     finish()
                 }
                 is ApiResult.Error -> handleError(it.error)
             }
         })
+
+        viewModel.tagsList.observe(this, {
+            Log.d("Tags results size", it.tags.size.toString())
+            tagsAdapter.clear()
+            tagsAdapter.addAll(it.tags)
+            tagsAdapter.notifyDataSetChanged()
+            tagsAdapter.filter.filter(tagsAutoCompleteTextView.text, tagsAutoCompleteTextView)
+        })
+
+
+        tagsAdapter = ArrayAdapter(this,
+            android.R.layout.simple_dropdown_item_1line, ArrayList<Tag>())
+        tagsAutoCompleteTextView.setAdapter(tagsAdapter)
+
+        initTagSearch()
+
+        tagsAutoCompleteTextView.setOnItemClickListener { _, _, position, _ ->
+            addTag(position)
+        }
+    }
+
+    private fun initTagSearch() {
+        tagsAutoCompleteTextView.doAfterTextChanged { text ->
+            if(text != null && text.trim().length > 1) {
+                Log.d("Tag query", text.toString())
+                viewModel.searchQuery = text.toString()
+                viewModel.getTagsList()
+            } else {
+                tagsAdapter.clear()
+            }
+        }
+    }
+
+    private fun addTag(position: Int) {
+        val tag = tagsAdapter.getItem(position)
+        Log.d("Selected tag", tag.toString())
+        selectedTagsAdapter.addItem(tag!!)
+        selectedTags.add(tag.id)
+        clearTagField()
+    }
+
+    private fun clearTagField() {
+        tagsAutoCompleteTextView.setText("")
+        tagsAdapter.clear()
     }
 
     private fun ask() {
         val title = editTextQuestionTitle.text.toString()
         val body = editTextQuestionBody.text.toString()
-
-        //if (selectedImages.isNotEmpty()) {
-            val images = getImages(selectedImages)
-        //}
+        val images = getImages(selectedImages)
 
         titleErrorMessageText.visibility = View.GONE
         bodyErrorMessageText.visibility = View.GONE
@@ -117,7 +171,7 @@ class QuestionFormActivity : AppCompatActivity(), ImageClickListener {
         viewModel.postQuestion(
             title,
             body,
-            tagList,
+            selectedTags,
             images
         )
     }
@@ -215,5 +269,10 @@ class QuestionFormActivity : AppCompatActivity(), ImageClickListener {
     override fun removeImage(position: Int) {
         selectedImages.removeAt(position)
         imageAdapter.removeItem(position)
+    }
+
+    override fun removeTag(position: Int) {
+        selectedTags.removeAt(position)
+        selectedTagsAdapter.removeItem(position)
     }
 }

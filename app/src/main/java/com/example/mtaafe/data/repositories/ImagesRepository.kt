@@ -19,7 +19,7 @@ class ImagesRepository {
 
     suspend fun getImage(apiToken: String, imageId: Long): ApiResult<out Any> {
         try {
-            Log.d("Get Image api call", "Getting image")
+            Log.d("Get image api call", "Getting image")
 
             apiInterface?.getImage("Bearer $apiToken", imageId).let {
                 if (it?.isSuccessful == true) {

@@ -46,6 +46,10 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
 
         questionId = intent.getLongExtra("question_id", 0)
 
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setHomeButtonEnabled(true)
+        supportActionBar?.title = ""
+
         rootLayout = findViewById(R.id.questionDetailRoot)
         answersListRecycler = findViewById(R.id.answersListRecycler)
         imagesListRecycler = findViewById(R.id.imagesRecyclerView)
