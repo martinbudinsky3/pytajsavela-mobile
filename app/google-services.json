@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "124013258262",
+    "project_id": "mtaa-63a1b",
+    "storage_bucket": "mtaa-63a1b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:124013258262:android:ef80d5a93a4ea92d93b737",
+        "android_client_info": {
+          "package_name": "com.example.mtaafe"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "124013258262-fjunac4ut3vsec0qsi3th4ta1m6q1ae4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDhlva0HmAmmFjSR9CTTStxjhEYBT9OJc4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "124013258262-fjunac4ut3vsec0qsi3th4ta1m6q1ae4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
