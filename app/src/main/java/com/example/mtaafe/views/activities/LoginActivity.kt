@@ -35,6 +35,9 @@ class LoginActivity : AppCompatActivity() {
         viewModel.loggedInUser.observe(this, {
             sessionManager.saveApiToken(it.apiToken)
             sessionManager.saveUserId(it.id)
+
+            viewModel.postFcmToken()
+
             val intent = Intent(this, QuestionsListActivity::class.java)
             startActivity(intent)
             finish()

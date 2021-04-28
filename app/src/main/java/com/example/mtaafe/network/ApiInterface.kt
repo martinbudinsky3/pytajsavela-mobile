@@ -142,4 +142,11 @@ interface ApiInterface {
     suspend fun logout(
         @Header("Authorization") bearerToken: String
     ): Response<Any>
+
+    @Headers("Accept: application/json")
+    @POST("fcm")
+    suspend fun postFcmToken(
+        @Header("Authorization") bearerToken: String,
+        @Body fcmToken: FcmToken
+    ): Response<Any>
 }

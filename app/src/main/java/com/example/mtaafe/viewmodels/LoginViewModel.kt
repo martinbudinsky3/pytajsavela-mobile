@@ -2,12 +2,15 @@ package com.example.mtaafe.viewmodels
 
 import android.app.Application
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.mtaafe.data.models.*
 import com.example.mtaafe.data.repositories.AuthRepository
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -32,6 +35,8 @@ class LoginViewModel: ViewModel() {
     val error: LiveData<ErrorEntity>
         get() = _error
 
+    private var fcmToken: String? = null
+
     init {
         authRepository = AuthRepository()
     }
@@ -54,5 +59,23 @@ class LoginViewModel: ViewModel() {
                 }
             }
         }
+    }
+
+    fun postFcmToken() {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.w("Fcm token", "Fetching FCM registration token failed", task.exception)
+                return@OnCompleteListener
+            }
+
+            Log.d("Token", task.result!!)
+            // Get new FCM registration token
+            fcmToken = task.result
+            CoroutineScope(Dispatchers.IO).launch {
+                Log.d("Token", "Sending token")
+                val fcmTokenData = FcmToken(fcmToken!!)
+                authRepository?.postFcmToken(_loggedInUser.value!!.apiToken, fcmTokenData)
+            }
+        })
     }
 }

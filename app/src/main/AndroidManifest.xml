@@ -13,6 +13,10 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true" >
 
+        <meta-data android:name="firebase_messaging_auto_init_enabled"
+            android:value="false" />
+        <meta-data android:name="firebase_analytics_collection_enabled"
+            android:value="false" />
         <service
             android:name=".notifications.MyFirebaseMessagingService"
             android:exported="false">
@@ -41,7 +45,9 @@
 
         </activity>
 
-        <activity android:name=".views.activities.QuestionDetailActivity">
+        <activity
+            android:name=".views.activities.QuestionDetailActivity"
+            android:parentActivityName=".views.activities.QuestionsListActivity">
 
         </activity>
 
