@@ -22,10 +22,6 @@ class QuestionDetailViewModel(application: Application): AndroidViewModel(applic
     private var imagesRepository: ImagesRepository? = null
     var sessionManager: SessionManager? = null
 
-    private val _result = MutableLiveData<ApiResult<out Any>>()
-    val result: LiveData<ApiResult<out Any>>
-        get() = _result
-
     private val _question = MutableLiveData<Question>()
     val question: LiveData<Question>
         get() = _question
@@ -37,6 +33,10 @@ class QuestionDetailViewModel(application: Application): AndroidViewModel(applic
     private val _answersImages = MutableLiveData<ArrayList<AnswersDecodedImage>>()
     val answersImages: LiveData<ArrayList<AnswersDecodedImage>>
         get() = _answersImages
+
+    private val _newAnswer = MutableLiveData<Answer>()
+    val newAnswer: LiveData<Answer>
+        get() = _newAnswer
 
     private val _successfulQuestionDelete = MutableLiveData<Boolean>()
     val successfulQuestionDelete: LiveData<Boolean>
@@ -154,6 +154,25 @@ class QuestionDetailViewModel(application: Application): AndroidViewModel(applic
                     }
                     is ApiResult.Error -> {
                         _answerDeleteError.value = response.error
+                    }
+                }
+            }
+        }
+    }
+
+    fun getAnswer(answerId: Long) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val response = answersRepository?.getAnswer(sessionManager?.fetchApiToken().toString(), answerId)
+
+            withContext(Dispatchers.Main) {
+                when(response) {
+                    is ApiResult.Success -> {
+                        if(response.data is Answer) {
+                            _newAnswer.value = response.data!!
+                        }
+                    }
+                    is ApiResult.Error -> {
+
                     }
                 }
             }

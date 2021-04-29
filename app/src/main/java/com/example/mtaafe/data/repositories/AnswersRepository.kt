@@ -19,6 +19,34 @@ class AnswersRepository {
         apiInterface = ApiClient.getApiClient().create(ApiInterface::class.java)
     }
 
+    suspend fun getAnswer(apiToken: String, answerId: Long) : ApiResult<out Any>{
+        try {
+            Log.i("Get answer api call", "Getting answer with id $answerId.")
+
+            apiInterface?.getAnswer(
+                "Bearer $apiToken",
+                answerId
+            ).let {
+                // server returns 200
+                if (it?.isSuccessful == true) {
+                    Log.i("Get answer api call", "Successfuly get answer with id $answerId")
+                    return ApiResult.Success(it.body()!!)
+                }
+
+                // server returns response with error code
+                else {
+                    val exception = HttpException(it!!)
+                    Log.e("Get answer api call", "Server returns response with error code. Response: $it", exception)
+                    return ApiResult.Error<ErrorEntity>(ErrorHandler.getError(exception))
+                }
+            }
+        }
+        catch (exception: Exception) {
+            Log.e("Get answer api call", "Error while connecting to server.", exception)
+            return ApiResult.Error<ErrorEntity>(ErrorHandler.getError(exception))
+        }
+    }
+
     suspend fun postAnswer(apiToken: String, questionId: Long, body : RequestBody, images : List<MultipartBody.Part>?) : ApiResult<out Any>{
         try {
             Log.i("Post answer api call", "Posting answer.")

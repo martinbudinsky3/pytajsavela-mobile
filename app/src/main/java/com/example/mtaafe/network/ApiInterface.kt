@@ -46,6 +46,13 @@ interface ApiInterface {
     ): Response<Any>
 
     @Headers("Accept: application/json")
+    @GET("answers/{id}")
+    suspend fun getAnswer(
+        @Header("Authorization") bearerToken: String,
+        @Path("id") answerId: Long?
+    ): Response<Answer>
+
+    @Headers("Accept: application/json")
     @Multipart
     @POST("questions/{id}/answers")
     suspend fun postAnswer(

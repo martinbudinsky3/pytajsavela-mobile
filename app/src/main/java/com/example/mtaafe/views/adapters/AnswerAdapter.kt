@@ -1,5 +1,6 @@
 package com.example.mtaafe.views.adapters
 
+import android.graphics.Bitmap
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -29,6 +30,12 @@ class AnswerAdapter (private val answersList: ArrayList<Answer>,
 
     override fun getItemCount(): Int {
         return answersList.size
+    }
+
+    fun appendAnswer(answer: Answer) {
+        answersList.add(answer)
+        notifyItemInserted(answersList.size - 1)
+        notifyItemRangeInserted(itemCount, 1)
     }
 
     fun updateData(answersListNew: ArrayList<Answer>) {

@@ -12,6 +12,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
 import com.example.mtaafe.R
 import com.example.mtaafe.data.models.ErrorEntity
+import com.example.mtaafe.notifications.FirebaseSessionManager
 import com.example.mtaafe.utils.SessionManager
 import com.example.mtaafe.viewmodels.DrawerViewModel
 import com.example.mtaafe.viewmodels.QuestionsListViewModel
@@ -43,6 +44,8 @@ open class DrawerActivity: AppCompatActivity(), NavigationView.OnNavigationItemS
 
         viewModel.successfulLogout.observe(this, {
             if(it == true) {
+                FirebaseSessionManager.disableFCM()
+
                 val intent = Intent(this, LoginActivity::class.java)
                 startActivity(intent)
                 finish()

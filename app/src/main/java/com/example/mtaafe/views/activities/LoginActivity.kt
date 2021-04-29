@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.mtaafe.R
 import com.example.mtaafe.data.models.ErrorEntity
 import com.example.mtaafe.databinding.ActivityLoginBinding
+import com.example.mtaafe.notifications.FirebaseSessionManager
 import com.example.mtaafe.utils.SessionManager
 import com.example.mtaafe.viewmodels.LoginViewModel
 import com.google.android.material.snackbar.Snackbar
@@ -37,6 +38,7 @@ class LoginActivity : AppCompatActivity() {
             sessionManager.saveUserId(it.id)
 
             viewModel.postFcmToken()
+            FirebaseSessionManager.enableFCM()
 
             val intent = Intent(this, QuestionsListActivity::class.java)
             startActivity(intent)

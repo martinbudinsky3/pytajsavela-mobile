@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.mtaafe.R
 import com.example.mtaafe.config.Constants
 import com.example.mtaafe.data.models.*
+import com.example.mtaafe.notifications.MyFirebaseMessagingService
 import com.example.mtaafe.viewmodels.QuestionDetailViewModel
 import com.example.mtaafe.views.adapters.AnswerAdapter
 import com.example.mtaafe.views.adapters.ImageAdapter
@@ -102,6 +103,21 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
             answersImagesLoaded = it.size
         })
 
+        MyFirebaseMessagingService.newAnswerId.observe(this, {
+            if(it.questionId == questionId) {
+                Log.d("QuestionDetailActivity", "Just got info about new answer")
+                viewModel.getAnswer(it.id)
+                MyFirebaseMessagingService.newAnswerId.value = NewAnswer(0L, 0L)
+                setResult(Constants.QUESTION_UPDATED)
+            }
+        })
+
+        viewModel.newAnswer.observe(this, {
+            answerAdapter.appendAnswer(it)
+            answersCount++
+            answersCountTextView.text = "Odpovede (" + answersCount.toString() + "):"
+        })
+
         viewModel.successfulQuestionDelete.observe(this, {
             if(it == true) {
                 setResult(Constants.QUESTION_DELETED)
@@ -148,10 +164,34 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
         }
     }
 
-    override fun onNewIntent(intent: Intent?) {
-        super.onNewIntent(intent)
-        Log.d("Question id", intent?.getLongExtra("question_id", 0).toString())
-        // TODO if new question id equals current question id, get new answer id and get new answer from server, else get question
+//    override fun onNewIntent(intent: Intent?) {
+//        super.onNewIntent(intent)
+//        val newQuestionId = intent?.getLongExtra("question_id", 0)
+//
+//        if(newQuestionId != questionId) {
+//            reload(newQuestionId!!)
+//        }
+//    }
+
+    override fun onBackPressed() {
+        if(isTaskRoot) {
+            val intent = Intent(this, QuestionsListActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+        else {
+            super.onBackPressed()
+        }
+    }
+
+    private fun reload(newQuestionId: Long) {
+        questionId = newQuestionId
+        answerToDelete = 0
+        questionImagesLoaded = 0
+        answersImagesLoaded = 0
+        shouldGetImages = true
+        answersCount = 0
+        viewModel.getQuestionDetails(questionId)
     }
 
     private fun openDeleteDialog(){

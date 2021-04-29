@@ -5,14 +5,28 @@ import android.content.Intent
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.lifecycle.MutableLiveData
 import com.example.mtaafe.R
+import com.example.mtaafe.data.models.FcmToken
+import com.example.mtaafe.data.models.NewAnswer
+import com.example.mtaafe.data.repositories.AuthRepository
+import com.example.mtaafe.utils.SessionManager
 import com.example.mtaafe.views.activities.QuestionDetailActivity
-import com.google.firebase.messaging.Constants.TAG
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import java.util.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MyFirebaseMessagingService: FirebaseMessagingService() {
+
+    private var authRepository: AuthRepository? = null
+    private var sessionManager: SessionManager? = null
+
+    init {
+        authRepository = AuthRepository()
+        sessionManager = SessionManager(applicationContext)
+    }
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         // if application sends multiple type of messages, some flag data should be sent along message
@@ -21,12 +35,15 @@ class MyFirebaseMessagingService: FirebaseMessagingService() {
         val questionId = remoteMessage.data["question_id"]!!.toLong()
         val answerId = remoteMessage.data["answer_id"]!!.toLong()
 
-        // Create an explicit intent for an Activity in your app
+        // if current activity is QuestionDetailActivity update UI
+        if(newAnswerId.hasActiveObservers()) {
+            newAnswerId.postValue(NewAnswer(answerId, questionId))
+        }
+
         val intent = Intent(this, QuestionDetailActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
         intent.putExtra("question_id", questionId)
-        intent.putExtra("answer_id", answerId)
 
         val pendingIntent: PendingIntent = PendingIntent.getActivity(
             this,
@@ -35,23 +52,30 @@ class MyFirebaseMessagingService: FirebaseMessagingService() {
             PendingIntent.FLAG_UPDATE_CURRENT
         )
 
+        showNotification(title, body, pendingIntent)
+    }
+
+    override fun onNewToken(token: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            authRepository?.postFcmToken(sessionManager?.fetchApiToken()!!, FcmToken(token))
+        }
+    }
+
+    private fun showNotification(title: String, body: String, pendingIntent: PendingIntent) {
         val builder = NotificationCompat.Builder(this, "101")
             .setSmallIcon(R.drawable.ic_baseline_notifications_24)
             .setContentTitle(title)
             .setContentText(body)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            // Set the intent that will fire when the user taps the notification
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
 
         with(NotificationManagerCompat.from(this)) {
-            // notificationId is a unique int for each notification that you must define
             notify(1, builder.build())
         }
     }
 
-    override fun onNewToken(token: String) {
-        Log.d("Token", "Refreshed token: $token")
-        // TODO post token on server
+    companion object {
+        val newAnswerId = MutableLiveData<NewAnswer>()
     }
 }

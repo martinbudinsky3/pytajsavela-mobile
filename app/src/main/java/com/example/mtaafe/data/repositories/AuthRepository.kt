@@ -78,7 +78,7 @@ class AuthRepository {
             apiInterface?.postFcmToken("Bearer $apiToken", fcmToken).let {
                 // server returns 200
                 if (it?.isSuccessful == true) {
-                    Log.i("Logout api call", "Successful logout api call")
+                    Log.i("Fcm token api call", "Successful post fcm token api call")
                 }
 
                 // server returns response with error code
