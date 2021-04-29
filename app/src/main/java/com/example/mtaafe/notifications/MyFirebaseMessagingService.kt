@@ -25,7 +25,6 @@ class MyFirebaseMessagingService: FirebaseMessagingService() {
 
     init {
         authRepository = AuthRepository()
-        sessionManager = SessionManager(applicationContext)
     }
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
@@ -56,6 +55,10 @@ class MyFirebaseMessagingService: FirebaseMessagingService() {
     }
 
     override fun onNewToken(token: String) {
+        if(sessionManager == null) {
+            sessionManager = SessionManager(this)
+        }
+
         CoroutineScope(Dispatchers.IO).launch {
             authRepository?.postFcmToken(sessionManager?.fetchApiToken()!!, FcmToken(token))
         }
