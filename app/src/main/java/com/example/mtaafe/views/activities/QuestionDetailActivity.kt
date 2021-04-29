@@ -148,6 +148,12 @@ class QuestionDetailActivity: AppCompatActivity(), OnAnswerClickListener {
         }
     }
 
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        Log.d("Question id", intent?.getLongExtra("question_id", 0).toString())
+        // TODO if new question id equals current question id, get new answer id and get new answer from server, else get question
+    }
+
     private fun openDeleteDialog(){
         val builder = AlertDialog.Builder(this)
         val inflater = layoutInflater
