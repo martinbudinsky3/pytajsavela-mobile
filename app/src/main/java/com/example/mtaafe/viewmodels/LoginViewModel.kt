@@ -23,10 +23,6 @@ class LoginViewModel: ViewModel() {
     val email = MutableLiveData<String>()
     val password = MutableLiveData<String>()
 
-    private val _result = MutableLiveData<ApiResult<out Any>>()
-    val result: LiveData<ApiResult<out Any>>
-        get() = _result
-
     private val _loggedInUser = MutableLiveData<LoggedInUser>()
     val loggedInUser: LiveData<LoggedInUser>
         get() = _loggedInUser
